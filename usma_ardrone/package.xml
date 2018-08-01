@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package>
+  <name>usma_ardrone</name>
+  <version>0.0.0</version>
+  <description>The usma_ardrone metapackage</description>
+  <maintainer email="benjamin@todo.todo">benjamin</maintainer>
+  <license>TODO</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <run_depend>optitrack_controller</run_depend>
+  <!-- <run_depend>gazebo_descriptions</run_depend> -->
+  <!-- <run_depend>gazebo_plugins</run_depend> -->
+
+  <export>
+    <metapackage/>
+  </export>
+</package>
