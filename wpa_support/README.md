@@ -67,3 +67,4 @@ ardrone-wpa2 @daraosn, MIT (see LICENSE)
 
 wpa_supplicant (BSD licensed)
 Copyright (c) 2003-2013, Jouni Malinen <j@w1.fi> and contributors.
+

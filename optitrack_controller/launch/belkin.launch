@@ -9,7 +9,7 @@
 		<param name="realtime_navdata" value="true" />
 		<param name="realtime_video" value="true" />		
 		<param name="looprate" value="50" /> <!-- Tunes the speed at which the ros loop runs, and thus, the rate at which navdata is published -->
-	    <remap from="/cmd_vel" to="hast/uav/cmd_vel"/>
+	    <remap from="/cmd_vel" to="ardrone/cmd_vel"/>
 	</node>
 
 	<node pkg="rostopic" type="rostopic" 			name="navdataEcho" 		output="screen" 	args="echo /ardrone/navdata" />
@@ -32,3 +32,9 @@
         <!-- <rosparam param="cov/imu_or">[1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 100000.0]</rosparam> -->
 	    <!-- <param name="enable_navdata_pwm" value="true"/> -->
 		<!-- <rosparam file="/home/turtlebot/ros/src/hast/cam_info/00b09d0100c8851b.yaml" />  -->
+
+
+<!-- /vrpn_client_node/parrot/pose -->
+
+<!-- ardrone2_065412 -->
+<!-- ardrone2_234879 -->
