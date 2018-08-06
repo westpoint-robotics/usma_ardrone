@@ -1,5 +1,5 @@
  <launch>
-	<arg name="model" default="$(find robot_descriptions)/UAV/urdf/ardrone.urdf.xacro"/>
+	<arg name="model" default="$(find usma_descriptions)/UAV/urdf/ardrone.urdf.xacro"/>
 	<arg name="robot_ns" default="uav"/>
 	<arg name="down_image"  default="image_rect" />
 	<arg name="uav_description" 	default="$(arg robot_ns)/robot_description"/>
@@ -26,7 +26,7 @@
 			<remap from="/joint_states" to="$(arg robot_ns)/joint_states" />
 		</node>
 
-		<node name="ardrone_to_tf" pkg="message_to_tf" type="message_to_tf" output="screen">
+		<node name="ardrone_to_tf" pkg="msg_to_tf" type="msg_to_tf" output="screen">
 			<param name="frame_id" 				value="map" />
 			<param name="odometry_topic" 		value="ardrone/odom" />
 			<param name="footprint_frame_id" 	value="/gazebo/uav/ardrone_base_footprint" />

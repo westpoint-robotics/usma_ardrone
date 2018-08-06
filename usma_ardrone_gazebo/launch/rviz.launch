@@ -1,0 +1,28 @@
+<launch>
+	<!-- <node pkg="rviz" type="rviz" name="rviz" />   -->
+	<arg name="rvizconfig" 	default="$(find hast_gazebo)/config/gazebo.rviz" />
+
+	<node pkg="rviz" type="rviz" name="rviz" args="-d $(arg rvizconfig)"/> 
+
+	<arg name="launcher" 	default="rviz_launcher" />
+
+	<node pkg="hast"	type="shutdownListener"	name="shutdownListener_$(arg launcher)"	output="screen"	required="true"/>
+
+	
+	
+
+	<!-- <node pkg="hast"	type="goalPub"			name="goalPub_$(arg launcher)"			output="screen" /> -->
+	<include file="$(find hast)/launch/goalPub.launch">
+		<arg name="goal_x" 		value="3.0"/>
+		<arg name="goal_y" 		value="0.1"/>
+		<arg name="goal_theta" 	value="0.01"/>
+		<arg name="goal_topic" 	value="/hast/ugv/goal"/>
+	</include>
+
+</launch>
+
+
+<!-- rostopic pub -r 10 /tb/cmd_vel geometry_msgs/Twist  '{linear:  {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0,y: 0.0,z: 0.0}}' -->
+<!-- rostopic pub -1 /hast/shutdown hast/flag '{flag: {False}}' -->
+
+<!-- rostopic pub -1 /hast/ugv/goal geometry_msgs/Pose2D '{x: 2.0, y: 0.0, theta: 0.125}' -->

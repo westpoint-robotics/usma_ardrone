@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+    <xacro:property name="X_ROBOT_NAMESPACE" value="/gazebo/uav" />
+
+    <!-- Ardrone Simple Controller Plugin -->
+    <xacro:macro name="usma_ardrone_controller">
+        <gazebo>
+            <plugin name="ardrone_simple_controller" filename="libusma_ardrone_simple_controller.so">
+            <!-- <plugin name="ardrone_simple_controller" filename="libhector_gazebo_quadrotor_simple_controller.so"> -->
+                <alwaysOn>true</alwaysOn>
+                <updateRate>0.0</updateRate>
+                <bodyName>${X_ROBOT_NAMESPACE}/ardrone_base_link</bodyName>
+                <stateTopic>ardrone/odom</stateTopic>
+                <imuTopic>ardrone/imu</imuTopic>
+                <topicName>usma_ardrone/uav/cmd_vel</topicName>
+                <publishPID>true</publishPID>
+                <PIDRootTopic>/usma_ardrone/uav/pid/</PIDRootTopic>
+                <red_led_link>/gazebo/uav/ardrone_red_led</red_led_link>
+                <blue_led_link>/gazebo/uav/ardrone_blue_led</blue_led_link>
+                <green_led_link>/gazebo/uav/ardrone_green_led</green_led_link>
+                <red_led_joint>/gazebo/uav/ardrone_red_joint</red_led_joint>
+                <blue_led_joint>/gazebo/uav/ardrone_blue_joint</blue_led_joint>
+                <green_led_joint>/gazebo/uav/ardrone_green_joint</green_led_joint>
+
+                 <velocityXYProportionalGain>5.0</velocityXYProportionalGain>
+                 <velocityXYDifferentialGain>1.0</velocityXYDifferentialGain>
+                            <velocityXYLimit>2.0</velocityXYLimit>
+                <rollpitchProportionalGain>10.0</rollpitchProportionalGain>
+                 <rollpitchDifferentialGain>5.0</rollpitchDifferentialGain>
+                            <rollpitchLimit>1.0</rollpitchLimit>
+                
+                <velocityZProportionalGain>5.0</velocityZProportionalGain>
+                <velocityZDifferentialGain>1.0</velocityZDifferentialGain>
+                           <velocityZLimit>0.5</velocityZLimit>
+                 <yawProportionalGain>2.0</yawProportionalGain>
+                 <yawDifferentialGain>1.0</yawDifferentialGain>
+                            <yawLimit>1.5</yawLimit>
+                
+                           <maxForce>30</maxForce>
+                    <motionSmallNoise>0.0</motionSmallNoise>
+                    
+                    <drift_noise_x>0.25</drift_noise_x>
+                    <drift_noise_y>0.25</drift_noise_y>
+                    <drift_noise_z>0.15</drift_noise_z>
+                    <drift_noise_yaw>0.1</drift_noise_yaw>
+                <motionDriftNoiseTime>1.0</motionDriftNoiseTime>
+            </plugin>
+
+            <!-- velocityXYProportionalGain : default = 5.0 -->
+            <!-- velocityXYDifferentialGain : default = 1.0 -->
+            <!-- velocityXYLimit            : default = 2.0 -->
+            <!-- rollpitchProportionalGain  : default = 10.0 -->
+            <!-- rollpitchDifferentialGain  : default =  5.0 -->
+            <!-- rollpitchLimit             : default =  0.5 -->
+            
+            <!-- velocityZProportionalGain  : default = 5.0 -->
+            <!-- velocityZDifferentialGain  : default = 1.0 -->
+            <!-- velocityZLimit             : default = 0.5 -->
+            <!-- yawProportionalGain        : default = 2.0 -->
+            <!-- yawDifferentialGain        : default = 1.0 -->
+            <!-- yawLimit                   : default = 1.5 -->
+
+            <!-- maxForce                   : default =30.0 -->
+            <!-- motionSmallNoise           : default = 0.05 -->
+            <!-- motionDriftNoise           : default = 0.03 -->
+            <!-- motionDriftNoiseTime       : default = 5.0 -->
+
+
+            <plugin name="usma_ardrone_state_controller" filename="libusma_ardrone_state_controller.so">
+                <alwaysOn>true</alwaysOn>
+                <updateRate>0.0</updateRate>
+                <bodyName>${X_ROBOT_NAMESPACE}/ardrone_base_link</bodyName>
+                <stateTopic>ardrone/odom</stateTopic>
+                <imuTopic>ardrone/imu</imuTopic>
+                <sonarTopic>ardrone/sonar_height</sonarTopic>
+                <topicName>usma_ardrone/uav/cmd_vel</topicName>
+            </plugin>
+        </gazebo>
+    </xacro:macro>
+</robot>

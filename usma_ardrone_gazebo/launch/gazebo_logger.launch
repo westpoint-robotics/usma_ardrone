@@ -1,0 +1,65 @@
+<launch>
+	<arg name="run" 				default="002" />
+	<arg name="date" 				default="20180417" />
+	<arg name="world_origin" 		default="/vicon/origin" />
+	<!-- <arg name="world_origin" 		default="/map" /> -->
+	<!-- <arg name="metronome_topic" 	default="/gazebo/kobuki/joint_states" /> -->
+	<arg name="metronome_type" 		default="Imu" />
+	<arg name="metronome_topic" 	default="/ardrone/imu" />
+	<arg name="pid_topic" 			default="/hast/uav/pid" />
+	<arg name="record_pid" 			default="false" />
+
+
+<!-- rosrun tf tf_echo map gazebo/kobuki/base_footprint -->
+	
+	<group ns="hast" >
+		<node pkg="hast_gazebo" type="gazebo_logger.py" name="gazebo_logger" output="screen" >
+			<param name="/run" 				value="$(arg run)" />
+			<param name="/date" 			value="$(arg date)" />
+			<param name="/pid_topic" 		value="$(arg pid_topic)" />
+			<param name="/record_pid" 		value="$(arg record_pid)" />
+			<param name="/world_origin" 	value="$(arg world_origin)" />
+			<param name="/metronome_type" 	value="$(arg metronome_type)" />
+			<param name="/metronome_topic" 	value="$(arg metronome_topic)" />
+			<param name="/xf_array" 		value="/vicon/kobuki/base_TF,vicon/uav/ardrone_red_led,vicon/uav/ardrone_blue_led,vicon/uav/ardrone_green_led,id02_16h5/base_footprint,id03_16h5/base_footprint,id07_16h5/base_footprint" /> <!-- no spaces! -->
+			<param name="/xf_names" 		value="kobuki_02,red,blue,green,april02,april03,april07" /> <!-- no spaces! -->
+		</node>
+	</group>
+
+    <arg name="launcher"    default="gazebo_logger_launch" />
+    <!-- <node pkg="hast"        type="killhast"         output="screen" name="killhast_$(arg launcher)"         required="true"/> -->
+    <node pkg="hast"        type="shutdownListener" output="screen" name="shutdownListener_$(arg launcher)" required="true"/>
+
+
+
+
+<!-- 	<node pkg="rostopic" 	type="rostopic" 		name="cmd_vel_limit_echo" 		output="screen" 	args="echo /hast/kobuki/cmd_vel_limited" />
+	<node pkg="hast"		type="killhast"			output="screen"	name="killhast_$(arg launcher)"			required="true"/>
+	<node pkg="hast"		type="shutdownListener"	output="screen" name="shutdownListener_$(arg launcher)"	required="true"/>
+ -->
+
+</launch>
+
+<!-- 
+	rosrun tf tf_echo /vicon/origin /gazebo/uav/ardrone_red_led 
+
+	rosrun tf tf_echo /vicon/origin /vicon/kobuki/base_TF
+	rosrun tf tf_echo /vicon/origin gazebo/uav/ardrone_red_led
+	rosrun tf tf_echo /vicon/origin gazebo/uav/ardrone_blue_led
+	rosrun tf tf_echo /vicon/origin gazebo/uav/ardrone_green_led
+	rosrun tf tf_echo /vicon/origin id02_16h5/base_footprint
+	rosrun tf tf_echo /vicon/origin id03_16h5/base_footprint
+	rosrun tf tf_echo /vicon/origin id07_16h5/base_footprint
+-->
+
+<!-- 
+rostopic pub -r 10 /hast/kobuki/cmd_vel geometry_msgs/Twist  '{linear:  {x: 1.0, y: 0.0, z: 0.0}, angular: {x: 0.0,y: 0.0,z: 1.0}}'
+ -->
+
+<!-- 			<param name="/tf_array" 		value="hast/kobuki/base_footprint,/hast/uav/ardrone_base_footprint,hast/uav/ardrone_red_led,hast/uav/ardrone_blue_led,hast/uav/ardrone_green_led,id02_16h5/base_footprint,id03_16h5/base_footprint,id07_16h5/base_footprint" /> 
+			<param name="/tf_names" 		value="kobuki,ardrone,red,blue,green,id02_16h5,id03_16h5,id07_16h5" />
+ -->
+
+
+ <!-- [ERROR] [1525475915.470866625]: Skipped loading plugin with error: XML Document '/opt/ros/kinetic/share/hector_pose_estimation/hector_pose_estimation_nodelets.xml' has no Root Element. This likely means the XML is malformed or missing..
+ -->

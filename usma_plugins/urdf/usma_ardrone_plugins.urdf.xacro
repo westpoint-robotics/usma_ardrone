@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+	<xacro:property name="X_ROBOT_NAMESPACE" value="/gazebo/uav" />
+	<xacro:include filename="$(find usma_plugins)/urdf/usma_ardrone_sensors.urdf.xacro" />
+	<xacro:include filename="$(find usma_plugins)/urdf/usma_ardrone_simple_controller.urdf.xacro" />
+
+	<!-- ardrone Gazebo Plugins -->
+	<xacro:macro name="usma_ardrone_plugins">
+		<canonicalBody>${X_ROBOT_NAMESPACE}/ardrone_base_link</canonicalBody>
+		<ardrone_sensors/>
+		<ardrone_controller/>
+	</xacro:macro>
+</robot>

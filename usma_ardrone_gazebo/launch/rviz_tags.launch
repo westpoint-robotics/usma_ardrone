@@ -1,0 +1,26 @@
+<launch>
+
+	<arg name="id02_model" 	default="$(find robot_descriptions)/tags/urdf/id02_16h5.urdf.xacro"/>
+	<arg name="id03_model" 	default="$(find robot_descriptions)/tags/urdf/id03_16h5.urdf.xacro"/>
+	<arg name="id07_model" 	default="$(find robot_descriptions)/tags/urdf/id07_16h5.urdf.xacro"/>
+
+    <param name="id02_description" command="$(find xacro)/xacro --inorder $(arg id02_model)" />
+    <param name="id03_description" command="$(find xacro)/xacro --inorder $(arg id03_model)" />
+    <param name="id07_description" command="$(find xacro)/xacro --inorder $(arg id07_model)" />
+
+	<node ns="kobuki" pkg="tf" type="static_transform_publisher" name="tf_id02_white" 
+		args="0 0 0    0 0 0 /id02_16h5/base_footprint /id02_16h5/base_link 100"/> 
+	<node ns="kobuki" pkg="tf" type="static_transform_publisher" name="tf_id02_black" 
+		args="0 0 0.002 0 0 0 /id02_16h5/base_footprint /id02_16h5/fill_link 100"/> 
+
+	<node ns="kobuki" pkg="tf" type="static_transform_publisher" name="tf_id03_white" 
+		args="0 0 0    0 0 0 /id03_16h5/base_footprint /id03_16h5/base_link 100"/> 	
+	<node ns="kobuki" pkg="tf" type="static_transform_publisher" name="tf_id03_black" 
+		args="0 0 0.002 0 0 0 /id03_16h5/base_footprint /id03_16h5/fill_link 100"/> 
+
+	<node ns="kobuki" pkg="tf" type="static_transform_publisher" name="tf_id07_white" 
+		args="0 0 0    0 0 0 /id07_16h5/base_footprint /id07_16h5/base_link 100"/> 
+	<node ns="kobuki" pkg="tf" type="static_transform_publisher" name="tf_id07_black" 
+		args="0 0 0.002 0 0 0 /id07_16h5/base_footprint /id07_16h5/fill_link 100"/> 
+
+</launch>

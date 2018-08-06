@@ -1,0 +1,170 @@
+<!-- -*- mode: XML -*-  -->
+
+<!-- roslaunch hast sim.launch run:=007 user:=benjamin -->
+
+<launch>
+	<arg name="launcher" 	default="gazebo_launch" />
+    <node pkg="hast"        type="killhast"         output="screen" name="killhast_$(arg launcher)"         required="true"/>
+    <node pkg="hast"        type="shutdownListener" output="screen" name="shutdownListener_$(arg launcher)" required="true"/>
+    
+
+	<!-- rviz params -->
+		
+		<arg name="uav_model" 	default="$(find robot_descriptions)/UAV/urdf/ardrone_rviz.urdf.xacro"/> 
+		<arg name="ugv_model" 	default="$(find robot_descriptions)/UGV2/urdf/hast_ugv2_kobuki_stereo.urdf.xacro"/>
+		
+	    <!-- <arg name="rvizconfig" 	default="$(find hast_gazebo)/config/gazebo.rviz" /> -->
+	    <!-- <arg name="rvizconfig" 	default="$(find hast_gazebo)/config/gazebo_kobuki.rviz" /> -->
+	    <!-- <arg name="rvizconfig" 	default="$(find hast_gazebo)/config/gazebo_kobuki_uav.rviz" /> -->
+	    <arg name="rvizconfig" 	default="$(find hast_gazebo)/config/gazebo_kobuki_uav_tags.rviz" />
+
+	    <param name="UAV_description" command="$(find xacro)/xacro --inorder $(arg uav_model)" />
+	    <param name="UGV_description" command="$(find xacro)/xacro --inorder $(arg ugv_model)" />
+
+
+		<include file="$(find hast_gazebo)/launch/rviz_tags.launch"/>
+
+	    <include file="$(find hast_gazebo)/launch/rviz.launch">
+			<arg name="rvizconfig" 	value="$(arg rvizconfig)" />
+	    </include>
+
+
+	<!-- Experiment parameters and identifiers -->
+		<arg name="sim" 				default="false" />
+		<arg name="april_debug" 		default="false" />
+		<arg name="run" 				default="001" />
+		<arg name="date" 				default="20180413" />
+		<arg name="user" 				default="$(env USER)" />
+		<arg name="saveimages" 			default="false" />
+		<arg name="showcircles" 		default="false" />
+		<arg name="saveraw" 			default="false" />
+		<arg name="trigger_saveraw"		default="false" />  <!-- rosrun hast triggerSaveRaw -->
+		<arg name="tb_base" 			default="kobuki" />
+		<arg name="down_image"  		default="image_rect" />
+		<!-- <arg name="tf_x_offset" 		default="0.025" /> -->
+		<arg name="record_pid" 			default="false" />
+		<arg name="useBackstepping" 	default="true" />
+		<arg name="gazebo_sim" 			default="true"/>
+
+	<!-- Experiment index parameters -->
+		<!-- <param name="/test/env_var" value="$(env PLATFORM)" 	type = "str" /> -->
+		<!-- <param name="/hast/tb_base" value="$(arg tb_base)" type = "str" /> -->
+		<param name="/hast/run"  			value="$(arg run)"  type = "str" />
+		<param name="/hast/user" 			value="$(arg user)" type = "str" />
+		<param name="/hast/date" 			value="$(arg date)" type = "str" />
+		<param name="/hast/kf/sim" 			value="$(arg sim)" type = "bool" />
+		<param name="/hast/april/debug" 		value="$(arg april_debug)" type = "bool" />
+		<param name="/hast/stereo/SaveImages" 	value="$(arg saveimages)" type = "bool" />
+	
+	<!-- record bag of all hast and drone related data for out-of-lab simulation [find ~/.ros -name \*.bag] -->
+	<include file="$(find hast)/launch/hast_bag.launch">
+		<arg name="run" 	value="$(arg run)" />
+		<arg name="date" 	value="$(arg date)" />
+		<arg name="user" 	value="$(arg user)" />
+		<arg name="tb_base" value="$(arg tb_base)" />
+	</include>
+
+	<include file="$(find hast)/launch/$(arg tb_base)/$(arg tb_base)_logger.launch">
+		<arg name="date" 				value="$(arg date)" />
+		<arg name="run" 				value="$(arg run)" />
+		<arg name="tb_base" 			value="$(arg tb_base)" />
+		<arg name="launcher" 			value="$(arg tb_base)_logger_launch" />
+		<arg name="cmd_vel_x_limit" 	value="0.5" />
+		<arg name="cmd_vel_w_limit" 	value="0.8" />
+		<arg name="cmd_vel_sub_topic" 	value="/gazebo/$(arg tb_base)/cmd_vel_raw" />
+		<arg name="cmd_vel_pub_topic" 	value="/gazebo/$(arg tb_base)/cmd_vel_limited" />
+		<!-- <arg name="global_path_topic" 	value="/move_base/TrajectoryPlannerROS/global_plan" /> -->
+ 	</include>
+
+	<node 	pkg="hast" 	type="oneCKF"	name="oneCKF"	required="true" >
+		<param name="ckf_TF_parent" 		value="/map"/>
+		<param name="ckf_TF_child" 			value="/hast/uav/ardrone_base_link"			/>
+		<param name="odom_topic" 			value="/hast/$(arg tb_base)/odom"	/>
+		<param name="footprint_topic" 		value="/hast/$(arg tb_base)/oneckf_base_footprint"	/>
+		<param name="ugvCmd_topic"			value="/hast/$(arg tb_base)/cmd_vel_limited"/>
+		<!-- <param name="uav_baseframe"		value="ardrone2/base_link"/> -->
+		<param name="uav_baseframe"			value="hast/uav/ardrone_base_link"/>
+		<param name="uav_imu_yawdriftrate"	value="0"/>
+		<param name="tag_max_id"			value="20" type="int"/> <!-- Make sure this matches highest number in tag dictionary -->
+	</node>
+
+	<include file="$(find hast)/launch/hast_stereo_obs.launch">
+		<arg name="tb_base" 		value="$(arg tb_base)"/>
+		<arg name="gazebo_sim" 		value="$(arg gazebo_sim)"/>
+		<arg name="roi_halfwindow" 	value="100" />
+		<arg name="saveraw" 		value="$(arg saveraw)"/>
+		<arg name="showcircles" 	value="$(arg showcircles)"/>
+		<arg name="trigger_saveraw" value="$(arg trigger_saveraw)"/>
+		<!-- <ard name="uav_TF_parent" 	value="/hast/$(arg tb_base)/oneckf_base_footprint"	/> -->
+
+		<arg name="red_u_high" default="125" />
+		<arg name="red_u_low"  default="0" />
+		<arg name="red_v_high" default="255" />
+		<arg name="red_v_low"  default="140" />
+
+		<arg name="blue_u_high" default="255" />
+		<arg name="blue_u_low"  default="140" />
+		<arg name="blue_v_high" default="125" />
+		<arg name="blue_v_low"  default="0" />
+
+		<arg name="green_u_high" default="110" />
+		<arg name="green_u_low"  default="0" />
+		<arg name="green_v_high" default="100" />
+		<arg name="green_v_low"  default="10" />
+	</include>
+
+	<node 	pkg="hast" 	type="uavAutopilot"	name="uavAutopilot"	 >
+		<param name="uav_cmd_topic" 	value="hast/uav/cmd_vel"/>
+
+		<param name="MinTilt" 		value="0.0001"/> 	<!-- min threshold for tilt on any one axis in degrees-->
+		<param name="MaxTilt" 		value="0.4"/> 		<!-- max threshold for tilt on any one axis in degrees-->
+		<param name="MaxYawRate" 	value="0.4"/> 		<!-- //upped for tilt testing to 0.75, 0.3 nominal-->
+
+		<!-- legacy PV controller -->
+		<param name="Kp" 	value="0.25"/> 	<!-- position gain-->
+		<param name="Kv" 	value="0.25"/> 	<!-- velocity gain-->
+		<param name="Ky" 	value="0.025"/> <!-- yaw gain-->
+
+		<!-- backstepping PID controller -->
+		<param name="useBackstepping"	value="$(arg useBackstepping)"/>
+		<param name="u_cmd_scale" 	value="1"/> 
+
+		<param name="posXY_gain_p" 	value="0.5"/> 
+		<param name="posXY_gain_i" 	value="0.001"/> 
+		<param name="posXY_gain_d" 	value="0.00025"/> 
+		<param name="posXY_limit" 	value="1.00"/> 
+		<param name="velXY_gain_p" 	value="0.50"/>
+		<param name="velXY_gain_i" 	value="0.00"/>  
+		<param name="velXY_gain_d" 	value="0.00"/> 
+		<param name="velXY_limit" 	value="0.75"/> 
+		<param name="RP_gain_p" value="5.0"/> 
+		<param name="RP_gain_d" value="1.0"/> 
+		<param name="RP_limit" 	value="5.0"/> 
+
+	</node>
+
+	<include file="$(find hast_gazebo)/launch/gazebo_logger.launch">
+		<arg name="date" 		value="$(arg date)" />
+		<arg name="run" 		value="$(arg run)" />
+		<arg name="record_pid" 	value="$(arg record_pid)" />
+		
+	</include>
+
+</launch>
+
+	<!-- <node 	pkg="hast" 	type="threshImage"	name="threshImage" 		/> -->
+
+	<!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find hast)/config/$(arg tb_base)/$(arg tb_base)_rviz.rviz" /> -->
+
+
+	<!-- <node pkg="rosbag" type="record" name="rosbag" args="-O $(arg bagpath) tf /ardrone/cmd_vel /ardrone/imu /ardrone/land /ardrone/mag /ardrone/navdata /ardrone/navdata_pwm /ardrone/reset /ardrone/odom /ardrone/takeoff /clock /vo2/info /vo2/odometry /vo2/pose /mobile_base /tag_detections -e '/hast/(.*)' -e '/move_base/(.*)' "/> -->
+
+	<!-- Stereoscopic Image Processing --> 
+	<!-- <arg name="sync_namespace" default="sync" /> -->
+	<!-- <node ns="$(arg sync_namespace)" pkg="stereo_image_proc" type="stereo_image_proc" name="stereo_image_proc" output="screen" /> -->
+	<!-- <node ns="$(arg sync_namespace)" pkg="image_view" type="image_view" name="left_image_view" args="image:=/$(arg sync_namespace)/left/image_rect_color" /> -->
+	<!-- <node ns="$(arg sync_namespace)" pkg="image_view" type="image_view" name="right_image_view" args="image:=/$(arg sync_namespace)/right/image_rect_color" /> -->
+	<!-- <node pkg="image_view" type="disparity_view" name="disparity_view" args="image:=/$(arg sync_namespace)/disparity" /> -->
+	<!-- <node pkg="rviz" type="rviz" name="rviz" args="-d $(find ar_pose)/launch/live_multi.rviz"/> -->
+
+
