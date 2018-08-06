@@ -15,9 +15,6 @@
 	<arg name="respawn_gazebo" default="false"/>
 	<arg name="use_clock_frequency" default="false"/>
 	<arg name="pub_clock_frequency" default="100"/>
-	<arg name="vicon_date"		default="20180430"/>
-	<arg name="vicon_run"		default="001"/>
-
 
 	<!-- set use_sim_time flag -->
 	<param name="/use_sim_time" value="$(arg use_sim_time)"/>

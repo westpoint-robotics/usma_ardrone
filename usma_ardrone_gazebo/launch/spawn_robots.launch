@@ -2,9 +2,9 @@
 	<!-- Lazy shutoff -->
 	<arg name="launcher"	default="spawn_launch" />
 
-	<node pkg="hast"		type="killhast"		 output="screen" name="killhast_$(arg launcher)"		 required="true"/>
+<!-- 	<node pkg="hast"		type="killhast"		 output="screen" name="killhast_$(arg launcher)"		 required="true"/>
 	<node pkg="hast"		type="shutdownListener" output="screen" name="shutdownListener_$(arg launcher)" required="true"/>
-	
+ -->	
 	<arg name="use_sim_time"	default="true"/>
 	<arg name="gui"	 			default="true"/>
 	<arg name="verbose"	 		default="true"/>
@@ -16,8 +16,6 @@
 		<arg name="paused" 			value="$(arg paused)"/>
 		<arg name="verbose" 		value="$(arg verbose)"/>
 		<arg name="use_sim_time" 	value="$(arg use_sim_time)"/>
-		<arg name="vicon_date" 		value="$(arg vicon_date)"/>
-		<arg name="vicon_run"	 	value="$(arg vicon_run)"/>
 	</include>
 
 	<!-- Spawn UAV --> 

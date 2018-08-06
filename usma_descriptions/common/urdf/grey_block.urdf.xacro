@@ -1,0 +1,39 @@
+<robot name="grey_block" xmlns:xacro="http://ros.org/wiki/xacro">
+
+	<xacro:property name="X_PI" value="3.1415926535897931" />
+	<xacro:property name="X_id" value="grey_block" />
+	<link name="${X_id}/base_footprint"/>
+	<joint name="base_joint" type="fixed">
+		<origin xyz="0 0 0" rpy="0 0 0" />
+		<parent link="${X_id}/base_footprint"/>
+		<child link="${X_id}/base_link" />
+	</joint>
+
+	<link name="${X_id}/base_link">
+		<visual>
+			<geometry>
+            	<box size="0.75 0.4 0.4"/>
+			</geometry>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+		</visual>
+		<collision>
+			<geometry>
+            	<box size="0.75 0.4 0.4"/>
+			</geometry>
+			<origin xyz="0 0 0" rpy="0 0 0"/>
+		</collision>
+		<inertial>
+			<mass value="1"/> <!-- 2.4/2.6 kg for small/big battery pack -->
+			<origin xyz="0 0 0"/>
+			<inertia ixx="1" ixy="0.0" ixz="0.0" iyy="1" iyz="0.0" izz="1" />
+		</inertial>
+	</link>
+
+
+	<gazebo reference="${X_id}/base_link">
+		<material>Gazebo/Grey</material>
+	</gazebo>
+
+
+</robot>
+
