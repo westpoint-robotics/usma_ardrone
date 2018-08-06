@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package>
+  <name>usma_ardrone_gazebo_msgs</name>
+  <version>0.0.0</version>
+  <description>The usma_ardrone_gazebo_msgs package</description>
+  <maintainer email="benjamin@todo.todo">benjamin</maintainer>
+  <license>TODO</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>message_generation</build_depend>
+  <run_depend>message_runtime</run_depend>
+  <run_depend>geometry_msgs</run_depend>
+
+  <export>
+    <cpp cflags="-I${prefix}/include"/>
+  </export>
+</package>

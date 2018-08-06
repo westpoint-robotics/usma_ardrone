@@ -1,0 +1,72 @@
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:property name="X_ROBOT_NAMESPACE" value="/gazebo/uav" />
+
+  <xacro:include filename="$(find robot_plugins)/urdf/ardrone_plugins.urdf.xacro" />
+
+  <!-- Main ardrone link -->
+  <xacro:macro name="ardrone_base_macro">
+	<link name="${X_ROBOT_NAMESPACE}/ardrone_base_footprint"/>
+	<joint name="base_joint" type="fixed">
+		<origin xyz="0 0 0.0102" rpy="0 0 0" />
+		<parent link="${X_ROBOT_NAMESPACE}/ardrone_base_footprint"/>
+		<child link="${X_ROBOT_NAMESPACE}/ardrone_base_link" />
+	</joint>
+
+
+    <link name="${X_ROBOT_NAMESPACE}/ardrone_base_link">
+      <inertial>
+        <mass value="1.477" />
+        <origin xyz="0 0 0" />
+        <inertia ixx="0.01152" ixy="0.0" ixz="0.0" iyy="0.01152" iyz="0.0" izz="0.0218" />
+      </inertial>
+
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <mesh filename="package://robot_descriptions/UAV/meshes/ardrone_4.dae"/>
+        </geometry>
+      </visual>
+
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <mesh filename="package://robot_descriptions/UAV/meshes/ardrone_4.stl"/>
+        </geometry>
+      </collision>
+    </link>
+
+  <!-- LEDs -->
+    <xacro:include filename="$(find robot_descriptions)/UAV/urdf/link_led.urdf.xacro" />
+    <!-- Red -->
+        <xacro:link_led name="${X_ROBOT_NAMESPACE}/ardrone_red" parent="${X_ROBOT_NAMESPACE}/ardrone_base_link">
+          <origin xyz="0.0 -0.22 -0.01" rpy="0 0 0"/>
+        </xacro:link_led>
+    <!-- Blue -->
+        <xacro:link_led name="${X_ROBOT_NAMESPACE}/ardrone_blue" parent="${X_ROBOT_NAMESPACE}/ardrone_base_link">
+          <origin xyz="0.0 0.22 -0.01" rpy="0 0 0"/>
+        </xacro:link_led>
+    <!-- Green -->
+        <xacro:link_led name="${X_ROBOT_NAMESPACE}/ardrone_green" parent="${X_ROBOT_NAMESPACE}/ardrone_base_link">
+          <origin xyz="-0.22 0.0 -0.01" rpy="0 0 0"/>
+        </xacro:link_led>
+
+	<gazebo reference="${X_ROBOT_NAMESPACE}/ardrone_base_link">
+		<turnGravityOff>false</turnGravityOff>
+	</gazebo>
+
+
+	<gazebo reference="${X_ROBOT_NAMESPACE}/ardrone_red_led">
+		<material>Gazebo/Red</material>
+	</gazebo>
+	<gazebo reference="${X_ROBOT_NAMESPACE}/ardrone_blue_led">
+		<material>Gazebo/Blue</material>
+	</gazebo>
+	<gazebo reference="${X_ROBOT_NAMESPACE}/ardrone_green_led">
+		<material>Gazebo/Green</material>
+	</gazebo>
+
+ 
+    <!-- Gazebo Plugins -->
+    <ardrone_plugins/>
+  </xacro:macro>
+</robot>

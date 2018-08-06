@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>usma_descriptions</name>
+  <version>0.0.0</version>
+  <description>The usma_descriptions package</description>
+
+  <maintainer email="benjamin@todo.todo">benjamin</maintainer>
+  <license>TODO</license>
+
+  <depend>gazebo_ros</depend>
+  <build_depend>message_generation</build_depend>
+  <buildtool_depend>catkin</buildtool_depend>
+
+
+  <!-- The export tag contains other, unspecified, tags -->
+  <export>
+    <!-- Other tools can request additional information be placed here -->
+    <gazebo_ros gazebo_model_path="${prefix}/models"/>
+    <gazebo_ros gazebo_media_path="${prefix}/models"/>
+  </export>
+</package>

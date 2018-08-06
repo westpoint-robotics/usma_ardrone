@@ -13,6 +13,8 @@ required repos
 
 	sudo apt-get install -y ros-kinetic-ardrone-autonomy
 
+might also need "hector_gazebo_plugins"
+
 connect the ardrone to eecsds3
 =======
 ---

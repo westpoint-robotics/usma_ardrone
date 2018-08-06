@@ -1,0 +1,8 @@
+<robot name="ardrone_rviz" xmlns:xacro="http://ros.org/wiki/xacro">
+
+    <xacro:include filename="$(find robot_descriptions)/UAV/urdf/ardrone_rviz_base.urdf.xacro" />
+    <ardrone_rviz_macro />
+
+</robot>
+
+
