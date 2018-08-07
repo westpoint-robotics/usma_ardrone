@@ -5,8 +5,7 @@
     <!-- Ardrone Simple Controller Plugin -->
     <xacro:macro name="usma_ardrone_controller">
         <gazebo>
-            <plugin name="ardrone_simple_controller" filename="libusma_ardrone_simple_controller.so">
-            <!-- <plugin name="ardrone_simple_controller" filename="libhector_gazebo_quadrotor_simple_controller.so"> -->
+            <plugin name="usma_ardrone_simple_controller" filename="libusma_ardrone_simple_controller.so">
                 <alwaysOn>true</alwaysOn>
                 <updateRate>0.0</updateRate>
                 <bodyName>${X_ROBOT_NAMESPACE}/ardrone_base_link</bodyName>

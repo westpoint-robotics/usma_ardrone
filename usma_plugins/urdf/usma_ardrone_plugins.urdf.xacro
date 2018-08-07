@@ -8,7 +8,7 @@
 	<!-- ardrone Gazebo Plugins -->
 	<xacro:macro name="usma_ardrone_plugins">
 		<canonicalBody>${X_ROBOT_NAMESPACE}/ardrone_base_link</canonicalBody>
-		<ardrone_sensors/>
-		<ardrone_controller/>
+		<usma_ardrone_sensors/>
+		<usma_ardrone_controller/>
 	</xacro:macro>
 </robot>
