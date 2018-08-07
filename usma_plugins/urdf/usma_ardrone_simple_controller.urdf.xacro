@@ -12,11 +12,13 @@
                 <bodyName>${X_ROBOT_NAMESPACE}/ardrone_base_link</bodyName>
                 <stateTopic>ardrone/odom</stateTopic>
                 <imuTopic>ardrone/imu</imuTopic>
-                
+
                 <topicName>usma_ardrone/uav/cmd_vel</topicName>
                 <mocapBodyName>/vrpn_client_node/parrot/pose</mocapBodyName>
+                <mocapPoseTopic>/vrpn_client_node/parrot/pose</mocapPoseTopic>
                 <!-- /vrpn_client_node/parrot/pose -->
                 <mocapOriginName>/mocap/origin</mocapOriginName>
+                <!--  -->
                 
                 <publishPID>true</publishPID>
                 <PIDRootTopic>/usma_ardrone/uav/pid/</PIDRootTopic>

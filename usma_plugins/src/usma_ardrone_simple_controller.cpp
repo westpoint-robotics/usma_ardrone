@@ -179,14 +179,18 @@ namespace gazebo {
       else
         _sdf->GetElement("mocapOriginName")->GetValue()->Get(mocap_origin_frame_);
 
+      if (!_sdf->HasElement("mocapPoseTopic"))
+        mocap_pose_topic_ = "/vrpn_client_node/parrot/pose";
+      else
+        _sdf->GetElement("mocapPoseTopic")->GetValue()->Get(mocap_pose_topic_);
+
+
       transform_broadcaster_ = boost::shared_ptr<tf::TransformBroadcaster>(new tf::TransformBroadcaster());
 
       // typedef boost::shared_ptr<Model> ModelPtr
         vicon_base = _model;
         base_link_name_ = vicon_base->GetName();
         ROS_WARN_NAMED("ardrone_simple_controller", "base_link_name_ := %s", base_link_name_.c_str());
-
-      /* Vicon config */
 
       // Get inertia and mass of quadrotor body
       inertia = link->GetInertial()->GetPrincipalMoments();
@@ -206,6 +210,11 @@ namespace gazebo {
         controllers_.velocity_y.name = "velocity_y";
       controllers_.velocity_z.Load(_sdf, "velocityZ");
         controllers_.velocity_z.name = "velocity_z";
+
+      mocap_pose_pub_ = node_handle_->advertise<geometry_msgs::Pose>(mocap_pose_topic_, 15);
+
+      ROS_WARN("ARDroneSimpleController:: Advertise pose pub[%s]!", mocap_pose_topic_.c_str());
+
 
       if(publish_pid)
         {
@@ -288,6 +297,18 @@ namespace gazebo {
         tf::Transform baseTF ( qt, vt );
         transform_broadcaster_->sendTransform (tf::StampedTransform ( baseTF, current_time, mocap_origin_frame_.c_str(), mocap_body_frame_.c_str() ) );
         // transform_broadcaster_->sendTransform (tf::StampedTransform ( baseTF, current_time, mocap_origin_frame_.c_str(), "/vicon/uav/base_footprint" ) );
+
+        mocap_pose_msg_.position.x = base_pose.pos.x;
+        mocap_pose_msg_.position.y = base_pose.pos.y;
+        mocap_pose_msg_.position.z = base_pose.pos.z;
+
+        mocap_pose_msg_.orientation.x = base_pose.rot.x;
+        mocap_pose_msg_.orientation.y = base_pose.rot.y;
+        mocap_pose_msg_.orientation.z = base_pose.rot.z;
+        mocap_pose_msg_.orientation.w = base_pose.rot.w;
+
+        mocap_pose_pub_.publish(mocap_pose_msg_);
+
     }
 
 

@@ -52,6 +52,7 @@
 #include <ros/ros.h>
 
 #include <geometry_msgs/Twist.h>
+#include <geometry_msgs/Pose.h>
 #include <sensor_msgs/Imu.h>
 #include <nav_msgs/Odometry.h>
 #include <ardrone_autonomy/Navdata.h>
@@ -95,6 +96,12 @@ public:
 
     physics::ModelPtr vicon_base;
     physics::ModelPtr model;
+
+    /// ROS pose publisher
+    std::string mocap_pose_topic_;
+    ros::Publisher mocap_pose_pub_;
+    geometry_msgs::Pose mocap_pose_msg_;
+
 
   std::string tf_prefix_;
   boost::shared_ptr<tf::TransformBroadcaster> transform_broadcaster_;
