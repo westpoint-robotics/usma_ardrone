@@ -5,6 +5,7 @@ find_package(catkin REQUIRED COMPONENTS
   ardrone_autonomy
   cv_bridge
   geometry_msgs
+
   image_transport
   nav_msgs
   pcl_conversions
@@ -15,10 +16,11 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   tf
   #pointgrey_camera_driver
+  usma_plugins
 )
 
 
-find_package(OpenCV REQUIRED)
+# find_package(OpenCV REQUIRED)
 
 ## Generate messages in the 'msg' folder
 add_message_files(
@@ -31,7 +33,6 @@ add_service_files(
   FILES
   # null.srv
 )
-
 
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
@@ -59,5 +60,5 @@ include_directories(
 
 
 add_executable(         optitrackAutopilot  src/optitrackAutopilot.cpp)
-  add_dependencies(     optitrackAutopilot  hast_gencpp)
+  add_dependencies(     optitrackAutopilot   ${catkin_EXPORTED_TARGETS})
     target_link_libraries(optitrackAutopilot  ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})

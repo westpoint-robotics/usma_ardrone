@@ -51,6 +51,7 @@ add_service_files(
 ## Generate messages in the 'msg' folder
 add_message_files(
   FILES
+  flag.msg
   pid_controller.msg
   pid_controller1.msg
   pid_controllers.msg

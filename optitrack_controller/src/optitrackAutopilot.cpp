@@ -8,6 +8,7 @@
 	#include <nav_msgs/Odometry.h>
 	#include <tf/transform_listener.h>
 
+	// #include <hast/flag.h>
 	#include <usma_plugins/flag.h>
 
 class optitrackAutopilot
@@ -26,7 +27,7 @@ class optitrackAutopilot
 		// mocap subscriber
 		ros::Subscriber mocap_pose_sub;
 			std::string s_mocap_pose_topic;
-			geometry_msgs::Pose uav_mocap_pose;
+			geometry_msgs::Pose uav_mocap_pose_msg;
 			tf::Quaternion uav_qt;
 			tf::Vector3 uav_vt;
 			tf::Transform uav_TF;
@@ -42,29 +43,29 @@ class optitrackAutopilot
 		/*-----  Publishers and Subscribers */
 		ROS_INFO("optitrackAutopilot Constructed");
 
-		ros::param::get("~uav_cmd_topic", s_uavcmd_topic);
-			DroneCmd_dr_pub 	= n.advertise<geometry_msgs::Twist>	(s_uavcmd_topic, 1);
+		ros::param::get("~uav_cmd_topic", s_uav_cmd_topic);
+			uav_cmd_pub = n.advertise<geometry_msgs::Twist>	(s_uav_cmd_topic, 1);
 
-		ros::param::get("~uav_cmd_topic", s_uavcmd_topic);
-			mocap_pose_sub= n.subscribe(s_mocap_pose_topic,   10,  &optitrackAutopilot::updatePose, this);
+		ros::param::get("~uav_cmd_topic", s_mocap_pose_topic);
+			mocap_pose_sub = n.subscribe(s_mocap_pose_topic,   10,  &optitrackAutopilot::updatePose, this);
 
 
 	}
 
 	void updatePose(const geometry_msgs::Pose::ConstPtr& mocap_pose_msg)
 	{
-		uav_mocap_pose_msg = mocap_pose_msg;
+		uav_mocap_pose_msg.position = mocap_pose_msg->position;
         
-        uav_qt = tf::Quaternion qt ( 
-        	uav_mocap_pose_msg.orientation.x, 
-        	uav_mocap_pose_msg.orientation.y, 
-        	uav_mocap_pose_msg.orientation.z, 
-        	uav_mocap_pose_msg.orientation.w);
-        uav_vt = tf::Vector3 vt ( 
-        	uav_mocap_pose_msg.position.x, 
-        	uav_mocap_pose_msg.position.y, 
-        	uav_mocap_pose_msg.position.z);
-        uav_TF = tf::Transform baseTF ( uav_qt, uav_vt );
+        // uav_qt = tf::Quaternion qt ( 
+        // 	uav_mocap_pose_msg.orientation.x, 
+        // 	uav_mocap_pose_msg.orientation.y, 
+        // 	uav_mocap_pose_msg.orientation.z, 
+        // 	uav_mocap_pose_msg.orientation.w);
+        // uav_vt = tf::Vector3 vt ( 
+        // 	uav_mocap_pose_msg.position.x, 
+        // 	uav_mocap_pose_msg.position.y, 
+        // 	uav_mocap_pose_msg.position.z);
+        // uav_TF = tf::Transform baseTF ( uav_qt, uav_vt );
 
 
 	}
