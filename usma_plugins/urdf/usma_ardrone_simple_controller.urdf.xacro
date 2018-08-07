@@ -5,30 +5,27 @@
     <!-- Ardrone Simple Controller Plugin -->
     <xacro:macro name="usma_ardrone_controller">
         <gazebo>
-            
+
             <plugin name="usma_ardrone_simple_controller" filename="libusma_ardrone_simple_controller.so">
                 <alwaysOn>true</alwaysOn>
                 <updateRate>0.0</updateRate>
                 <bodyName>${X_ROBOT_NAMESPACE}/ardrone_base_link</bodyName>
                 <stateTopic>ardrone/odom</stateTopic>
                 <imuTopic>ardrone/imu</imuTopic>
+                
                 <topicName>usma_ardrone/uav/cmd_vel</topicName>
+                <mocapBodyName>/vrpn_client_node/parrot/pose</mocapBodyName>
+                <!-- /vrpn_client_node/parrot/pose -->
+                <mocapOriginName>/mocap/origin</mocapOriginName>
+                
                 <publishPID>true</publishPID>
                 <PIDRootTopic>/usma_ardrone/uav/pid/</PIDRootTopic>
-                <red_led_link>/gazebo/uav/ardrone_red_led</red_led_link>
-                <blue_led_link>/gazebo/uav/ardrone_blue_led</blue_led_link>
-                <green_led_link>/gazebo/uav/ardrone_green_led</green_led_link>
-                <red_led_joint>/gazebo/uav/ardrone_red_joint</red_led_joint>
-                <blue_led_joint>/gazebo/uav/ardrone_blue_joint</blue_led_joint>
-                <green_led_joint>/gazebo/uav/ardrone_green_joint</green_led_joint>
-
                  <velocityXYProportionalGain>5.0</velocityXYProportionalGain>
                  <velocityXYDifferentialGain>1.0</velocityXYDifferentialGain>
                             <velocityXYLimit>2.0</velocityXYLimit>
                 <rollpitchProportionalGain>10.0</rollpitchProportionalGain>
                  <rollpitchDifferentialGain>5.0</rollpitchDifferentialGain>
                             <rollpitchLimit>1.0</rollpitchLimit>
-                
                 <velocityZProportionalGain>5.0</velocityZProportionalGain>
                 <velocityZDifferentialGain>1.0</velocityZDifferentialGain>
                            <velocityZLimit>0.5</velocityZLimit>

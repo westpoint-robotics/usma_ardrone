@@ -89,18 +89,12 @@ public:
 
   void publishViconBaseTF();
     // vicon base frame
-    std::string viconBaseTF_frame_;
     std::string base_link_name_;
+    std::string mocap_body_frame_;
+    std::string mocap_origin_frame_;
+
     physics::ModelPtr vicon_base;
     physics::ModelPtr model;
-    // physics::BasePtr base_red, base_blue, base_green ;
-    physics::ModelPtr mdl_red, mdl_blue, mdl_green ;
-    physics::CollisionPtr col_red, col_blue, col_green ;
-        
-    std::string link_red_name_;
-    std::string link_blue_name_;
-    std::string link_green_name_;
-      // "/gazebo/uav/ardrone_red"
 
   std::string tf_prefix_;
   boost::shared_ptr<tf::TransformBroadcaster> transform_broadcaster_;
@@ -120,14 +114,6 @@ private:
   physics::LinkPtr linkByName;
   math::Pose pose;
   math::Pose poseByName;
-
-  physics::LinkPtr link_red;
-  physics::LinkPtr link_blue;
-  physics::LinkPtr link_green;
-  math::Pose red_pose;
-  math::Pose blue_pose;
-  math::Pose green_pose;
-
 
   ros::NodeHandle* node_handle_;
   ros::CallbackQueue callback_queue_;

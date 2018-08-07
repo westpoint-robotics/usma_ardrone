@@ -158,7 +158,6 @@ namespace gazebo {
       else
         _sdf->GetElement("drift_noise_yaw")->GetValue()->Get(drift_noise_yaw_);
 
-
       if (!_sdf->HasElement("publishPID"))
         publish_pid = false;
       else
@@ -169,25 +168,24 @@ namespace gazebo {
       else
         _sdf->GetElement("PIDRootTopic")->GetValue()->Get(PIDRootTopic);
 
-      /* Vicon config */
-        transform_broadcaster_ = boost::shared_ptr<tf::TransformBroadcaster>(new tf::TransformBroadcaster());
+      /* Mocap config */
+      if (!_sdf->HasElement("mocapBodyName"))
+        mocap_body_frame_ = "/vicon/uav";
+      else
+        _sdf->GetElement("mocapBodyName")->GetValue()->Get(mocap_body_frame_);
+
+      if (!_sdf->HasElement("mocapOriginName"))
+        mocap_origin_frame_ = "/vicon/origin";
+      else
+        _sdf->GetElement("mocapOriginName")->GetValue()->Get(mocap_origin_frame_);
+
+      transform_broadcaster_ = boost::shared_ptr<tf::TransformBroadcaster>(new tf::TransformBroadcaster());
 
       // typedef boost::shared_ptr<Model> ModelPtr
         vicon_base = _model;
         base_link_name_ = vicon_base->GetName();
         ROS_WARN_NAMED("ardrone_simple_controller", "base_link_name_ := %s", base_link_name_.c_str());
 
-        link_red_name_ = _sdf->GetElement("red_led_link")->GetValue()->GetAsString();
-        link_red = boost::dynamic_pointer_cast<physics::Link>(world->GetEntity(link_red_name_)); 
-        ROS_WARN_NAMED("ardrone_simple_controller", "link_red_name_   := %s", link_red_name_.c_str());
-        
-        link_blue_name_ = _sdf->GetElement("blue_led_link")->GetValue()->GetAsString();
-        link_blue = boost::dynamic_pointer_cast<physics::Link>(world->GetEntity(link_blue_name_)); 
-        ROS_WARN_NAMED("ardrone_simple_controller", "link_blue_name_  := %s", link_blue_name_.c_str());
-        
-        link_green_name_ = _sdf->GetElement("green_led_link")->GetValue()->GetAsString();
-        link_green = boost::dynamic_pointer_cast<physics::Link>(world->GetEntity(link_green_name_)); 
-        ROS_WARN_NAMED("ardrone_simple_controller", "link_green_name_ := %s", link_green_name_.c_str());
       /* Vicon config */
 
       // Get inertia and mass of quadrotor body
@@ -285,31 +283,11 @@ namespace gazebo {
         ros::Time current_time = ros::Time::now();
         math::Pose base_pose = vicon_base->GetWorldPose();
 
-        red_pose = link_red->GetWorldPose();
-        blue_pose = link_blue->GetWorldPose();
-        green_pose = link_green->GetWorldPose();
-
         tf::Quaternion qt ( base_pose.rot.x, base_pose.rot.y, base_pose.rot.z, base_pose.rot.w);
         tf::Vector3 vt ( base_pose.pos.x, base_pose.pos.y, base_pose.pos.z);
         tf::Transform baseTF ( qt, vt );
-        transform_broadcaster_->sendTransform (tf::StampedTransform ( baseTF, current_time, "/vicon/origin", "/vicon/uav" ) );
-        transform_broadcaster_->sendTransform (tf::StampedTransform ( baseTF, current_time, "/vicon/origin", "/vicon/uav/base_footprint" ) );
-
-        tf::Quaternion red_qt ( red_pose.rot.x, red_pose.rot.y, red_pose.rot.z, red_pose.rot.w);
-        tf::Vector3 red_vt ( red_pose.pos.x, red_pose.pos.y, red_pose.pos.z);
-        tf::Transform red_baseTF ( red_qt, red_vt );
-        transform_broadcaster_->sendTransform (tf::StampedTransform ( red_baseTF, current_time, "/vicon/origin", "/vicon/uav/ardrone_red_led" ) );
-
-        tf::Quaternion blue_qt ( blue_pose.rot.x, blue_pose.rot.y, blue_pose.rot.z, blue_pose.rot.w);
-        tf::Vector3 blue_vt ( blue_pose.pos.x, blue_pose.pos.y, blue_pose.pos.z);
-        tf::Transform blue_baseTF ( blue_qt, blue_vt );
-        transform_broadcaster_->sendTransform (tf::StampedTransform ( blue_baseTF, current_time, "/vicon/origin", "/vicon/uav/ardrone_blue_led" ) );
-
-        tf::Quaternion green_qt ( green_pose.rot.x, green_pose.rot.y, green_pose.rot.z, green_pose.rot.w);
-        tf::Vector3 green_vt ( green_pose.pos.x, green_pose.pos.y, green_pose.pos.z);
-        tf::Transform green_baseTF ( green_qt, green_vt );
-        transform_broadcaster_->sendTransform (tf::StampedTransform ( green_baseTF, current_time, "/vicon/origin", "/vicon/uav/ardrone_green_led" ) );
-
+        transform_broadcaster_->sendTransform (tf::StampedTransform ( baseTF, current_time, mocap_origin_frame_.c_str(), mocap_body_frame_.c_str() ) );
+        // transform_broadcaster_->sendTransform (tf::StampedTransform ( baseTF, current_time, mocap_origin_frame_.c_str(), "/vicon/uav/base_footprint" ) );
     }
 
 
@@ -385,7 +363,7 @@ namespace gazebo {
   // Update the controller ///////////////////////////////////////////////////////
     void ARDroneSimpleController::Update()
     {
-      // publishViconBaseTF();
+      publishViconBaseTF();
       math::Vector3 force, torque;
 
       // Get new commands/state
