@@ -8,7 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
   gazebo_plugins
   geometry_msgs
   image_transport
-
+  # messsage_generation
   nav_msgs
   roscpp
   sensor_msgs
@@ -52,6 +52,7 @@ add_service_files(
 add_message_files(
   FILES
   flag.msg
+  ardrone_pose.msg
   pid_controller.msg
   pid_controller1.msg
   pid_controllers.msg
@@ -96,7 +97,7 @@ catkin_package(
    CATKIN_DEPENDS 
     gazebo_plugins
     geometry_msgs
-    kobuki_msgs
+    # kobuki_msgs
     nav_msgs
     roscpp
     sensor_msgs

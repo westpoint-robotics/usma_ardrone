@@ -1,0 +1,16 @@
+<launch>
+	<node 	pkg="optitrack_controller" 	type="optitrackAutopilot"	name="optitrackAutopilot" output="screen" >
+		<param name="uav_cmd_topic" 			value="/usma_ardrone/uav/cmd_vel"/>
+		<param name="uav_desired_pose_topic" 	value="/usma_ardrone/uav/desired_pose"/>
+		<param name="mocap_pose_topic" 			value="/vrpn_client_node/parrot/pose"/>
+		<!-- uavPV control -->
+		<param name="Kp"	value="0.5"/>
+		<param name="Kv"	value="0.1"/>
+	</node>
+</launch>
+
+<!-- 
+rostopic pub -1 /usma_ardrone/uav/desired_pose usma_plugins/ardrone_pose '{position:  {x: 0.0, y: 0.0, z: 1.5}, heading: 0.0}'
+-->
+
+<!--  -->

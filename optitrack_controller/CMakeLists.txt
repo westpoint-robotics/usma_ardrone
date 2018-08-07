@@ -5,7 +5,6 @@ find_package(catkin REQUIRED COMPONENTS
   ardrone_autonomy
   cv_bridge
   geometry_msgs
-
   image_transport
   nav_msgs
   pcl_conversions
@@ -20,7 +19,7 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 
-# find_package(OpenCV REQUIRED)
+find_package(OpenCV REQUIRED)
 
 ## Generate messages in the 'msg' folder
 add_message_files(
