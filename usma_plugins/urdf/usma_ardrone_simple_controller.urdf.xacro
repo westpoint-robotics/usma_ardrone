@@ -5,6 +5,7 @@
     <!-- Ardrone Simple Controller Plugin -->
     <xacro:macro name="usma_ardrone_controller">
         <gazebo>
+            
             <plugin name="usma_ardrone_simple_controller" filename="libusma_ardrone_simple_controller.so">
                 <alwaysOn>true</alwaysOn>
                 <updateRate>0.0</updateRate>
@@ -45,6 +46,8 @@
                 <motionDriftNoiseTime>1.0</motionDriftNoiseTime>
             </plugin>
 
+
+
             <!-- velocityXYProportionalGain : default = 5.0 -->
             <!-- velocityXYDifferentialGain : default = 1.0 -->
             <!-- velocityXYLimit            : default = 2.0 -->
@@ -74,6 +77,8 @@
                 <sonarTopic>ardrone/sonar_height</sonarTopic>
                 <topicName>usma_ardrone/uav/cmd_vel</topicName>
             </plugin>
+
+
         </gazebo>
     </xacro:macro>
 </robot>

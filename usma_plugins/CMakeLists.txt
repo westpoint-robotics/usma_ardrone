@@ -91,7 +91,7 @@ catkin_package(
     usma_ardrone_ros_baro 
     usma_ardrone_simple_controller
     usma_ardrone_state_controller
-    # reset_plugin 
+    reset_plugin 
    CATKIN_DEPENDS 
     gazebo_plugins
     geometry_msgs

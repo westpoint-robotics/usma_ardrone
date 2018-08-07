@@ -268,8 +268,8 @@ namespace gazebo {
       // callback_queue_thread_ = boost::thread( boost::bind( &ARDroneSimpleController::CallbackQueueThread,this ) );
 
 
+      
       Reset();
-
       // New Mechanism for Updating every World Cycle
       // Listen to the update event. This event is broadcast every
       // simulation iteration.
@@ -278,6 +278,7 @@ namespace gazebo {
     }
 
   // Callbacks ///////////////////////////////////////////////////////////////////
+      // ROS_WARN_NAMED("ardrone_simple_controller", "ardrone_simple_controller::PING");
 
     void ARDroneSimpleController::publishViconBaseTF()
     {
@@ -384,7 +385,7 @@ namespace gazebo {
   // Update the controller ///////////////////////////////////////////////////////
     void ARDroneSimpleController::Update()
     {
-      publishViconBaseTF();
+      // publishViconBaseTF();
       math::Vector3 force, torque;
 
       // Get new commands/state
