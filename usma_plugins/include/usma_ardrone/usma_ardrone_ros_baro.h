@@ -38,6 +38,7 @@
 #else
   #include <geometry_msgs/PointStamped.h>
 #endif
+
 #include <usma_ardrone_gazebo_msgs/Altimeter.h>
 
 #include <usma_ardrone/sensor_model.h>

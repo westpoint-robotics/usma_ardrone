@@ -18,30 +18,30 @@ find_package(catkin REQUIRED COMPONENTS
   usma_plugins
 )
 
-
 find_package(OpenCV REQUIRED)
+find_package(usma_plugins REQUIRED)
+# find_package(kindr) 
 
 ## Generate messages in the 'msg' folder
-add_message_files(
-    FILES
+# add_message_files(
+#     FILES
     # flag.msg
-)
+# )
 
 ## Generate services in the 'srv' folder
-add_service_files(
-  FILES
+# add_service_files(
+#   FILES
   # null.srv
-)
+# )
 
 ## Generate added messages and services with any dependencies listed here
-generate_messages(
-    DEPENDENCIES
-    geometry_msgs
-    nav_msgs
-    sensor_msgs
-    std_msgs
-)
-
+# generate_messages(
+#     DEPENDENCIES
+#     geometry_msgs
+#     nav_msgs
+#     sensor_msgs
+#     std_msgs
+# )
 
 catkin_package(
 #  INCLUDE_DIRS include
@@ -52,9 +52,11 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
+# include_directories(${kindr_INCLUDE_DIRS}) 
 include_directories(
 # include
   ${catkin_INCLUDE_DIRS}
+  ${kindr_INCLUDE_DIRS}
 )
 
 

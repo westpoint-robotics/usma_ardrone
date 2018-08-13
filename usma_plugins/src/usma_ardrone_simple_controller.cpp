@@ -45,7 +45,7 @@
 #include "gazebo/physics/physics.hh"
 
 // msg headers
-// #include <usma_plugins/pid_controller.h>
+#include <usma_plugins/pid_controller.h>
 #include <usma_plugins/pid_controllers.h>
 
 #include <cmath>
@@ -212,6 +212,8 @@ namespace gazebo {
         controllers_.velocity_z.name = "velocity_z";
 
       mocap_pose_pub_ = node_handle_->advertise<geometry_msgs::Pose>(mocap_pose_topic_, 15);
+      publishedTime = ros::Time::now().toSec();
+
 
       ROS_WARN("ARDroneSimpleController:: Advertise pose pub[%s]!", mocap_pose_topic_.c_str());
 
@@ -285,29 +287,32 @@ namespace gazebo {
     }
 
   // Callbacks ///////////////////////////////////////////////////////////////////
-      // ROS_WARN_NAMED("ardrone_simple_controller", "ardrone_simple_controller::PING");
-
     void ARDroneSimpleController::publishViconBaseTF()
     {
         ros::Time current_time = ros::Time::now();
-        math::Pose base_pose = vicon_base->GetWorldPose();
 
-        tf::Quaternion qt ( base_pose.rot.x, base_pose.rot.y, base_pose.rot.z, base_pose.rot.w);
-        tf::Vector3 vt ( base_pose.pos.x, base_pose.pos.y, base_pose.pos.z);
-        tf::Transform baseTF ( qt, vt );
-        transform_broadcaster_->sendTransform (tf::StampedTransform ( baseTF, current_time, mocap_origin_frame_.c_str(), mocap_body_frame_.c_str() ) );
-        // transform_broadcaster_->sendTransform (tf::StampedTransform ( baseTF, current_time, mocap_origin_frame_.c_str(), "/vicon/uav/base_footprint" ) );
+        // optitrack update rate = 100Hz
+        if (.01 <= (current_time.toSec() - publishedTime)) 
+        {
+          publishedTime = current_time.toSec();
+          math::Pose base_pose = vicon_base->GetWorldPose();
 
-        mocap_pose_msg_.position.x = base_pose.pos.x;
-        mocap_pose_msg_.position.y = base_pose.pos.y;
-        mocap_pose_msg_.position.z = base_pose.pos.z;
+          tf::Quaternion qt ( base_pose.rot.x, base_pose.rot.y, base_pose.rot.z, base_pose.rot.w);
+          tf::Vector3 vt ( base_pose.pos.x, base_pose.pos.y, base_pose.pos.z);
+          tf::Transform baseTF ( qt, vt );
+          transform_broadcaster_->sendTransform (tf::StampedTransform ( baseTF, current_time, mocap_origin_frame_.c_str(), mocap_body_frame_.c_str() ) );
 
-        mocap_pose_msg_.orientation.x = base_pose.rot.x;
-        mocap_pose_msg_.orientation.y = base_pose.rot.y;
-        mocap_pose_msg_.orientation.z = base_pose.rot.z;
-        mocap_pose_msg_.orientation.w = base_pose.rot.w;
+          mocap_pose_msg_.position.x = base_pose.pos.x;
+          mocap_pose_msg_.position.y = base_pose.pos.y;
+          mocap_pose_msg_.position.z = base_pose.pos.z;
 
-        mocap_pose_pub_.publish(mocap_pose_msg_);
+          mocap_pose_msg_.orientation.x = base_pose.rot.x;
+          mocap_pose_msg_.orientation.y = base_pose.rot.y;
+          mocap_pose_msg_.orientation.z = base_pose.rot.z;
+          mocap_pose_msg_.orientation.w = base_pose.rot.w;
+
+          mocap_pose_pub_.publish(mocap_pose_msg_);
+      }
 
     }
 

@@ -2,6 +2,12 @@ cmake_minimum_required(VERSION 2.8.3)
 project(usma_plugins)
 set (CMAKE_CXX_STANDARD 11)
 
+find_package(
+  Boost 
+  REQUIRED COMPONENTS 
+  thread
+)
+find_package(gazebo REQUIRED)
 find_package(catkin REQUIRED COMPONENTS
   ardrone_autonomy
   gazebo_ros
@@ -13,7 +19,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   sensor_msgs
   std_msgs
-
+  usma_ardrone_gazebo_msgs
   tf
   tf2_ros
 )
@@ -29,12 +35,6 @@ else()
   message(FATAL_ERROR "pkg-config is required; please install it")
 endif()
 
-find_package(
-  Boost 
-  REQUIRED COMPONENTS 
-  thread
-)
-find_package(gazebo REQUIRED)
 
 execute_process(COMMAND
   pkg-config --variable=plugindir OGRE
@@ -54,10 +54,10 @@ add_message_files(
   flag.msg
   ardrone_pose.msg
   pid_controller.msg
-  pid_controller1.msg
   pid_controllers.msg
   pid3.msg
 )
+  
 
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
@@ -93,7 +93,7 @@ catkin_package(
     usma_ardrone_ros_baro 
     usma_ardrone_simple_controller
     usma_ardrone_state_controller
-    reset_plugin 
+    # reset_plugin 
    CATKIN_DEPENDS 
     gazebo_plugins
     geometry_msgs
@@ -105,7 +105,7 @@ catkin_package(
     image_transport 
     usma_ardrone_gazebo_msgs
    DEPENDS 
-    system_lib
+    # system_lib
     tf
     tf2_ros
 )
@@ -116,13 +116,13 @@ catkin_package(
 # add_library(reset_plugin src/reset_plugin.cpp)
 
 add_library(usma_ardrone_ros_baro src/usma_ardrone_ros_baro.cpp)
-  add_dependencies(usma_ardrone_ros_baro usma_ardrone_gazebo_msgs_gencpp)
+  add_dependencies(usma_ardrone_ros_baro usma_plugins_generate_messages_cpp)
 
 add_library(usma_ardrone_simple_controller src/usma_ardrone_simple_controller.cpp)
-  add_dependencies(usma_ardrone_simple_controller ardrone_autonomy_gencpp)
+  add_dependencies(usma_ardrone_simple_controller usma_plugins_generate_messages_cpp)
 
 add_library(usma_ardrone_state_controller src/usma_ardrone_state_controller.cpp)
-  add_dependencies(usma_ardrone_state_controller ardrone_autonomy_gencpp)
+  add_dependencies(usma_ardrone_state_controller usma_plugins_generate_messages_cpp)
   target_link_libraries(usma_ardrone_state_controller ${image_transport_LIBRARIES})
 
 # add_library(gazebo_vicon_diff_drive src/gazebo_vicon_diff_drive.cpp)

@@ -101,6 +101,7 @@ public:
     std::string mocap_pose_topic_;
     ros::Publisher mocap_pose_pub_;
     geometry_msgs::Pose mocap_pose_msg_;
+    double publishedTime;
 
 
   std::string tf_prefix_;
