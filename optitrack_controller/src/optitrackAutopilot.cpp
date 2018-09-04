@@ -5,6 +5,7 @@
 	#include <std_msgs/Empty.h>
 	#include <geometry_msgs/Twist.h>
 	#include <geometry_msgs/Pose.h>
+	#include <geometry_msgs/PoseStamped.h>
 	#include <nav_msgs/Odometry.h>
 	#include <tf/transform_listener.h>
 	#include <opencv/cv.h>
@@ -30,6 +31,7 @@ class optitrackAutopilot
 		ros::Subscriber mocap_pose_sub;
 			std::string s_mocap_pose_topic;
 			geometry_msgs::Pose uav_mocap_pose_msg;
+			geometry_msgs::PoseStamped uav_mocap_poseStamped_msg;
 			usma_plugins::ardrone_pose uav_mocap_ardrone_pose;
 			tf::Quaternion uav_qt;
 			tf::Vector3 uav_vt;
@@ -64,7 +66,7 @@ class optitrackAutopilot
 			desired_pose_sub = n.subscribe(s_desired_pose_topic,   10,  &optitrackAutopilot::updateDesiredPose, this);
 
 		ros::param::get("~mocap_pose_topic", s_mocap_pose_topic);
-			mocap_pose_sub = n.subscribe(s_mocap_pose_topic,   10,  &optitrackAutopilot::updatePose, this);
+			mocap_pose_sub = n.subscribe(s_mocap_pose_topic,   10,  &optitrackAutopilot::updatePoseStamped, this);
 
 		ros::param::get("~Kp", Kp);
 		ros::param::get("~Kv", Kv);
@@ -74,6 +76,40 @@ class optitrackAutopilot
 
 		ROS_INFO("optitrackAutopilot Constructed");
 	}
+
+	void updatePoseStamped(const geometry_msgs::PoseStamped::ConstPtr& mocap_pose_msg)
+	{
+		uav_mocap_pose_msg.position = mocap_pose_msg->pose.position;
+
+		uav_mocap_pose_msg.orientation = mocap_pose_msg->pose.orientation;
+        
+        tf::Quaternion qt ( 
+        	uav_mocap_pose_msg.orientation.x, 
+        	uav_mocap_pose_msg.orientation.y, 
+        	uav_mocap_pose_msg.orientation.z, 
+        	uav_mocap_pose_msg.orientation.w);
+        tf::Vector3 vt ( 
+        	uav_mocap_pose_msg.position.x, 
+        	uav_mocap_pose_msg.position.y, 
+        	uav_mocap_pose_msg.position.z);
+        tf::Transform baseTF ( uav_qt, uav_vt );
+        uav_vt = vt;
+        uav_qt = qt;
+        uav_TF = baseTF;
+        tf::Matrix3x3 m(qt);
+        uav_R = m;
+	    m.getRPY(uav_RPY[0], uav_RPY[1], uav_RPY[2]);
+
+		uav_mocap_ardrone_pose.position.x = mocap_pose_msg->pose.position.x;
+		uav_mocap_ardrone_pose.position.y = mocap_pose_msg->pose.position.y;
+		uav_mocap_ardrone_pose.position.z = mocap_pose_msg->pose.position.z;
+		uav_mocap_ardrone_pose.heading = uav_RPY[2];
+
+		// now compute UAV commands
+			uav_Kp();
+
+	}
+
 
 	void updatePose(const geometry_msgs::Pose::ConstPtr& mocap_pose_msg)
 	{

@@ -1,10 +1,9 @@
 <!-- -*- mode: XML -*- -->
 <launch>
-	<!-- <arg name="launcher" 	default="ardrone2_launch" /> -->
-	<!-- <node ns="ardrone2" pkg="tf" type="static_transform_publisher" name="tf_map2odom" args="0 0 0 0 0 0 /map /ardrone_autonomy/odom 100"/>  -->
+	<arg name="launcher" 	default="ardrone2_launch" />
 	
-	<arg name="ip" default="192.168.2.10" /> <!-- need ot check IP address each time -->
-	<node pkg="ardrone_autonomy" type="ardrone_driver" name="ardrone_autonomy" clear_params="true" args="-ip 192.168.2.10">>
+	<arg name="ip" default="192.168.2.25" /> <!-- need ot check IP address each time -->
+	<node pkg="ardrone_autonomy" type="ardrone_driver" name="ardrone_autonomy" clear_params="true" args="-ip 192.168.2.25">>
 		<param name="tf_prefix" value="ardrone_autonomy" />  
 		<param name="realtime_navdata" value="true" />
 		<param name="realtime_video" value="true" />		
@@ -14,25 +13,10 @@
 
 	<node pkg="rostopic" type="rostopic" 			name="navdataEcho" 		output="screen" 	args="echo /ardrone/navdata" />
 	<!-- <node pkg="rviz" 	 type="rviz" 				name="rviz_$(arg launcher)" 	/>  -->
-<!-- 	<node pkg="hast"	 type="killhast"			name="killhast_$(arg launcher)"			output="screen" required="true"/>
+	<node pkg="hast"	 type="killhast"			name="killhast_$(arg launcher)"			output="screen" required="true"/>
 	<node pkg="hast"	 type="shutdownListener"	name="shutdownListener_$(arg launcher)"	output="screen"	required="true"/>
- -->
+
 </launch>
-
-	<!-- <node pkg="rosservice" type="rosservice" name="toggle" args="call /ardrone/togglecam"/> 		 -->
-
-
-<!-- node pkg="tf" type="static_transform_publisher" name="world_to_cam"  args="x y z yaw pitch roll frame_id child_frame_id period_in_milisec" /-->
- 
- <!--  Is this a half meter??? args="0 0 0.5 -1.57 0 -1.57 world camera 1" /> -->
-	<!-- <node pkg="ardrone_autonomy" type="ardrone_driver" name="ardrone_autonomy" output="screen" clear_params="true"> -->
-        <!-- <param name="do_imu_caliberation" value="true" /> -->
-        <!-- <rosparam param="cov/imu_la">[0.1, 0.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0, 0.1]</rosparam> -->
-        <!-- <rosparam param="cov/imu_av">[1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]</rosparam> -->
-        <!-- <rosparam param="cov/imu_or">[1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 100000.0]</rosparam> -->
-	    <!-- <param name="enable_navdata_pwm" value="true"/> -->
-		<!-- <rosparam file="/home/turtlebot/ros/src/hast/cam_info/00b09d0100c8851b.yaml" />  -->
-
 
 <!-- /vrpn_client_node/parrot/pose -->
 

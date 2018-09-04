@@ -20,13 +20,14 @@ connect the ardrone to eecsds3
 ---
 
 connect to the ssid "ardrone2_<######>", in terminal type 
-	>> roscd usma_ardrone/wpa_support
-	>> sh ./script/install
-	>> sh ./script/connect "create_belkin" -p "hast2017" -a auto -d 192.168.1.1
-	>> sh ./script/connect "eecsds" -p "accessgranted" -a auto -d 192.168.1.1
---- close this terminal
---- connect to eecsds3
-	>> roslaunch optitrack_controller ardrone.launch	
+	>> roscd usma_ardrone && cd ../wpa_support 
+	>> script/install
+	>> script/connect_belkin
+connect to create_belkin ssid
+	>> ping 192.168.2.25
+if the ping returns a response time	
+	>> roslaunch optitrack_controller belkin.launch	
+	>> roslaunch optitrack_controller vrpn.launch	
 
 
 Finding a MAC address

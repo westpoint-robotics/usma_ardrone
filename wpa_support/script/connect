@@ -46,7 +46,16 @@ echo "PASSWORD: $PASSWORD"
 echo "ADDRESS: $ADDRESS"
 echo "DRONE_IP: $DRONEIP"
 
+
+wpa_passphrase 'create_belkin' 'hast2017' 
+
 {( echo "\
-  wpa_passphrase '$ESSID' '$PASSWORD' > /etc/wpa_supplicant.conf
+  wpa_passphrase 'create_belkin' 'hast2017'  > /etc/wpa_supplicant.conf
   { $IFCONFIG iwconfig ath0 essid '$ESSID' && wpa_supplicant -B -Dwext -iath0 -c/etc/wpa_supplicant.conf $DHCPC; } &
 "; sleep 1; ) | telnet $DRONEIP > /dev/null; }
+
+
+# {( echo "\
+#   wpa_passphrase '$ESSID' '$PASSWORD' > /etc/wpa_supplicant.conf
+#   { $IFCONFIG iwconfig ath0 essid '$ESSID' && wpa_supplicant -B -Dwext -iath0 -c/etc/wpa_supplicant.conf $DHCPC; } &
+# "; sleep 1; ) | telnet $DRONEIP > /dev/null; }
