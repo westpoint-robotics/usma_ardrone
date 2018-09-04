@@ -19,9 +19,6 @@
         <arg name="server" value="$(arg ardrone_ip)"/>
     </include>
 
-
-
-
 </launch>
 
 

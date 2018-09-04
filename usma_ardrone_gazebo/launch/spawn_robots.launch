@@ -1,10 +1,9 @@
 <launch>
 	<!-- Lazy shutoff -->
 	<arg name="launcher"	default="spawn_launch" />
+	<node pkg="optitrack_controller"	type="killNodes"			name="killnodes_$(arg launcher)"		output="screen" required="true"/>
+	<node pkg="optitrack_controller"	type="listenForKill"		name="shutdownListener_$(arg launcher)"	output="screen"	required="true"/>
 
-<!-- 	<node pkg="hast"		type="killhast"		 output="screen" name="killhast_$(arg launcher)"		 required="true"/>
-	<node pkg="hast"		type="shutdownListener" output="screen" name="shutdownListener_$(arg launcher)" required="true"/>
- -->	
 	<arg name="use_sim_time"	default="true"/>
 	<arg name="gui"	 			default="true"/>
 	<arg name="verbose"	 		default="true"/>
