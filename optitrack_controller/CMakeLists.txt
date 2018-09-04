@@ -63,3 +63,11 @@ include_directories(
 add_executable(         optitrackAutopilot  src/optitrackAutopilot.cpp)
   add_dependencies(     optitrackAutopilot   ${catkin_EXPORTED_TARGETS})
     target_link_libraries(optitrackAutopilot  ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+
+add_executable(         killNodes  src/killNodes.cpp)
+  add_dependencies(     killNodes   ${catkin_EXPORTED_TARGETS})
+    target_link_libraries(killNodes  ${catkin_LIBRARIES})
+
+add_executable(         listenForKill  src/listenForKill.cpp)
+  add_dependencies(     listenForKill   ${catkin_EXPORTED_TARGETS})
+    target_link_libraries(listenForKill  ${catkin_LIBRARIES})
