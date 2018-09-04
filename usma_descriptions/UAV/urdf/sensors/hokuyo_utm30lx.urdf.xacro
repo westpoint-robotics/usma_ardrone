@@ -15,7 +15,7 @@
 	<visual>
 	  <origin xyz="0 0 0" rpy="0 0 0" />
           <geometry>
-          <mesh filename="package://robot_descriptions/common/meshes/hokuyo_utm30lx/hokuyo_utm_30lx$(optenv TEST_SELF_FILTER).dae"/>
+          <mesh filename="package://usma_descriptions/common/meshes/hokuyo_utm30lx/hokuyo_utm_30lx$(optenv TEST_SELF_FILTER).dae"/>
         </geometry>
 	</visual>
 	<collision>

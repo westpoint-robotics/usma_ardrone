@@ -1,7 +1,48 @@
 <launch>
+	<arg name="server" 		default="192.168.2.50"/>
+	<arg name="launcher" 	default="ardrone2_launch" />
+	<arg name="ardrone_ip" 	default="192.168.2.25" /> <!-- need to check IP address each time -->
 
-	<node pkg="optitrack_controller"	type="optitrackAutopilot"	name="optitrackAutopilot"	output="screen" />
+	<node pkg="rostopic" type="rostopic" 			name="navdataEcho" 		output="screen" 	args="echo /ardrone/navdata" />
+	<node pkg="hast"	 type="killhast"			name="killhast_$(arg launcher)"			output="screen" required="true"/>
+	<node pkg="hast"	 type="shutdownListener"	name="shutdownListener_$(arg launcher)"	output="screen"	required="true"/>
 
+
+	<node 	pkg="optitrack_controller" 	type="optitrackAutopilot"	name="optitrackAutopilot" output="screen" >
+		<param name="uav_cmd_topic" 			value="/usma_ardrone/uav/cmd_vel"/>
+		<param name="uav_desired_pose_topic" 	value="/usma_ardrone/uav/desired_pose"/>
+		<param name="mocap_pose_topic" 			value="/vrpn_client_node/Ardrone2/pose"/>
+		<param name="Kp"	value="0.5"/>
+		<param name="Kv"	value="0.1"/>
+	</node>
+
+	<node pkg="usma_optitrack" type="vrpn_client_node" name="vrpn_client_node" output="screen">
+		<rosparam subst_value="true">
+			server: $(arg server)
+			port: 3883
+
+			update_frequency: 100.0
+			frame_id: world
+
+			# Use the VRPN server's time, or the client's ROS time.
+			use_server_time: false
+			broadcast_tf: true
+
+			# Must either specify refresh frequency > 0.0, or a list of trackers to create
+			refresh_tracker_frequency: 1.0
+			#trackers:
+			#- FirstTracker
+			#- SecondTracker
+		</rosparam>
+	</node>
+
+	<node pkg="ardrone_autonomy" type="ardrone_driver" name="ardrone_autonomy" clear_params="true" args="-ip 192.168.2.25">>
+		<param name="tf_prefix" value="ardrone_autonomy" />  
+		<param name="realtime_navdata" value="true" />
+		<param name="realtime_video" value="true" />		
+		<param name="looprate" value="50" /> <!-- Tunes the speed at which the ros loop runs, and thus, the rate at which navdata is published -->
+		<remap from="/cmd_vel" to="ardrone/cmd_vel"/>
+	</node>
 
 
 </launch>

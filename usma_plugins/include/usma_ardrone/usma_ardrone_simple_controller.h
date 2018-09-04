@@ -53,6 +53,7 @@
 
 #include <geometry_msgs/Twist.h>
 #include <geometry_msgs/Pose.h>
+#include <geometry_msgs/PoseStamped.h>
 #include <sensor_msgs/Imu.h>
 #include <nav_msgs/Odometry.h>
 #include <ardrone_autonomy/Navdata.h>
@@ -99,10 +100,10 @@ public:
 
     /// ROS pose publisher
     std::string mocap_pose_topic_;
-    ros::Publisher mocap_pose_pub_;
+    ros::Publisher mocap_pose_pub_, mocap_pose_stamped_pub_;
     geometry_msgs::Pose mocap_pose_msg_;
+    geometry_msgs::PoseStamped mocap_pose_stamped_msg_;
     double publishedTime;
-
 
   std::string tf_prefix_;
   boost::shared_ptr<tf::TransformBroadcaster> transform_broadcaster_;

@@ -17,7 +17,7 @@
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
           <!--<box size="0.01 0.01 0.01" /> -->
-          <mesh filename="package://robot_descriptions/common/meshes/sonar_sensor/max_sonar_ez4.dae"/>
+          <mesh filename="package://usma_descriptions/common/meshes/sonar_sensor/max_sonar_ez4.dae"/>
         </geometry>
       </visual>
       <collision>

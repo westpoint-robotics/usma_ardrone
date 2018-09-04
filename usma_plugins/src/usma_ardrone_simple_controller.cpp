@@ -180,7 +180,7 @@ namespace gazebo {
         _sdf->GetElement("mocapOriginName")->GetValue()->Get(mocap_origin_frame_);
 
       if (!_sdf->HasElement("mocapPoseTopic"))
-        mocap_pose_topic_ = "/vrpn_client_node/parrot/pose";
+        mocap_pose_topic_ = "/vrpn_client_node/Ardrone2/pose";
       else
         _sdf->GetElement("mocapPoseTopic")->GetValue()->Get(mocap_pose_topic_);
 
@@ -211,7 +211,8 @@ namespace gazebo {
       controllers_.velocity_z.Load(_sdf, "velocityZ");
         controllers_.velocity_z.name = "velocity_z";
 
-      mocap_pose_pub_ = node_handle_->advertise<geometry_msgs::Pose>(mocap_pose_topic_, 15);
+      // mocap_pose_pub_ = node_handle_->advertise<geometry_msgs::Pose>(mocap_pose_topic_, 15);
+      mocap_pose_stamped_pub_ = node_handle_->advertise<geometry_msgs::PoseStamped>(mocap_pose_topic_, 15);
       publishedTime = ros::Time::now().toSec();
 
 
@@ -311,7 +312,21 @@ namespace gazebo {
           mocap_pose_msg_.orientation.z = base_pose.rot.z;
           mocap_pose_msg_.orientation.w = base_pose.rot.w;
 
-          mocap_pose_pub_.publish(mocap_pose_msg_);
+          // mocap_pose_pub_.publish(mocap_pose_msg_);
+
+          mocap_pose_stamped_msg_.pose.position.x = base_pose.pos.x;
+          mocap_pose_stamped_msg_.pose.position.y = base_pose.pos.y;
+          mocap_pose_stamped_msg_.pose.position.z = base_pose.pos.z;
+
+          mocap_pose_stamped_msg_.pose.orientation.x = base_pose.rot.x;
+          mocap_pose_stamped_msg_.pose.orientation.y = base_pose.rot.y;
+          mocap_pose_stamped_msg_.pose.orientation.z = base_pose.rot.z;
+          mocap_pose_stamped_msg_.pose.orientation.w = base_pose.rot.w;
+
+          mocap_pose_stamped_msg_.header.stamp = current_time;
+
+          mocap_pose_stamped_pub_.publish(mocap_pose_stamped_msg_);
+
       }
 
     }

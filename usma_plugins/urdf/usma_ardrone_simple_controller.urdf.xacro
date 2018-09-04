@@ -14,8 +14,8 @@
                 <imuTopic>ardrone/imu</imuTopic>
 
                 <topicName>usma_ardrone/uav/cmd_vel</topicName>
-                <mocapBodyName>/vrpn_client_node/parrot/pose</mocapBodyName>
-                <mocapPoseTopic>/vrpn_client_node/parrot/pose</mocapPoseTopic>
+                <mocapBodyName>/vrpn_client_node/Ardrone2/pose</mocapBodyName>
+                <mocapPoseTopic>/vrpn_client_node/Ardrone2/pose</mocapPoseTopic>
                 <!-- /vrpn_client_node/parrot/pose -->
                 <mocapOriginName>/mocap/origin</mocapOriginName>
                 <!--  -->
