@@ -16,6 +16,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf
   #pointgrey_camera_driver
   usma_plugins
+  rospy
 )
 
 find_package(OpenCV REQUIRED)
