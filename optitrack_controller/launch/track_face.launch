@@ -1,19 +1,28 @@
 <!-- -*- mode: XML -*- -->
+
+<!-- need to send takeoff and land commands separately -->
+
 <launch>
 	<arg name="ardrone_ip" default="192.168.2.25" /> <!-- need to check IP address each time -->
+    <arg name="server_ip" default="192.168.2.50" /> 
 
-    <include file="$(find face_shooter)/launch/face_tracker_imgmsg.launch">
-    	<arg name="cfg_yaml" 		value="$(find optitrack_controller)/config/facetrack.yaml" />
-        <arg name="img_topic" 		value="/ardrone/front/image_raw"/>
-        <arg name="centroid_topic" 	value="/ardrone/front/face_centroid"/>
-    </include>
+    <!-- EECSDS3 is the default, I did development using my own routers -->
+    <arg name="network" default="EECSDS3" /> 
 
-	<!-- launch vrpn server -->
+    <!-- launch vrpn server -->
     <include file="$(find optitrack_controller)/launch/vrpn.launch">
-        <arg name="server" value="$(arg ardrone_ip)"/>
+        <arg name="server" value="$(arg server_ip)"/>
     </include>
 
-    <!-- ardrone waypoint controller -->
+	<!-- ardrone driver !!! need to send takeoff and land commands separately -->
+    <include file="$(find optitrack_controller)/launch/ardrone_driver_$(arg network).launch">
+        <arg name="ip" value="$(arg ardrone_ip)"/>
+    </include>
+
+    <!-- use for directly connected to ardrone -->
+    <!-- <include file="$(find optitrack_controller)/launch/ardrone_direct.launch"/> -->
+
+    <!-- launch autopilot using optitrack measurements -->
     <include file="$(find optitrack_controller)/launch/optitrackAutopilot.launch">
         <arg name="Kp"                      value="0.5"/>
         <arg name="Kv"                      value="0.1"/>
@@ -22,9 +31,19 @@
         <arg name="uav_desired_pose_topic"  value="/usma_ardrone/uav/desired_pose"/>
     </include>
 
-    <!-- use for directly connected to ardrone -->
-    <include file="$(find optitrack_controller)/launch/ardrone_direct.launch"/>
+    <!-- launch autopilot using face tracking centroid -->
+    <include file="$(find optitrack_controller)/launch/face_tracking_autopilot.launch">
+        <arg name="mocap_cmd_vel_topic"     value="/usma_ardrone/uav/cmd_vel"/>
+        <arg name="face_centroid_topic"     value="/ardrone/front/face_centroid" />
+        <arg name="switched_cmd_vel_topic"  value="/ardrone/switched/cmd_vel" />
+    </include>
 
+    <!-- Launch face tracking algorithm -->
+    <include file="$(find face_shooter)/launch/face_tracker_imgmsg.launch">
+        <arg name="cfg_yaml"        value="$(find optitrack_controller)/config/facetrack.yaml" />
+        <arg name="img_topic"       value="/ardrone/front/image_raw"/>
+        <arg name="centroid_topic"  value="/ardrone/front/face_centroid"/>
+    </include>
 
 </launch>
 

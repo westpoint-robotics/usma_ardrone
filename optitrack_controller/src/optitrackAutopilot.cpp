@@ -148,7 +148,7 @@ class optitrackAutopilot
 	{
 		uav_desired_pose_body_msg.position.x = uav_desired_pose_body_msg.position.y = 0; // meters
 		uav_desired_pose_global_msg.position.x = uav_desired_pose_global_msg.position.y = 0; // meters
-		uav_desired_pose_body_msg.position.z = uav_desired_pose_global_msg.position.z = 1.0; // meters
+		uav_desired_pose_body_msg.position.z = uav_desired_pose_global_msg.position.z = 1.5; // meters
 		uav_desired_pose_body_msg.heading = uav_desired_pose_global_msg.heading = 0; // radians
 		R_from_yaw = (cv::Mat_<double>(3, 3) << 1, 0, 0,
 												0, 1, 0,

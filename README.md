@@ -56,3 +56,9 @@ roslaunch optitrack_controller ardrone_direct.launch
 roslaunch optitrack_controller track_face.launch
 
 
+Connect to ARDrone using linksys router and running the whole face tracking pipeline
+=======
+---
+roslaunch optitrack_controller track_face.launch network:=linksys
+roslaunch optitrack_controller track_face.launch network:=belkin
+roslaunch optitrack_controller track_face.launch network:=EECSDS3
