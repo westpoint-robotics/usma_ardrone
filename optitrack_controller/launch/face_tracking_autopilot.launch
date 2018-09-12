@@ -1,0 +1,21 @@
+<launch>
+    <!-- Launch arguments -->
+    <arg name="mocap_cmd_vel_topic" 	default="/usma_ardrone/cmd_vel" />
+    <arg name="face_centroid_topic" 	default="/ardrone/front/face_centroid" />
+    <arg name="switched_cmd_vel_topic"  default="/ardrone/switched/cmd_vel" />
+    <arg name="ardrone_front_yaml"      default="$(find optitrack_controller)/cam_info/ardrone_front.yaml" />
+
+    <group ns="ardrone/front/params">
+        <rosparam file="$(arg ardrone_front_yaml)" command="load"/>   
+    </group>
+    <!-- Start the node to track a face in an video stream   -->
+    <node pkg="optitrack_controller" type="faceTrackingAutopilot.py" name="face_tracking_autopilot" output="screen" >
+        <param name="/mocap_cmd_vel_topic"    value="$(arg mocap_cmd_vel_topic)" />
+        <param name="/face_centroid_topic"    value="$(arg face_centroid_topic)" />
+        <param name="/switched_cmd_vel_topic" value="$(arg switched_cmd_vel_topic)" />
+    </node>
+
+</launch>
+
+<!-- rostopic pub -r 20 /usma_ardrone/cmd_vel geometry_msgs/Twist  '{linear:  {x: 96.0, y: 0.0, z: 36.0}, angular: {x: 0.0,y: 0.0,z: 10.0}}' -->
+<!-- rostopic pub -r 0.2 /ardrone/front/face_centroid geometry_msgs/Vector3  '{x: 150.0,y: 150.0,z: 1}' -->

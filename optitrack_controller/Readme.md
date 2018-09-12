@@ -1,0 +1,1 @@
+I'm fairly certain that the ARDrone controls are X/Y -> tilt angles of the body, Z/Yaw -> rate commands for body

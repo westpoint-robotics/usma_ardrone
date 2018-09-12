@@ -1,6 +1,3 @@
-input_image_topic: "/usb_cam/image_raw"
-output_image_topic: "/face_detector/raw_image"
-haar_file_face: "/ros/src/face_shooter/data/face.xml"
 face_tracking: 1
 display_original_image: 0
 display_tracking_image: 1

@@ -1,9 +1,0 @@
-<launch>
-    <arg name="cfg_yaml"           default="$(find optitrack_controller)/config/facetrack.yaml" />
-
-    <!-- Start the node to track a face in an video stream   -->
-   <rosparam file="$(arg cfg_yaml)" command="load"/>   
-   <node pkg="optitrack_controller" type="face_tracker.py" name="face_tracker" output="screen"/>  
-
-</launch>
-

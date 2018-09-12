@@ -41,3 +41,18 @@ ardrone2_234879
 
 ardrone2_065412
 90:03:B7:31:18:D5  
+
+
+Connect to the AR.Drone directly
+=======
+---
+roslaunch optitrack_controller ardrone_direct.launch
+
+
+Launch the face_tracker when directly connected to the ardrone
+=======
+---
+roslaunch optitrack_controller ardrone_direct.launch
+roslaunch optitrack_controller track_face.launch
+
+
