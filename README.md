@@ -49,6 +49,7 @@ and to land;
 	>> rostopic pub -1 /ardrone/land std_msgs/Empty
 
 If there is an issue during takeoff, or if you need to do a hard abort for some reason, you may need to reset the drone before taking off a second time:
+	
 	>> rostopic pub -1 /ardrone/reset std_msgs/Empty
 
 
