@@ -15,6 +15,16 @@ import time
 class faceTrackingAutopilot():
     # Must have __init__(self) function for a class, similar to a C++ class constructor.
     def __init__(self):
+        # check to see if data should be logged:
+        self.logging = rospy.get_param("~logging",False)
+        if(self.logging):
+            self.exp_run = rospy.get_param("~run","001")
+            self.exp_date = rospy.get_param("~date","20180917")
+            self.file_loggerfilename = '/home/benjamin/ros/data/' + self.exp_date + '/' + self.exp_run + '/faceTrackingAutopilot_' + self.exp_run + '.m'
+            # print("filename: {}").format(self.file_loggerfilename)
+            self.file_logger = open(self.file_loggerfilename, 'w')
+            self.file_logger.close()
+
         #subscribe to optitrack cmd_vel 
         self.mocap_cmd_vel_topic = rospy.get_param("~mocap_cmd_vel_topic","/usma_ardrone/cmd_vel")
         self.mocap_vel_sub = rospy.Subscriber(self.mocap_cmd_vel_topic,Twist,self.mocap_cmd_vel_cb)

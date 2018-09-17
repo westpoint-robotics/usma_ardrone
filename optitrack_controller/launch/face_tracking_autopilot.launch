@@ -4,12 +4,14 @@
     <arg name="face_centroid_topic" 	default="/ardrone/front/face_centroid" />
     <arg name="switched_cmd_vel_topic"  default="/ardrone/switched/cmd_vel" />
     <arg name="ardrone_front_yaml"      default="$(find optitrack_controller)/cam_info/ardrone_front.yaml" />
+    <arg name="logging"                 default="False"/>
 
     <group ns="ardrone/front/params">
         <rosparam file="$(arg ardrone_front_yaml)" command="load"/>   
     </group>
     <!-- Start the node to track a face in an video stream   -->
     <node pkg="optitrack_controller" type="faceTrackingAutopilot.py" name="face_tracking_autopilot" output="screen" >
+        <param name="/logging"                value="$(arg logging)" />
         <param name="/mocap_cmd_vel_topic"    value="$(arg mocap_cmd_vel_topic)" />
         <param name="/face_centroid_topic"    value="$(arg face_centroid_topic)" />
         <param name="/switched_cmd_vel_topic" value="$(arg switched_cmd_vel_topic)" />
