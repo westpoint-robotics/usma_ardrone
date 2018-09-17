@@ -23,24 +23,40 @@ using a laptop or PC, connect to the ssid "ardrone2_<######>", in terminal type
 	>> script/install
 	>> script/connect_linksys
 
-not connect the laptop to the linksys router network ARDRONE250024ghz
+now connect the laptop to the linksys router network ARDRONE250024ghz and test whether the optitrack pc is connected to the same network:
 
 	>> ping 192.168.2.25
 
 if the ping returns a response time, the the optitrack pc is connected to the same network
 
+=======
 
-	>> roslaunch optitrack_controller belkin.launch	
-	>> roslaunch optitrack_controller vrpn.launch	
+Assuming the optitrack software and cameras are booted and running, to launch the demo, first launch the vrpn service. This will stream the optitrack pose data as a ros message.
 
---
+	>> roslaunch optitrack_controller vrpn.launch
+
+To run the face tracking demo, the following command file will launch the control and tracking nodes for the ardrone
+
+	>> roslaunch optitrack_controller track_face.launch network:=linksys
+
+Finally to have the drone takeoff :
+
+	>> rostopic pub -1 /ardrone/takeoff std_msgs/Empty
+
+
+and to land;
+
+	>> rostopic pub -1 /ardrone/land std_msgs/Empty
+
+If there is an issue during takeoff, or if you need to do a hard abort for some reason, you may need to reset the drone before taking off a second time:
+	>> rostopic pub -1 /ardrone/reset std_msgs/Empty
 
 
 
 ---
 Connect to the AR.Drone directly
 =======
-If you are directly connected to the ardrone netwrok, the following launch file will launch the ardrone controller
+If you are directly connected to the ardrone network, the following launch file will launch the ardrone controller
 	roslaunch optitrack_controller ardrone_direct.launch
 
 
@@ -55,7 +71,6 @@ roslaunch optitrack_controller track_face.launch
 Connect to ARDrone using linksys router and running the whole face tracking pipeline
 =======
 roslaunch optitrack_controller track_face.launch network:=linksys
-roslaunch optitrack_controller track_face.launch network:=belkin
 roslaunch optitrack_controller track_face.launch network:=EECSDS3
 
 ---
