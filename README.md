@@ -18,11 +18,15 @@ Set AR.Drone to connect to router:
 =======
 
 using a laptop or PC, connect to the ssid "ardrone2_<######>", in terminal type 
+
 	>> roscd usma_ardrone && cd ../wpa_support 
 	>> script/install
 	>> script/connect_linksys
+
 not connect the laptop to the linksys router network ARDRONE250024ghz
+
 	>> ping 192.168.2.25
+
 if the ping returns a response time, the the optitrack pc is connected to the same network
 
 
