@@ -14,10 +14,10 @@ Required repos:
 might also need "hector_gazebo_plugins"
 
 ---
-Set AR.Drone to connect to router:
+Ar.Drone Face Tracking demo with optitrack feedback
 =======
 
-using a laptop or PC, connect to the ssid "ardrone2_<######>", in terminal type 
+Set AR.Drone to connect to router, using a laptop or PC, connect to the ssid "ardrone2_<######>", in terminal type 
 
 	>> roscd usma_ardrone && cd ../wpa_support 
 	>> script/install
