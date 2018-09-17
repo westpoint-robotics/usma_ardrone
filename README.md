@@ -23,11 +23,11 @@ Set AR.Drone to connect to router, using a laptop or PC, connect to the ssid "ar
 	>> script/install
 	>> script/connect_linksys
 
-now connect the laptop to the linksys router network ARDRONE250024ghz and test whether the optitrack pc is connected to the same network:
+now connect the laptop to the linksys router network ARDRONE250024ghz and test whether the ardrone is connected to the same network:
 
 	>> ping 192.168.2.25
 
-if the ping returns a response time, then the optitrack pc is connected to the same network
+if the ping returns a response time, then the ardrone is connected to the same network on the correct ip address
 
 ---
 
@@ -43,7 +43,6 @@ Finally to have the drone takeoff :
 
 	>> rostopic pub -1 /ardrone/takeoff std_msgs/Empty
 
-
 and to land;
 
 	>> rostopic pub -1 /ardrone/land std_msgs/Empty
@@ -51,8 +50,6 @@ and to land;
 If there is an issue during takeoff, or if you need to do a hard abort for some reason, you may need to reset the drone before taking off a second time:
 	
 	>> rostopic pub -1 /ardrone/reset std_msgs/Empty
-
-
 
 ---
 Connect to the AR.Drone directly

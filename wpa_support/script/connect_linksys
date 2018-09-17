@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+ESSID="create_belkin"
+PASSWORD="hast2017"
+ADDRESS="192.168.2.25"
+DRONEIP="192.168.1.1"
+IFCONFIG="ifconfig ath0 $ADDRESS;"
+DHCPC=""
+
+set -ue
+echo "ESSID: $ESSID"
+echo "PASSWORD: $PASSWORD"
+echo "ADDRESS: $ADDRESS"
+echo "DRONE_IP: $DRONEIP"
+
+{( echo "\
+  { $IFCONFIG iwconfig ath0 essid '$ESSID' && wpa_supplicant -B -Dwext -iath0 -c/etc/wpa_supplicant.conf $DHCPC; } &
+"; sleep 1; ) | telnet $DRONEIP > /dev/null; }
