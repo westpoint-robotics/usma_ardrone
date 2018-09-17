@@ -31,7 +31,7 @@ if the ping returns a response time, then the ardrone is connected to the same n
 
 ---
 
-Assuming the optitrack software and cameras are booted and running, to launch the demo, first launch the vrpn service. This will stream the optitrack pose data as a ros message.
+Assuming the optitrack software and cameras are booted and running, to launch the demo, first launch the vrpn service. This will stream the optitrack pose data as a ros message. (note this assumes the Ethernet cable for the optitrack pc has been switched from EECSDS3 to the linksys router, it has not been tested on EECSDS3)
 
 	>> roslaunch optitrack_controller vrpn.launch
 
