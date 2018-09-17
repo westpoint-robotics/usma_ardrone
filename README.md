@@ -20,12 +20,12 @@ Ar.Drone Face Tracking demo with optitrack feedback
 Set AR.Drone to connect to router, using a laptop or PC, connect to the ssid "ardrone2_<######>", in terminal type 
 
 	>> roscd usma_ardrone && cd ../wpa_support 
-	>> script/install
+	>> script/install_linksys
 	>> script/connect_linksys
 
-now connect the laptop to the linksys router network ARDRONE250024ghz and test whether the ardrone is connected to the same network:
+"install_linksys" needs only to be called once, but "connect_linksys" must be called each time the drone is powered down, such as when changing the battery. Now connect the laptop to the linksys router network ARDRONE250024ghz and test whether the ardrone is connected to the same network:
 
-	>> ping 192.168.2.25
+	>> ping 192.168.0.25
 
 if the ping returns a response time, then the ardrone is connected to the same network on the correct ip address
 

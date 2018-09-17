@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+cp wpa_belkin.conf wpa_supplicant.conf
+
+set -ue
+
+DRONEIP=${1:-"192.168.1.1"}
+
+echo "Uploading binaries..."
+curl -T bin/wpa_cli "ftp://$DRONEIP"
+curl -T bin/wpa_passphrase "ftp://$DRONEIP"
+curl -T bin/wpa_supplicant "ftp://$DRONEIP"
+curl -T script/wpa_supplicant.conf "ftp://$DRONEIP"
+sleep 1
+
+{( sleep 1; echo "
+	mv /data/video/wpa_supplicant.conf /etc
+    mv /data/video/wpa_* /bin
+	chmod +x /bin/wpa_*
+";) | telnet $DRONEIP > /dev/null; } | sleep 1 && echo "wpa_supplicant installed."
+
+
+# 	mv /data/video/wpa.sh /home/default/
+	# chmod +x /home/default/wpa.sh
