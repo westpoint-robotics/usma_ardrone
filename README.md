@@ -28,6 +28,7 @@ now connect the laptop to the linksys router network ARDRONE250024ghz and test w
 	>> ping 192.168.2.25
 
 if the ping returns a response time, then the optitrack pc is connected to the same network
+
 ---
 
 Assuming the optitrack software and cameras are booted and running, to launch the demo, first launch the vrpn service. This will stream the optitrack pose data as a ros message.
