@@ -1,9 +1,9 @@
 <!-- -*- mode: XML -*- -->
 <launch>
 	<arg name="launcher" 	default="ardrone2_launch" />
-	<arg name="ip" 			default="192.168.2.25" /> <!-- need ot check IP address each time -->
+	<arg name="ip" 			default="192.168.0.25" /> <!-- need ot check IP address each time -->
 
-	<node pkg="ardrone_autonomy" type="ardrone_driver" name="ardrone_autonomy" clear_params="true" args="-ip 192.168.2.25">>
+	<node pkg="ardrone_autonomy" type="ardrone_driver" name="ardrone_autonomy" clear_params="true" args="-ip $(arg ip)">>
 		<param name="tf_prefix" value="ardrone_autonomy" />  
 		<param name="realtime_navdata" value="true" />
 		<param name="realtime_video" value="true" />		
