@@ -55,12 +55,20 @@ class faceTrackingAutopilot():
         self.Kyaw = rospy.get_param("~Kyaw","0.1") # proportional gain for yaw feedback from image
         self.Kz = rospy.get_param("~Kz","0.1") # proportional gain for altitude feedback from image
 
+    def log_fta(self, dx, dy):
+        if(self.logging):
+            self.face_feedback_counter += 1
+            self.data_logger.write(("fta.face.feedback.time({},1) = {};\n").format(self.face_feedback_counter, rospy.get_time()))
+            self.data_logger.write(("fta.face.feedback.yaw({},1) = {};\n").format(self.face_feedback_counter, self.Kyaw*dx))
+            self.data_logger.write(("fta.face.feedback.z({},1) = {};\n\n").format(self.face_feedback_counter, self.Kz*dy))
+
 
     def publish_switched_cmd_vel_msg(self):
         self.switched_cmd_vel_counter += 1
-        self.data_logger.write(("fta.face.switched_cmd_vel_msg.time({},1) = {};\n").format(self.mocap_vel_counter, rospy.get_time()))
-        self.data_logger.write(("fta.mocap.switched_cmd_vel_msg.linear(:,{}) = [{:06.8f} {:06.8f} {:06.8f}];\n").format(self.mocap_vel_counter, self.mocap_vel_msg.linear.x, self.mocap_vel_msg.linear.y, fta.mocap_vel_msg.linear.z))
-        self.data_logger.write(("fta.mocap.switched_cmd_vel_msg.angular(:,{}) = [{:06.8f} {:06.8f} {:06.8f}];\n\n").format(self.mocap_vel_counter, self.mocap_vel_msg.angular.x, self.mocap_vel_msg.angular.y, fta.mocap_vel_msg.angular.z))
+        if(self.logging):
+            self.data_logger.write(("fta.face.switched_cmd_vel_msg.time({},1) = {};\n").format(self.mocap_vel_counter, rospy.get_time()))
+            self.data_logger.write(("fta.mocap.switched_cmd_vel_msg.linear(:,{}) = [{:06.8f} {:06.8f} {:06.8f}];\n").format(self.mocap_vel_counter, self.mocap_vel_msg.linear.x, self.mocap_vel_msg.linear.y, fta.mocap_vel_msg.linear.z))
+            self.data_logger.write(("fta.mocap.switched_cmd_vel_msg.angular(:,{}) = [{:06.8f} {:06.8f} {:06.8f}];\n\n").format(self.mocap_vel_counter, self.mocap_vel_msg.angular.x, self.mocap_vel_msg.angular.y, fta.mocap_vel_msg.angular.z))
         self.switched_cmd_vel_pub.publish(self.switched_cmd_vel_msg)
 
 
@@ -115,10 +123,7 @@ if __name__ == '__main__':
                 cmd_linear = Vector3(fta.mocap_vel_msg.linear.x, fta.mocap_vel_msg.linear.y, fta.Kz*dy)
                 cmd_angular = Vector3(0, 0, fta.Kyaw*dx)
 
-                fta.face_feedback_counter += 1
-                fta.data_logger.write(("fta.face.feedback.time({},1) = {};\n").format(fta.face_feedback_counter, rospy.get_time()))
-                fta.data_logger.write(("fta.face.feedback.yaw({},1) = {};\n").format(fta.face_feedback_counter, fta.Kyaw*dx))
-                fta.data_logger.write(("fta.face.feedback.z({},1) = {};\n\n").format(fta.face_feedback_counter, fta.Kz*dy))
+                fta.log_fta(dx, dy)
                 fta.switched_cmd_vel_msg = Twist(cmd_linear, cmd_angular)
             elif(
                     time_since_last_face>fta_face_ctrl_time and 
