@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-ESSID="create_belkin"
-PASSWORD="hast2017"
+ESSID="ARDRONE250024ghz"
+PASSWORD="abruzzo2018"
 ADDRESS="192.168.0.25"
 DRONEIP="192.168.1.1"
 IFCONFIG="ifconfig ath0 $ADDRESS;"

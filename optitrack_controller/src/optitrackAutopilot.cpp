@@ -17,6 +17,11 @@
 class optitrackAutopilot
 {
 	private:
+
+		/*---------  File Recorder ------------- */
+			std::string s_filename, s_run, s_dotm, s_root, s_handle, s_date, s_user;
+			std::FILE * pFile;
+
 		// shutdown manager
 		ros::Subscriber ShutDown_sub;
 			std_msgs::Empty Null_msg;
@@ -39,6 +44,7 @@ class optitrackAutopilot
 			double uav_RPY[3];
 		    tf::Matrix3x3 uav_R;
 		    cv::Mat R_from_yaw;
+		    int mocap_counter, cmd_counter;
 
 		// desired pose subscriber
 		ros::Subscriber desired_pose_sub;
@@ -56,17 +62,30 @@ class optitrackAutopilot
 
 	optitrackAutopilot()
 	{
+		/*---------  File Recorder ------------- */
+		ros::param::get("~date",s_date );
+		ros::param::get("~run",s_run );
+		// ROS_INFO("optitrackAutopilot: date = %s", s_date.c_str());
+		// ROS_INFO("optitrackAutopilot: run = %s", s_run.c_str());
+		s_handle = "optAutopilot_";
+		s_root = "/home/benjamin/ros/data/";
+		s_dotm = ".m";
+		s_filename = s_root + s_date + "/" + s_run + "/" + s_handle + s_run + s_dotm;
+		// ROS_INFO("optitrackAutopilot: %s", s_filename.c_str());
+		pFile = std::fopen (s_filename.c_str(),"w");
+
 		/*--------- Initialize ROS Communication & Variables ------------- */
 		/*-----  Publishers and Subscribers */
-
 		ros::param::get("~uav_cmd_topic", s_uav_cmd_topic);
 			uav_cmd_pub = n.advertise<geometry_msgs::Twist>	(s_uav_cmd_topic, 1);
+			cmd_counter = 0;
 
 		ros::param::get("~uav_desired_pose_topic", s_desired_pose_topic);
 			desired_pose_sub = n.subscribe(s_desired_pose_topic,   10,  &optitrackAutopilot::updateDesiredPose, this);
 
 		ros::param::get("~mocap_pose_topic", s_mocap_pose_topic);
 			mocap_pose_sub = n.subscribe(s_mocap_pose_topic,   10,  &optitrackAutopilot::updatePoseStamped, this);
+			mocap_counter = 0;
 
 		ros::param::get("~Kp", Kp);
 		ros::param::get("~Kv", Kv);
@@ -105,8 +124,22 @@ class optitrackAutopilot
 		uav_mocap_ardrone_pose.position.z = mocap_pose_msg->pose.position.z;
 		uav_mocap_ardrone_pose.heading = uav_RPY[2];
 
-		// now compute UAV commands
+		mocap_counter += 1;
+		fprintf (pFile,"optAutopilot.mocap_pose.time(%d,:) = % -6.8f;\n", mocap_counter, ros::Time::now().toSec());
+		fprintf (pFile,"optAutopilot.mocap_pose.p(%d,:) = [% -6.8f % -6.8f % -6.8f];\n", mocap_counter, 
+																				uav_mocap_pose_msg.position.x, 
+																				uav_mocap_pose_msg.position.y, 
+																				uav_mocap_pose_msg.position.z);
+		fprintf (pFile,"optAutopilot.mocap_pose.q(%d,:) = [% -6.8f % -6.8f % -6.8f % -6.8f];\n", mocap_counter, 
+																				uav_mocap_pose_msg.orientation.x, 
+																				uav_mocap_pose_msg.orientation.y, 
+																				uav_mocap_pose_msg.orientation.z, 
+																				uav_mocap_pose_msg.orientation.w);
+		fprintf (pFile,"optAutopilot.mocap_pose.yaw(%d,:) = % -6.8f;\n\n", mocap_counter, uav_mocap_ardrone_pose.heading);
+				// now compute UAV commands
 			uav_Kp();
+
+
 
 	}
 
@@ -141,15 +174,14 @@ class optitrackAutopilot
 
 		// now compute UAV commands
 			uav_Kp();
-
 	}
 
 	void initDesiredPose()
 	{
-		uav_desired_pose_body_msg.position.x = uav_desired_pose_body_msg.position.y = 0; // meters
-		uav_desired_pose_global_msg.position.x = uav_desired_pose_global_msg.position.y = 0; // meters
+		uav_desired_pose_body_msg.position.x = uav_desired_pose_global_msg.position.y = 0; // meters
+		uav_desired_pose_body_msg.position.x = uav_desired_pose_global_msg.position.y = 0; // meters
 		uav_desired_pose_body_msg.position.z = uav_desired_pose_global_msg.position.z = 1.5; // meters
-		uav_desired_pose_body_msg.heading = uav_desired_pose_global_msg.heading = 0; // radians
+		uav_desired_pose_body_msg.heading 	 = uav_desired_pose_global_msg.heading = 0; // radians
 		R_from_yaw = (cv::Mat_<double>(3, 3) << 1, 0, 0,
 												0, 1, 0,
 												0, 0, 1);
@@ -170,9 +202,9 @@ class optitrackAutopilot
 			uav_desired_pose_global_msg.position.z - uav_mocap_ardrone_pose.position.z);
 		double global_heading_error = uav_desired_pose_global_msg.heading - uav_mocap_ardrone_pose.heading;
         // ROS_INFO("uav_Kp global position and heading errors [x, y, z, Y] : [%2.3f, %2.3f, %2.3f, %2.4f]", 
-        // 	global_position_error.at<double>(0,0),
-        // 	global_position_error.at<double>(1,0),
-        // 	global_position_error.at<double>(2,0),
+		// global_position_error.at<double>(0,0),
+		// global_position_error.at<double>(1,0),
+		// global_position_error.at<double>(2,0),
         // 	global_heading_error);
 
 		// convert global frame to uav body frame
@@ -183,9 +215,9 @@ class optitrackAutopilot
 												 0, 0, 1);
 		cv::Mat body_position_error = R_from_yaw * global_position_error;
         // ROS_INFO("uav_Kp body position and heading errors [x, y, z, Y] : [%2.3f, %2.3f, %2.3f, %2.4f]", 
-        // 	body_position_error.at<double>(0,0),
-        // 	body_position_error.at<double>(1,0),
-        // 	body_position_error.at<double>(2,0),
+        	// body_position_error.at<double>(0,0),
+        	// body_position_error.at<double>(1,0),
+        	// body_position_error.at<double>(2,0),
         // 	global_heading_error);
 
 
@@ -196,17 +228,39 @@ class optitrackAutopilot
 		uav_cmd_msg.angular.y = 0;
 		uav_cmd_msg.angular.z = Kp*global_heading_error;
 
-		cmdUAV(uav_cmd_msg);
+		// cmdUAV(uav_cmd_msg);
+		uav_cmd_pub.publish(uav_cmd_msg);
+
+		cmd_counter += 1;
+		fprintf (pFile,"optAutopilot.cmd.time(%d,:) = % -6.8f;\n", cmd_counter, ros::Time::now().toSec());
+		fprintf (pFile,"optAutopilot.cmd.desired_pose_global.yaw(%d,:) = % -6.8f;\n", cmd_counter, uav_desired_pose_global_msg.heading);
+		fprintf (pFile,"optAutopilot.cmd.desired_pose_global.p(%d,:) = [% -6.8f % -6.8f % -6.8f];\n", cmd_counter, 
+																				uav_desired_pose_global_msg.position.x, 
+																				uav_desired_pose_global_msg.position.y, 
+																				uav_desired_pose_global_msg.position.z);
+		fprintf (pFile,"optAutopilot.cmd.error_pose_global.yaw(%d,:) = % -6.8f;\n", cmd_counter, uav_desired_pose_global_msg.heading);
+		fprintf (pFile,"optAutopilot.cmd.error_pose_global.p(%d,:) = [% -6.8f % -6.8f % -6.8f];\n", cmd_counter, 
+																				global_position_error.at<double>(0,0),
+																				global_position_error.at<double>(1,0),
+																				global_position_error.at<double>(2,0));
+		fprintf (pFile,"optAutopilot.cmd.error_pose_body.yaw(%d,:) = % -6.8f;\n", cmd_counter, uav_desired_pose_global_msg.heading);
+		fprintf (pFile,"optAutopilot.cmd.error_pose_body.p(%d,:) = [% -6.8f % -6.8f % -6.8f];\n", cmd_counter, 
+																				body_position_error.at<double>(0,0),
+																				body_position_error.at<double>(1,0),
+																				body_position_error.at<double>(2,0));
+		fprintf (pFile,"optAutopilot.cmd.msg_linear(%d,:) = [% -6.8f % -6.8f % -6.8f];\n", cmd_counter, uav_cmd_msg.linear.x, uav_cmd_msg.linear.y, uav_cmd_msg.linear.z);
+		fprintf (pFile,"optAutopilot.cmd.msg_angular(%d,:)= [% -6.8f % -6.8f % -6.8f];\n\n", cmd_counter, uav_cmd_msg.angular.x, uav_cmd_msg.angular.y, uav_cmd_msg.angular.z);
+
 	}
 
-	void cmdUAV(geometry_msgs::Twist cmd_vel)
-	{
-		uav_cmd_pub.publish(cmd_vel);
-		// cmd_count += 1;
-		// fprintf (pFile,"\nuavCon.cmd.time(%d,:) = % -6.8f;\n", cmd_count, ros::Time::now().toSec());
-		// fprintf (pFile,"uavCon.cmd.linear(%d,:)  = [% -6.8f, % -6.8f, % -6.8f];\n", cmd_count, cmd_vel.linear.x, cmd_vel.linear.y, cmd_vel.linear.z);
-		// fprintf (pFile,"uavCon.cmd.angular(%d,:) = [% -6.8f, % -6.8f, % -6.8f];\n", cmd_count, cmd_vel.angular.x, cmd_vel.angular.y, cmd_vel.angular.z);
-	}
+	// void cmdUAV(geometry_msgs::Twist cmd_vel)
+	// {
+	// 	uav_cmd_pub.publish(cmd_vel);
+	// 	// cmd_count += 1;
+	// 	// fprintf (pFile,"\nuavCon.cmd.time(%d,:) = % -6.8f;\n", cmd_count, ros::Time::now().toSec());
+	// 	// fprintf (pFile,"uavCon.cmd.linear(%d,:)  = [% -6.8f, % -6.8f, % -6.8f];\n", cmd_count, cmd_vel.linear.x, cmd_vel.linear.y, cmd_vel.linear.z);
+	// 	// fprintf (pFile,"uavCon.cmd.angular(%d,:) = [% -6.8f, % -6.8f, % -6.8f];\n", cmd_count, cmd_vel.angular.x, cmd_vel.angular.y, cmd_vel.angular.z);
+	// }
 
 
 

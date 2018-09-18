@@ -18,12 +18,14 @@ class faceTrackingAutopilot():
         # check to see if data should be logged:
         self.logging = rospy.get_param("~logging",False) # false by default, in case operator doesn't know to create data folder for logging
         if(self.logging):
-            self.exp_run = rospy.get_param("~run","001")
+            self.exp_run = rospy.get_param("~run","002")
+            # print(self.exp_run)
             self.exp_date = rospy.get_param("~date","20180917")
-            self.data_logger_filename = '/home/benjamin/ros/data/' + self.exp_date + '/' + self.exp_run + '/faceTrackingAutopilot_' + self.exp_run + '.m'
-            print("faceTrackingAutopilot :: logger filename {}\n\n").format(self.data_logger_filename)
+            # print(self.exp_date)
+            self.data_logger_filename = ('/home/benjamin/ros/data/{0:0>3}/{1:0>3}/fta_{1:0>3}.m').format(self.exp_date, self.exp_run)
+            # print("faceTrackingAutopilot :: logger filename {} \n\n").format(self.data_logger_filename)
             self.data_logger = open(self.data_logger_filename, 'w')
-            self.data_logger.write(("%%filename: {}").format(self.data_logger_filename))
+            self.data_logger.write(("%%filename: {} \n\n").format(self.data_logger_filename))
 
         #subscribe to optitrack cmd_vel 
         self.mocap_cmd_vel_topic = rospy.get_param("~mocap_cmd_vel_topic","/usma_ardrone/cmd_vel")
@@ -58,17 +60,17 @@ class faceTrackingAutopilot():
     def log_fta(self, dx, dy):
         if(self.logging):
             self.face_feedback_counter += 1
-            self.data_logger.write(("fta.face.feedback.time({},1) = {};\n").format(self.face_feedback_counter, rospy.get_time()))
-            self.data_logger.write(("fta.face.feedback.yaw({},1) = {};\n").format(self.face_feedback_counter, self.Kyaw*dx))
-            self.data_logger.write(("fta.face.feedback.z({},1) = {};\n\n").format(self.face_feedback_counter, self.Kz*dy))
+            self.data_logger.write(("fta.face.feedback.time({},1) = {:06.8f};\n").format(self.face_feedback_counter, rospy.get_time()))
+            self.data_logger.write(("fta.face.feedback.yaw({},1) = {:06.8f};\n").format(self.face_feedback_counter, self.Kyaw*dx))
+            self.data_logger.write(("fta.face.feedback.z({},1) = {:06.8f};\n\n").format(self.face_feedback_counter, self.Kz*dy))
 
 
     def publish_switched_cmd_vel_msg(self):
         self.switched_cmd_vel_counter += 1
         if(self.logging):
-            self.data_logger.write(("fta.face.switched_cmd_vel_msg.time({},1) = {};\n").format(self.mocap_vel_counter, rospy.get_time()))
-            self.data_logger.write(("fta.mocap.switched_cmd_vel_msg.linear(:,{}) = [{:06.8f} {:06.8f} {:06.8f}];\n").format(self.mocap_vel_counter, self.mocap_vel_msg.linear.x, self.mocap_vel_msg.linear.y, fta.mocap_vel_msg.linear.z))
-            self.data_logger.write(("fta.mocap.switched_cmd_vel_msg.angular(:,{}) = [{:06.8f} {:06.8f} {:06.8f}];\n\n").format(self.mocap_vel_counter, self.mocap_vel_msg.angular.x, self.mocap_vel_msg.angular.y, fta.mocap_vel_msg.angular.z))
+            self.data_logger.write(("fta.face.switched_cmd_vel_msg.time({},1) = {:06.8f};\n").format(self.mocap_vel_counter, rospy.get_time()))
+            self.data_logger.write(("fta.face.switched_cmd_vel_msg.linear({},:) = [{:06.8f} {:06.8f} {:06.8f}];\n").format(self.mocap_vel_counter, self.mocap_vel_msg.linear.x, self.mocap_vel_msg.linear.y, fta.mocap_vel_msg.linear.z))
+            self.data_logger.write(("fta.face.switched_cmd_vel_msg.angular({},:) = [{:06.8f} {:06.8f} {:06.8f}];\n\n").format(self.mocap_vel_counter, self.mocap_vel_msg.angular.x, self.mocap_vel_msg.angular.y, fta.mocap_vel_msg.angular.z))
         self.switched_cmd_vel_pub.publish(self.switched_cmd_vel_msg)
 
 
@@ -79,9 +81,9 @@ class faceTrackingAutopilot():
         # print(self.mocap_cmd_vel_topic + '/angular : {} {} {}').format(self.mocap_vel_msg.angular.x, self.mocap_vel_msg.angular.y, self.mocap_vel_msg.angular.z)
         self.mocap_vel_msg_time = rospy.get_time()
         if(self.logging):
-            self.data_logger.write(("fta.mocap.vel_msg.time({},1) = {};\n").format(self.mocap_vel_counter, self.mocap_vel_msg_time))
-            self.data_logger.write(("fta.mocap.vel_msg.linear(:,{}) = [{:06.8f} {:06.8f} {:06.8f}];\n").format(self.mocap_vel_counter, self.mocap_vel_msg.linear.x, self.mocap_vel_msg.linear.y, self.mocap_vel_msg.linear.z))
-            self.data_logger.write(("fta.mocap.vel_msg.angular(:,{}) = [{:06.8f} {:06.8f} {:06.8f}];\n\n").format(self.mocap_vel_counter, self.mocap_vel_msg.angular.x, self.mocap_vel_msg.angular.y, self.mocap_vel_msg.angular.z))
+            self.data_logger.write(("fta.mocap.vel_msg.time({},1) = {:06.8f};\n").format(self.mocap_vel_counter, self.mocap_vel_msg_time))
+            self.data_logger.write(("fta.mocap.vel_msg.linear({},:) = [{:06.8f} {:06.8f} {:06.8f}];\n").format(self.mocap_vel_counter, self.mocap_vel_msg.linear.x, self.mocap_vel_msg.linear.y, self.mocap_vel_msg.linear.z))
+            self.data_logger.write(("fta.mocap.vel_msg.angular({},:) = [{:06.8f} {:06.8f} {:06.8f}];\n\n").format(self.mocap_vel_counter, self.mocap_vel_msg.angular.x, self.mocap_vel_msg.angular.y, self.mocap_vel_msg.angular.z))
         if(self.face_centroid_msg_time == None): 
             self.publish_switched_cmd_vel_msg()
 
@@ -92,7 +94,7 @@ class faceTrackingAutopilot():
         self.face_centroid_msg_time = rospy.get_time()
         if(self.logging):
             self.data_logger.write(("fta.face.centroid_msg.time({},1) = {};\n").format(self.mocap_vel_counter, self.mocap_vel_msg_time))
-            self.data_logger.write(("fta.face.centroid_msg.linear(:,{}) = [{:06.8f} {:06.8f} {:06.8f}];\n\n").format(self.face_centroid_counter, self.face_centroid_msg.x, self.face_centroid_msg.y, self.face_centroid_msg.z))
+            self.data_logger.write(("fta.face.centroid_msg.linear({},:) = [{:06.8f} {:06.8f} {:06.8f}];\n\n").format(self.face_centroid_counter, self.face_centroid_msg.x, self.face_centroid_msg.y, self.face_centroid_msg.z))
 
 
 if __name__ == '__main__':

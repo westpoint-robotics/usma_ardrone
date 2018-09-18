@@ -3,11 +3,18 @@
 <!-- need to send takeoff and land commands separately -->
 
 <launch>
+    <!-- Experiment meta -->
+    <arg name="date" default="20180917" /> 
+    <arg name="run" default="002" /> 
+
 	<arg name="ardrone_ip" default="192.168.0.25" /> <!-- need to check IP address each time -->
     <arg name="server_ip" default="192.168.0.50" /> 
 
     <!-- EECSDS3 is the default, I did development using my own routers -->
     <arg name="network" default="linksys" /> 
+
+    <!-- turn on/off logging  of data for plotting -->
+    <arg name="logging" default="False" /> 
 
     <!-- launch vrpn server -->
     <include file="$(find optitrack_controller)/launch/vrpn.launch">
@@ -24,6 +31,8 @@
 
     <!-- launch autopilot using optitrack measurements -->
     <include file="$(find optitrack_controller)/launch/optitrackAutopilot.launch">
+        <arg name="date"                    value="$(arg date)" />
+        <arg name="run"                     value="$(arg run)" />
         <arg name="Kp"                      value="0.5"/>
         <arg name="Kv"                      value="0.1"/>
         <arg name="uav_cmd_topic"           value="/usma_ardrone/uav/cmd_vel"/>
@@ -33,6 +42,9 @@
 
     <!-- launch autopilot using face tracking centroid -->
     <include file="$(find optitrack_controller)/launch/face_tracking_autopilot.launch">
+        <arg name="date"                    value="$(arg date)" />
+        <arg name="run"                     value="$(arg run)" />
+        <arg name="logging"                 value="$(arg logging)" />
         <arg name="mocap_cmd_vel_topic"     value="/usma_ardrone/uav/cmd_vel"/>
         <arg name="face_centroid_topic"     value="/ardrone/front/face_centroid" />
         <arg name="switched_cmd_vel_topic"  value="/ardrone/switched/cmd_vel" />
@@ -44,6 +56,7 @@
         <arg name="img_topic"       value="/ardrone/front/image_raw"/>
         <arg name="centroid_topic"  value="/ardrone/front/face_centroid"/>
     </include>
+
 
 </launch>
 

@@ -5,8 +5,12 @@
     <arg name="Kp"  					default="0.5"/>
     <arg name="Kv"  					default="0.1"/>
     <arg name="logging"  				default="False"/>
+    <arg name="date"                    default="20180917" />
+    <arg name="run"                     default="002" />
 
 	<node 	pkg="optitrack_controller" 	type="optitrackAutopilot"	name="optitrackAutopilot" output="screen" >
+        <param name="date"                    	value="$(arg date)" type = "str" />
+        <param name="run"                     	value="$(arg run)" type = "str"/>
 		<param name="Kp"						value="$(arg Kp)"/>
 		<param name="Kv"						value="$(arg Kv)"/>
 		<param name="logging"                	value="$(arg logging)"/>
