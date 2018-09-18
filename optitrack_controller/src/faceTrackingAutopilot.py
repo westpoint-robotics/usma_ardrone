@@ -93,7 +93,7 @@ class faceTrackingAutopilot():
         # print(self.face_centroid_topic + ' : {} {} {}' ).format(self.face_centroid_msg.x, self.face_centroid_msg.y, self.face_centroid_msg.z)
         self.face_centroid_msg_time = rospy.get_time()
         if(self.logging):
-            self.data_logger.write(("fta.face.centroid_msg.time({},1) = {};\n").format(self.mocap_vel_counter, self.mocap_vel_msg_time))
+            self.data_logger.write(("fta.face.centroid_msg.time({},1) = {};\n").format(self.face_centroid_counter, self.mocap_vel_msg_time))
             self.data_logger.write(("fta.face.centroid_msg.linear({},:) = [{:06.8f} {:06.8f} {:06.8f}];\n\n").format(self.face_centroid_counter, self.face_centroid_msg.x, self.face_centroid_msg.y, self.face_centroid_msg.z))
 
 

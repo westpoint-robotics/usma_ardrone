@@ -1,3 +1,4 @@
+#include <math.h>
 //ROS Communications
 #include <ros/ros.h>
 	// Messages
@@ -17,7 +18,6 @@
 class optitrackAutopilot
 {
 	private:
-
 		/*---------  File Recorder ------------- */
 			std::string s_filename, s_run, s_dotm, s_root, s_handle, s_date, s_user;
 			std::FILE * pFile;
@@ -55,7 +55,7 @@ class optitrackAutopilot
 			usma_plugins::ardrone_pose uav_desired_pose_global_msg, uav_desired_pose_body_msg;
 
 		// PV variables
-		double Kp, Kv;
+		double Kp, Kv, Kphi;
 
 	public:
 		ros::NodeHandle n;
@@ -89,7 +89,7 @@ class optitrackAutopilot
 
 		ros::param::get("~Kp", Kp);
 		ros::param::get("~Kv", Kv);
-
+		ros::param::get("~Kphi", Kphi);
 
 		initDesiredPose();
 
@@ -122,7 +122,20 @@ class optitrackAutopilot
 		uav_mocap_ardrone_pose.position.x = mocap_pose_msg->pose.position.x;
 		uav_mocap_ardrone_pose.position.y = mocap_pose_msg->pose.position.y;
 		uav_mocap_ardrone_pose.position.z = mocap_pose_msg->pose.position.z;
-		uav_mocap_ardrone_pose.heading = uav_RPY[2];
+		// uav_mocap_ardrone_pose.heading = uav_RPY[2];
+		double x = uav_mocap_pose_msg.orientation.x;
+		double y = uav_mocap_pose_msg.orientation.y;
+		double z = uav_mocap_pose_msg.orientation.z;
+		double w = uav_mocap_pose_msg.orientation.w;
+		// double h0 = 2.0 * (w * x + y * z);
+		// double h1 = 1.0 - 2.0 * (x * x + y * y);
+		// uav_mocap_ardrone_pose.heading = atan2(h0,h1);
+
+		double h3 = 2.0 * (w * z + x * y);
+		double h4 = 1.0 - 2.0 * (y * y + z * z);
+		uav_mocap_ardrone_pose.heading = atan2(h3,h4);
+		// ROS_INFO("uav_mocap_ardrone_pose.heading = atan2(h0,h1) = %6.4f", uav_mocap_ardrone_pose.heading);
+
 
 		mocap_counter += 1;
 		fprintf (pFile,"optAutopilot.mocap_pose.time(%d,:) = % -6.8f;\n", mocap_counter, ros::Time::now().toSec());
@@ -170,7 +183,23 @@ class optitrackAutopilot
 		uav_mocap_ardrone_pose.position.x = mocap_pose_msg->position.x;
 		uav_mocap_ardrone_pose.position.y = mocap_pose_msg->position.y;
 		uav_mocap_ardrone_pose.position.z = mocap_pose_msg->position.z;
-		uav_mocap_ardrone_pose.heading = uav_RPY[2];
+
+
+	    // def yaw_from_q(self, w, x, y, z):
+	    //     t0 = +2.0 * (w * x + y * z)
+	    //     t1 = +1.0 - 2.0 * (x * x + y * y)
+	    //     X = math.degrees(math.atan2(t0, t1))
+	    //     return X
+
+		// double x = uav_mocap_pose_msg.orientation.x;
+		// double y = uav_mocap_pose_msg.orientation.y;
+		// double z = uav_mocap_pose_msg.orientation.z;
+		// double w = uav_mocap_pose_msg.orientation.w;
+		// double h0 = 2.0 * (w * x + y * z);
+		// double h1 = 1.0 - 2.0 * (x * x + y * y);
+
+		// uav_mocap_ardrone_pose.heading = atan2(h0,h1);
+		// ROS_INFO("uav_mocap_ardrone_pose.heading = atan2(h0,h1) = %6.4f", uav_mocap_ardrone_pose.heading);
 
 		// now compute UAV commands
 			uav_Kp();
@@ -223,10 +252,10 @@ class optitrackAutopilot
 
 		uav_cmd_msg.linear.x = Kp*body_position_error.at<double>(0,0);
 		uav_cmd_msg.linear.y = Kp*body_position_error.at<double>(1,0);
-		uav_cmd_msg.linear.z = Kp*body_position_error.at<double>(2,0);
+		uav_cmd_msg.linear.z = 2*Kp*body_position_error.at<double>(2,0);
 		uav_cmd_msg.angular.x = 0;
 		uav_cmd_msg.angular.y = 0;
-		uav_cmd_msg.angular.z = Kp*global_heading_error;
+		uav_cmd_msg.angular.z = -Kphi*global_heading_error;
 
 		// cmdUAV(uav_cmd_msg);
 		uav_cmd_pub.publish(uav_cmd_msg);
