@@ -39,16 +39,22 @@ class faceTrackingAutopilot():
         self.face_centroid_msg_time = None
         self.face_centroid_counter = 0
         
+        self.param_image_width = rospy.get_param("ardrone/front/params/image_width","640")
+        self.param_image_height = rospy.get_param("ardrone/front/params/image_height","360")
+        self.param_image_Cx = rospy.get_param("ardrone/front/params/Cx","320")
+        self.param_image_Cy = rospy.get_param("ardrone/front/params/Cy","180")
+
         # publish either the mocap cmd_vel or the face centroid based cmd_vel
         self.switched_cmd_vel_topic = rospy.get_param("~switched_cmd_vel_topic","/ardrone/switched/cmd_vel")
         self.switched_cmd_vel_pub = rospy.Publisher(self.switched_cmd_vel_topic,Twist, queue_size=1)  
         self.switched_cmd_vel_msg = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0))
         self.switched_cmd_vel_counter = 0
 
-        self.param_image_width = rospy.get_param("ardrone/front/params/image_width","640")
-        self.param_image_height = rospy.get_param("ardrone/front/params/image_height","360")
-        self.param_image_Cx = rospy.get_param("ardrone/front/params/Cx","320")
-        self.param_image_Cy = rospy.get_param("ardrone/front/params/Cy","180")
+        # face tracker feedback commands
+        self.face_feedback_counter = 0
+        self.Kyaw = rospy.get_param("~Kyaw","0.1") # proportional gain for yaw feedback from image
+        self.Kz = rospy.get_param("~Kz","0.1") # proportional gain for altitude feedback from image
+
 
     def publish_switched_cmd_vel_msg(self):
         self.switched_cmd_vel_counter += 1
@@ -61,6 +67,8 @@ class faceTrackingAutopilot():
     def mocap_cmd_vel_cb(self,msg):
         self.mocap_vel_counter += 1
         self.mocap_vel_msg = msg
+        # print(self.mocap_cmd_vel_topic + '/linear : {} {} {}' ).format(self.mocap_vel_msg.linear.x, self.mocap_vel_msg.linear.y, self.mocap_vel_msg.linear.z)
+        # print(self.mocap_cmd_vel_topic + '/angular : {} {} {}').format(self.mocap_vel_msg.angular.x, self.mocap_vel_msg.angular.y, self.mocap_vel_msg.angular.z)
         self.mocap_vel_msg_time = rospy.get_time()
         if(self.logging):
             self.data_logger.write(("fta.mocap.vel_msg.time({},1) = {};\n").format(self.mocap_vel_counter, self.mocap_vel_msg_time))
@@ -68,62 +76,56 @@ class faceTrackingAutopilot():
             self.data_logger.write(("fta.mocap.vel_msg.angular(:,{}) = [{:06.8f} {:06.8f} {:06.8f}];\n\n").format(self.mocap_vel_counter, self.mocap_vel_msg.angular.x, self.mocap_vel_msg.angular.y, self.mocap_vel_msg.angular.z))
         if(self.face_centroid_msg_time == None): 
             self.publish_switched_cmd_vel_msg()
-        # print(self.mocap_cmd_vel_topic + '/linear : {} {} {}' ).format(self.mocap_vel_msg.linear.x, self.mocap_vel_msg.linear.y, self.mocap_vel_msg.linear.z)
-        # print(self.mocap_cmd_vel_topic + '/angular : {} {} {}').format(self.mocap_vel_msg.angular.x, self.mocap_vel_msg.angular.y, self.mocap_vel_msg.angular.z)
 
     def facetracker_centroid_cb(self,msg):
         self.face_centroid_counter += 1
         self.face_centroid_msg = msg
+        # print(self.face_centroid_topic + ' : {} {} {}' ).format(self.face_centroid_msg.x, self.face_centroid_msg.y, self.face_centroid_msg.z)
         self.face_centroid_msg_time = rospy.get_time()
         if(self.logging):
             self.data_logger.write(("fta.face.centroid_msg.time({},1) = {};\n").format(self.mocap_vel_counter, self.mocap_vel_msg_time))
             self.data_logger.write(("fta.face.centroid_msg.linear(:,{}) = [{:06.8f} {:06.8f} {:06.8f}];\n\n").format(self.face_centroid_counter, self.face_centroid_msg.x, self.face_centroid_msg.y, self.face_centroid_msg.z))
-        # print(self.face_centroid_topic + ' : {} {} {}' ).format(self.face_centroid_msg.x, self.face_centroid_msg.y, self.face_centroid_msg.z)
 
 
 if __name__ == '__main__':
     # Initialize the node and name it.
     rospy.init_node('faceTrackingAutopilot')
-    # Go to class functions that do all the heavy lifting. Do error checking.
     try:
         fta = faceTrackingAutopilot()
     except rospy.ROSInterruptException: pass
-
-    # Process the images when new ones arrive
-    Kyaw = 0.01 # proportional gain for yaw feedback from image
-    Kz = 0.01   # proportional gain for altitude feedback from image
 
     dummy = None
     rate = rospy.Rate(30) # 30hz
     fta_face_ctrl_time = 0.1 # how many seconds should the last face detection be used for uav control
     fta_wait_for_face = 4 # how long before giving up and going back to neutral
     while not rospy.is_shutdown():
-        if (fta.face_centroid_msg_time == None): 
-            # do nothing until a face is seen
+        if (fta.face_centroid_msg_time == None): # do nothing until a face is seen
             dummy = None
         else: # let the face tracker and time switcher choose
             # print ('rospy.get_time() - fta.face_centroid_msg_time = {}').format(rospy.get_time() - fta.face_centroid_msg_time)
             # print('now = {}, fta.face_centroid_msg_time = {}').format(rospy.get_time(), fta.face_centroid_msg_time)
             time_since_last_face = rospy.get_time() - fta.face_centroid_msg_time
             # print('time since last face was seen: {}').format(time_since_last_face) 
-            if (time_since_last_face<fta_face_ctrl_time):
+            if (time_since_last_face<=fta_face_ctrl_time):
                 # Then calculate cmd_vel based on faces
                 dx = fta.param_image_Cx - fta.face_centroid_msg.x # This contributes to yawing
                 dy = fta.param_image_Cy - fta.face_centroid_msg.y # this contributes to altitude
 
                 # use mocap to keep uav in center of workspace, let camera control altitude and yaw-rate
-                cmd_linear = Vector3(fta.mocap_vel_msg.linear.x, fta.mocap_vel_msg.linear.y, Kz*dy)
-                cmd_angular = Vector3(0, 0, Kyaw*dx)
+                cmd_linear = Vector3(fta.mocap_vel_msg.linear.x, fta.mocap_vel_msg.linear.y, fta.Kz*dy)
+                cmd_angular = Vector3(0, 0, fta.Kyaw*dx)
 
+                fta.face_feedback_counter += 1
+                fta.data_logger.write(("fta.face.feedback.time({},1) = {};\n").format(fta.face_feedback_counter, rospy.get_time()))
+                fta.data_logger.write(("fta.face.feedback.yaw({},1) = {};\n").format(fta.face_feedback_counter, fta.Kyaw*dx))
+                fta.data_logger.write(("fta.face.feedback.z({},1) = {};\n\n").format(fta.face_feedback_counter, fta.Kz*dy))
                 fta.switched_cmd_vel_msg = Twist(cmd_linear, cmd_angular)
             elif(
                     time_since_last_face>fta_face_ctrl_time and 
-                    time_since_last_face<fta_wait_for_face
-                ):
-                # do nothing, maybe the face will come back
+                    time_since_last_face<=fta_wait_for_face
+                ): # do nothing, maybe the face will come back
                 fta.switched_cmd_vel_msg = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0))
-            else:
-                # lost the face, go home
+            else: # lost the face, go home
                 fta.switched_cmd_vel_msg = fta.mocap_vel_msg
 
             #publish cmd_vel no matter what
