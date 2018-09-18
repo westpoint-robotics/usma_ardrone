@@ -19,6 +19,7 @@
 
     <!-- launch autopilot using face tracking centroid -->
     <include file="$(find optitrack_controller)/launch/face_tracking_autopilot.launch">
+        <arg name="logging"                 value="$(arg logging)"/>
         <arg name="mocap_cmd_vel_topic"     value="/usma_ardrone/uav/cmd_vel"/>
         <arg name="face_centroid_topic"     value="/ardrone/front/face_centroid" />
         <arg name="switched_cmd_vel_topic"  value="/ardrone/switched/cmd_vel" />
