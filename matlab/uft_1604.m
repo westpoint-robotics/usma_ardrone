@@ -1,7 +1,9 @@
 function [meta, data] = uft_1604()
 %% Set up meta
-    meta.date = '20180917/';
-    meta.run = '010';
+    meta.date = '20180919/';
+%     meta.run = '002'; %optitrack control works, but does not settle, it just oscillates
+    meta.run = '003'; %testing face tracking and feedback, but uav did not seem to follow my face
+    
     meta.dataroot = '/home/benjamin/ros/data/';
     
 %% Load data

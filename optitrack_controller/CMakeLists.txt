@@ -72,3 +72,7 @@ add_executable(         killNodes  src/killNodes.cpp)
 add_executable(         listenForKill  src/listenForKill.cpp)
   add_dependencies(     listenForKill   ${catkin_EXPORTED_TARGETS})
     target_link_libraries(listenForKill  ${catkin_LIBRARIES})
+
+# add_executable(         calArdrone  src/calArdrone.cpp)
+#   add_dependencies(     calArdrone   ${catkin_EXPORTED_TARGETS})
+#     target_link_libraries(calArdrone  ${catkin_LIBRARIES})
