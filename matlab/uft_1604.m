@@ -141,3 +141,20 @@ figure(8); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) '
     hold off
     grid on
 end
+
+
+function [] = shortcut()
+
+clc
+clear all
+close all
+
+warning('off','MATLAB:legend:PlotEmpty')
+
+meta.root = '/home/benjamin/ros/src/usma_ardrone/matlab/';
+cd([meta.root])
+addpath(genpath([meta.root]));
+[meta, data] = uft_1604();
+
+
+end
