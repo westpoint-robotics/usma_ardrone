@@ -24,10 +24,8 @@
 	<!-- ardrone driver !!! need to send takeoff and land commands separately -->
     <include file="$(find optitrack_controller)/launch/ardrone_driver_$(arg network).launch">
         <arg name="ip" value="$(arg ardrone_ip)"/>
+        <arg name="cmd_topic" value="ardrone/switched/cmd_vel"/>
     </include>
-
-    <!-- use for directly connected to ardrone -->
-    <!-- <include file="$(find optitrack_controller)/launch/ardrone_direct.launch"/> -->
 
     <!-- launch autopilot using optitrack measurements -->
     <include file="$(find optitrack_controller)/launch/optitrackAutopilot.launch">
@@ -41,13 +39,24 @@
     </include>
 
     <!-- launch autopilot using face tracking centroid -->
+    <include file="$(find optitrack_controller)/launch/face_centroid_cmd.launch">
+        <arg name="date"                    value="$(arg date)" />
+        <arg name="run"                     value="$(arg run)" />
+        <arg name="Kz"                      value="0.005"/>
+        <arg name="Kyaw"                    value="0.005"/>
+        <arg name="logging"                 value="$(arg logging)" />
+        <arg name="face_centroid_topic"     value="/ardrone/front/face_centroid" />
+        <arg name="face_cmd_vel_topic"      value="/ardrone/face/cmd_vel" />
+    </include>
+
+    <!-- launch controller muxxer -->
     <include file="$(find optitrack_controller)/launch/face_tracking_autopilot.launch">
         <arg name="date"                    value="$(arg date)" />
         <arg name="run"                     value="$(arg run)" />
         <arg name="logging"                 value="$(arg logging)" />
-        <arg name="mocap_cmd_vel_topic"     value="/usma_ardrone/uav/cmd_vel"/>
-        <arg name="face_centroid_topic"     value="/ardrone/front/face_centroid" />
-        <arg name="switched_cmd_vel_topic"  value="/ardrone/switched/cmd_vel" />
+        <arg name="mocap_cmd_vel_topic"     value="/usma_ardrone/uav/cmd_vel"/> <!-- subscribe to mocap controller -->
+        <arg name="face_cmd_vel_topic"      value="/ardrone/face/cmd_vel" /> <!-- subscribe to face tracking controller -->
+        <arg name="switched_cmd_vel_topic"  value="/ardrone/switched/cmd_vel" /> <!-- mux controllers and publish  -->
     </include>
 
     <!-- Launch face tracking algorithm -->
