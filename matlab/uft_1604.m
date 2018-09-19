@@ -17,6 +17,7 @@ function [meta, data] = uft_1604()
         'data.fta.mocap.vel_msg.time'; ...
         'data.optAutopilot.cmd.time'; ...
         'data.optAutopilot.mocap_pose.time'; ...
+        'data.fta.face.centroid_msg.time'; ...
             };
 
     for n = 1:length(timers.SimpleCells)
@@ -70,10 +71,10 @@ end
 
 function [meta, data] = plotuft(meta, data)
 %% Turn plotting on
-    set(0, 'DefaultFigureVisible', 'on');
-    figHandles = findall(0, 'Type', 'figure');
-    set(figHandles(:), 'visible', 'on');
-    clear figHandles
+%     set(0, 'DefaultFigureVisible', 'on');
+%     figHandles = findall(0, 'Type', 'figure');
+%     set(figHandles(:), 'visible', 'on');
+%     clear figHandles
 
 %% figure(1); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']); clear current_fig
 figure(1); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']); clear current_fig
@@ -116,9 +117,13 @@ figure(4); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) '
 figure(5); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']); clear current_fig
     title('uav error, x body')
     hold on
-        try plot(data.optAutopilot.cmd.time, data.optAutopilot.cmd.error_pose_body.p(:,1), 'r.'); catch; end
+        try plot(data.optAutopilot.cmd.time, data.optAutopilot.cmd.error_pose_body.p(:,1), 'r.', 'displayname', 'error bosd body'); catch; end
+        try plot(data.optAutopilot.cmd.time, data.optAutopilot.cmd.msg_linear(:,1), 'b.', 'displayname', 'cmd msd linear'); catch; end
+        try plot(data.fta.mocap.vel_msg.time, data.fta.mocap.vel_msg.linear(:,1), 'kx', 'displayname', 'cmd msd linear'); catch; end
+        
     hold off
     grid on
+    legend('toggle')
 %% figure(6); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']); clear current_fig
 figure(6); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']); clear current_fig
     title('uav error, y body')
