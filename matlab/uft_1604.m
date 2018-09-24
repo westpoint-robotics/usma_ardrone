@@ -1,9 +1,11 @@
 function [meta, data] = uft_1604()
 %% Set up meta
-    meta.date = '20180919/';
+%     meta.date = '20180919/';
 %     meta.run = '002'; %optitrack control works, but does not settle, it just oscillates
 %     meta.run = '003'; %testing face tracking and feedback, but uav did not seem to follow my face
-    meta.run = '008'; %testing face tracking and feedback, testing in the office
+%     meta.run = '008'; %testing face tracking and feedback, testing in the office
+    meta.date = '20180924/';
+    meta.run = '014'; % testing face feedback
     
     meta.dataroot = '/home/benjamin/ros/data/';
     
@@ -21,8 +23,11 @@ function [meta, data] = uft_1604()
         'data.fta.face.cmd_msg.time'; ...
         'data.facetoCmd.face.centroid_msg.time'; ...
         'data.facetoCmd.face.feedback.time'; ...
+        'data.facetoCmd.face.face_desired_pose.time'; ...
         'data.optAutopilot.mocap_pose.time'; ...
         'data.optAutopilot.cmd.time'; ...
+        'data.optAutopilot.face.time'; ...
+       
             };
 
     for n = 1:length(timers.SimpleCells)
@@ -112,12 +117,14 @@ figure(3); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) '
 figure(4); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']); clear current_fig
     title('uav position, yaw global')
     hold on
-        try plot(data.optAutopilot.mocap_pose.time, data.optAutopilot.mocap_pose.yaw, 'k.'); catch; end
-        try plot(data.optAutopilot.cmd.time, data.optAutopilot.cmd.desired_pose_global.yaw, 'r.'); catch; end
-        try plot(data.optAutopilot.cmd.time, data.optAutopilot.cmd.msg_angular(:,3), 'm.'); catch; end
+        try plot(data.optAutopilot.mocap_pose.time, data.optAutopilot.mocap_pose.yaw, 'k.', 'displayname', 'mocap pose'); catch; end
+        try plot(data.optAutopilot.cmd.time, data.optAutopilot.cmd.desired_pose_global.yaw, 'r.', 'displayname', 'desired pose (global)'); catch; end
+        try plot(data.optAutopilot.cmd.time, data.optAutopilot.cmd.msg_angular(:,3), 'm.', 'displayname', 'cmd msg yaw'); catch; end
+        try plot(data.optAutopilot.cmd.time, data.optAutopilot.cmd.error_pose_global.yaw, 'b.', 'displayname', 'yaw error'); catch; end
         
     hold off
     grid on
+    legend('toggle')
 %% figure(5); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']); clear current_fig
 figure(5); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']); clear current_fig
     title('uav error, x body')
@@ -150,6 +157,52 @@ figure(8); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) '
         try plot(data.optAutopilot.cmd.time, data.optAutopilot.cmd.error_pose_body.yaw, 'r.'); catch; end
     hold off
     grid on
+%% figure(9); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']); clear current_fig
+figure(9); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']); clear current_fig
+    title('yaw cmd vs pixel centroid')
+    try     [AX1 Hleft1 Hright1] = plotyy(...
+            data.facetoCmd.face.centroid_msg.time, data.facetoCmd.face.centroid_msg.dxdy(:,1),...
+            data.optAutopilot.cmd.time, data.optAutopilot.cmd.msg_angular(:,3));
+        hold(AX1(1)); % hold the left axis for more plots
+        hold(AX1(2)); % hold the right axis for more plots
+        set(Hleft1(1), 'Color', 'b', 'Marker', 'x', 'LineStyle', 'none', 'displayname', 'Centroid pixel');
+        set(Hright1(1), 'Color', 'r', 'Marker', '.', 'LineStyle', 'none', 'displayname', 'cmd msg yaw');
+
+        h1 = plot(AX1(2), data.facetoCmd.face.feedback.time, data.facetoCmd.face.feedback.yaw, 'ko', 'displayname', 'face yaw cmd');
+    catch
+    end
+    grid on
+    legend('toggle')    
+%% figure(10); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']); clear current_fig
+figure(10); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']); clear current_fig
+    title('yaw cmd vs pixel centroid')
+    try [AX1 Hleft1 Hright1] = plotyy(...
+        data.facetoCmd.face.centroid_msg.time, data.facetoCmd.face.centroid_msg.dxdy(:,2),...
+        data.optAutopilot.cmd.time, data.optAutopilot.cmd.msg_linear(:,3));
+        hold(AX1(1)); % hold the left axis for more plots
+        hold(AX1(2)); % hold the right axis for more plots
+        set(Hleft1(1), 'Color', 'b', 'Marker', 'x', 'LineStyle', 'none', 'displayname', 'Centroid pixel');
+        set(Hright1(1), 'Color', 'r', 'Marker', '.', 'LineStyle', 'none', 'displayname', 'cmd msg z');
+
+        h1 = plot(AX1(2), data.facetoCmd.face.feedback.time, data.facetoCmd.face.feedback.z, 'ko', 'displayname', 'face z cmd');
+    catch
+    end
+    grid on
+    legend('toggle')  
+    
+%% figure(11); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']); clear current_fig
+figure(11); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']); clear current_fig
+
+% try plot(data.facetoCmd.face.feedback.time, data.facetoCmd.face.feedback.z, 'ko', 'displayname', 'face z cmd'); catch; end
+
+    hold on
+		try plot(data.optAutopilot.face.time, data.optAutopilot.face.angle, 'x', 'displayname', 'relative face angle'); catch; end
+		try plot(data.optAutopilot.face.time, data.optAutopilot.face.uav_mocap_heading, 'x', 'displayname', 'uav heading mocap'); catch; end
+        try plot(data.optAutopilot.face.time, data.optAutopilot.face.desired_global_heading, 'x', 'displayname', 'desired global heading'); catch; end
+    hold off
+    grid on
+    legend('toggle')
+
 end
 
 

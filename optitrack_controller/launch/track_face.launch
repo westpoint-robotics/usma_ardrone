@@ -31,32 +31,26 @@
     <include file="$(find optitrack_controller)/launch/optitrackAutopilot.launch">
         <arg name="date"                    value="$(arg date)" />
         <arg name="run"                     value="$(arg run)" />
-        <arg name="Kp"                      value="0.5"/>
+        <arg name="Kphi"                    value="0.5"/>
+        <arg name="Kp"                      value="0.25"/>
         <arg name="Kv"                      value="0.1"/>
-        <arg name="uav_cmd_topic"           value="/usma_ardrone/uav/cmd_vel"/>
         <arg name="mocap_pose_topic"        value="/vrpn_client_node/Ardrone/pose"/>
         <arg name="uav_desired_pose_topic"  value="/usma_ardrone/uav/desired_pose"/>
+        <arg name="face_pose_topic"         value="/ardrone/face/pose_desired" />
+        <arg name="uav_cmd_topic"           value="/ardrone/switched/cmd_vel" />
+        <!-- <arg name="uav_cmd_topic"           value="/usma_ardrone/uav/cmd_vel"/> -->
     </include>
 
     <!-- launch autopilot using face tracking centroid -->
     <include file="$(find optitrack_controller)/launch/face_centroid_cmd.launch">
         <arg name="date"                    value="$(arg date)" />
         <arg name="run"                     value="$(arg run)" />
-        <arg name="Kz"                      value="0.005"/>
-        <arg name="Kyaw"                    value="0.005"/>
+        <arg name="Kz"                      value="0.001"/>
+        <arg name="Kyaw"                    value="0.001"/>
         <arg name="logging"                 value="$(arg logging)" />
         <arg name="face_centroid_topic"     value="/ardrone/front/face_centroid" />
         <arg name="face_cmd_vel_topic"      value="/ardrone/face/cmd_vel" />
-    </include>
-
-    <!-- launch controller muxxer -->
-    <include file="$(find optitrack_controller)/launch/face_tracking_autopilot.launch">
-        <arg name="date"                    value="$(arg date)" />
-        <arg name="run"                     value="$(arg run)" />
-        <arg name="logging"                 value="$(arg logging)" />
-        <arg name="mocap_cmd_vel_topic"     value="/usma_ardrone/uav/cmd_vel"/> <!-- subscribe to mocap controller -->
-        <arg name="face_cmd_vel_topic"      value="/ardrone/face/cmd_vel" /> <!-- subscribe to face tracking controller -->
-        <arg name="switched_cmd_vel_topic"  value="/ardrone/switched/cmd_vel" /> <!-- mux controllers and publish  -->
+        <arg name="face_pose_topic"         value="/ardrone/face/pose_desired" />
     </include>
 
     <!-- Launch face tracking algorithm -->

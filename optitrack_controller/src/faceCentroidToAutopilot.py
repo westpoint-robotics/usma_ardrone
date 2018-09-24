@@ -4,10 +4,12 @@
 import sys
 import rospy
 import cv2
+import math
 from std_msgs.msg import String
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 from geometry_msgs.msg import Vector3, Twist #TwistStamped
+from geometry_msgs.msg import Quaternion, Pose, Point
 from os.path import expanduser
 home = expanduser("~")
 import time
@@ -48,16 +50,56 @@ class faceCentroidToAutopilot():
         self.Kyaw = rospy.get_param("~Kyaw",0.005) # proportional gain for yaw feedback from image
         self.Kz = rospy.get_param("~Kz",0.01) # proportional gain for altitude feedback from image
 
+        # face_desired_pose_msg
+        self.face_desired_pose_counter = 0
+        self.face_desired_pose_msg = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0))
+
+        # self.face_desired_pose_msg = Pose
+        self.face_desired_pose_point = Vector3(0, 0, 0)
+        self.face_desired_pose_euler = Vector3(0, 0, 0)
+        # self.face_desired_pose_point.x = 0
+        # self.face_desired_pose_point.y = 0
+        # self.face_desired_pose_point.z = 0
+        # self.face_desired_pose_q = Quaternion
+        self.face_pose_topic = rospy.get_param("~face_pose_topic","/ardrone/face/pose_desired")
+        self.face_pose_pub = rospy.Publisher(self.face_pose_topic,Twist, queue_size=1)  
+
+
+    def publish_face_desired_pose_msg(self, dx, dy):
+        # qx = ax * sin(angle/2)
+        # qy = ay * sin(angle/2)
+        # qz = az * sin(angle/2)
+        # qw = cos(angle/2)
+        # ardrone FOV 92 degrees, 640 pixles :: 0.14375 degrees/pixel :: 0.00251 rads/pixel
+        # self.face_desired_pose_q.x = 0
+        # self.face_desired_pose_q.y = 0
+        # self.face_desired_pose_q.z = math.sin(angle/2)
+        # self.face_desired_pose_q.w = math.cos(angle/2)
+        angle = dx*0.00251
+        self.face_desired_pose_point = Vector3(0, 0, 0)
+        self.face_desired_pose_euler = Vector3(0, 0, angle)
+        self.face_desired_pose_msg = Twist(self.face_desired_pose_point, self.face_desired_pose_euler)
+        if(self.logging):
+            self.face_desired_pose_counter += 1
+            self.data_logger.write(("facetoCmd.face.face_desired_pose.time({},1) = {:06.8f};\n").format(self.face_desired_pose_counter, rospy.get_time()))
+            self.data_logger.write(("facetoCmd.face.face_desired_pose.point({},:) = [{:06.8f} {:06.8f} {:06.8f}];\n").format(self.face_desired_pose_counter, self.face_desired_pose_point.x, self.face_desired_pose_point.y, self.face_desired_pose_point.z))
+            self.data_logger.write(("facetoCmd.face.face_desired_pose.euler({},:) = [{:06.8f} {:06.8f} {:06.8f}];\n\n").format(self.face_desired_pose_counter, self.face_desired_pose_euler.x, self.face_desired_pose_euler.y, self.face_desired_pose_euler.z))
+        self.face_pose_pub.publish(self.face_desired_pose_msg)
+
+
     def facetracker_centroid_cb(self,msg):
         self.face_centroid_msg = msg
         self.face_centroid_msg_time = rospy.get_time()
         dx = self.param_image_Cx - self.face_centroid_msg.x # This contributes to yawing
         dy = self.param_image_Cy - self.face_centroid_msg.y # this contributes to altitude
 
-        cmd_linear = Vector3(0, 0, self.Kz*dy)
-        cmd_angular = Vector3(0, 0, self.Kyaw*dx)
+        cmd_z = self.Kz*dy
+        cmd_yaw = self.Kyaw*dx
+        cmd_linear = Vector3(0, 0, cmd_z)
+        cmd_angular = Vector3(0, 0, cmd_yaw)
         self.face_cmd_vel_msg = Twist(cmd_linear, cmd_angular)
         self.face_cmd_vel_pub.publish(self.face_cmd_vel_msg)
+        self.publish_face_desired_pose_msg(dx, dy)
 
         if(self.logging):
             # print(self.face_centroid_topic + ' : {} {} {}' ).format(self.face_centroid_msg.x, self.face_centroid_msg.y, self.face_centroid_msg.z)
@@ -67,18 +109,18 @@ class faceCentroidToAutopilot():
             self.data_logger.write(("facetoCmd.face.centroid_msg.dxdy({},:) = [{:06.8f} {:06.8f} ];\n").format(self.face_centroid_counter, dx, dy))
             self.face_feedback_counter += 1
             self.data_logger.write(("facetoCmd.face.feedback.time({},1) = {:06.8f};\n").format(self.face_feedback_counter, rospy.get_time()))
-            self.data_logger.write(("facetoCmd.face.feedback.yaw({},1) = {:06.8f};\n").format(self.face_feedback_counter, self.Kyaw*dx))
-            self.data_logger.write(("facetoCmd.face.feedback.z({},1) = {:06.8f};\n\n").format(self.face_feedback_counter, self.Kz*dy))
+            self.data_logger.write(("facetoCmd.face.feedback.yaw({},1) = {:06.8f};\n").format(self.face_feedback_counter, cmd_yaw))
+            self.data_logger.write(("facetoCmd.face.feedback.z({},1) = {:06.8f};\n\n").format(self.face_feedback_counter, cmd_z))
 
 if __name__ == '__main__':
     # Initialize the node and name it.
     rospy.init_node('faceCentroidToAutopilot')
     try:
-        fta = faceCentroidToAutopilot()
+        facetoCmd = faceCentroidToAutopilot()
     except rospy.ROSInterruptException: pass
     rate = rospy.Rate(30) # 30hz
     while not rospy.is_shutdown():
         rate.sleep()
 
-    fta.data_logger.close()
+    facetoCmd.data_logger.close()
 # end main

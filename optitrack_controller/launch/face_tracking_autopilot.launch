@@ -5,6 +5,7 @@
     <arg name="logging"                 default="False"/>
     <arg name="mocap_cmd_vel_topic" 	default="/usma_ardrone/cmd_vel" />
     <arg name="face_cmd_vel_topic"     default="/ardrone/front/face_centroid"/>
+    <arg name="face_pose_topic"         default="/ardrone/face/pose_desired" />
     <arg name="switched_cmd_vel_topic"  default="/ardrone/switched/cmd_vel" />
     <arg name="ardrone_front_yaml"      default="$(find optitrack_controller)/cam_info/ardrone_front.yaml" />
     
@@ -18,6 +19,7 @@
         <param name="/run"                      value="$(arg run)" />
         <param name="/logging"                  value="$(arg logging)" />
         <param name="/mocap_cmd_vel_topic"      value="$(arg mocap_cmd_vel_topic)" />
+        <param name="/face_pose_topic"          value="$(arg face_pose_topic)" />
         <param name="/face_cmd_vel_topic"       value="$(arg face_cmd_vel_topic)" />
         <param name="/switched_cmd_vel_topic"   value="$(arg switched_cmd_vel_topic)" />
     </node>

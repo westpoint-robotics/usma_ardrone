@@ -7,7 +7,7 @@ import cv2
 from std_msgs.msg import String
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
-from geometry_msgs.msg import Vector3, Twist #TwistStamped
+from geometry_msgs.msg import Vector3, Twist, Pose #TwistStamped
 from os.path import expanduser
 home = expanduser("~")
 import time
@@ -46,6 +46,11 @@ class faceTrackingAutopilot():
         self.switched_cmd_vel_pub = rospy.Publisher(self.switched_cmd_vel_topic,Twist, queue_size=1)  
         self.switched_cmd_vel_msg = Twist(Vector3(0, 0, 0), Vector3(0, 0, 0))
         self.switched_cmd_vel_counter = 0
+
+        # publish desired pose and let optitrack controller take care of it
+        self.face_desired_pose_counter = 0
+
+
 
     def publish_switched_cmd_vel_msg(self):
         if(self.logging):
@@ -100,7 +105,7 @@ if __name__ == '__main__':
             if (time_since_last_face<=fta_face_ctrl_time):
                 # Then use face control
                 # use mocap to keep uav in center of workspace, let camera control altitude and yaw-rate
-                cmd_linear = Vector3(fta.mocap_vel_msg.linear.x, fta.mocap_vel_msg.linear.y, fta.face_cmd_msg.linear.z)
+                cmd_linear = Vector3(fta.mocap_vel_msg.linear.x, fta.mocap_vel_msg.linear.y, fta.mocap_vel_msg.linear.z)
                 cmd_angular = Vector3(0, 0, fta.face_cmd_msg.angular.z)
                 fta.switched_cmd_vel_msg = Twist(cmd_linear, cmd_angular)
                 # print('cmd_linear  = [{:06.8f} {:06.8f} {:06.8f}]').format(fta.mocap_vel_msg.linear.x, fta.mocap_vel_msg.linear.y, fta.face_cmd_msg.linear.z)

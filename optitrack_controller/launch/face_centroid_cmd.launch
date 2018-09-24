@@ -8,6 +8,7 @@
     <arg name="mocap_cmd_vel_topic" 	default="/usma_ardrone/cmd_vel" />
     <arg name="face_centroid_topic"     default="/ardrone/front/face_centroid"/>
     <arg name="face_cmd_vel_topic"      default="/ardrone/face/cmd_vel" />
+    <arg name="face_pose_topic"         default="/ardrone/face/pose_desired" />
     <arg name="ardrone_front_yaml"      default="$(find optitrack_controller)/cam_info/ardrone_front.yaml" />
 
     <group ns="ardrone/front/params">
@@ -22,6 +23,7 @@
         <param name="/logging"              value="$(arg logging)" />
         <param name="/face_centroid_topic"  value="$(arg face_centroid_topic)" />
         <param name="/face_cmd_vel_topic"   value="$(arg face_cmd_vel_topic)" />
+        <param name="/face_pose_topic"      value="$(arg face_pose_topic)" />
     </node>
 
 </launch>
