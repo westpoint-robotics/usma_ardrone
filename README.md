@@ -68,10 +68,8 @@ roslaunch optitrack_controller track_face.launch  <br />
 ---
 Connect to ARDrone using linksys router and running the whole face tracking pipeline
 =======
-roslaunch optitrack_controller track_face.launch network:=linksys
-
-roslaunch optitrack_controller track_face.launch network:=EECSDS3
-
+roslaunch optitrack_controller track_face.launch network:=linksys  <br />
+roslaunch optitrack_controller track_face.launch network:=EECSDS3  <br />
 roslaunch optitrack_controller track_face.launch network:=ardrone #(directly connect to uav network)
 
 ---
