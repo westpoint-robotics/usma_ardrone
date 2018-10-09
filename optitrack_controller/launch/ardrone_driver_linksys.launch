@@ -14,8 +14,8 @@
 
 	<!-- <node pkg="rostopic" type="rostopic" 			name="navdataEcho" 		output="screen" 	args="echo /ardrone/navdata" /> -->
 	<!-- <node pkg="rviz" 	 type="rviz" 				name="rviz_$(arg launcher)" 	/>  -->
-	<node pkg="hast"	 type="killhast"			name="killhast_$(arg launcher)"			output="screen" required="true"/>
-	<node pkg="hast"	 type="shutdownListener"	name="shutdownListener_$(arg launcher)"	output="screen"	required="true"/>
+	<node pkg="optitrack_controller"	type="killNodes"		name="killNodes_$(arg launcher)"		output="screen" required="true"/>
+	<node pkg="optitrack_controller"	type="listenForKill"	name="shutdownListener_$(arg launcher)"	output="screen"	required="true"/>
 
 </launch>
 

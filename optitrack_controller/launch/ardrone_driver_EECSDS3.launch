@@ -1,6 +1,8 @@
 <!-- -*- mode: XML -*- -->
 <launch>
 	<arg name="launcher" 	default="ardrone2_launch" />
+	<arg name="cmd_topic" 	default="ardrone/cmd_vel"/>
+	<arg name="echo" 		default="false" />
 	<arg name="ip" 			default="192.168.2.25" /> <!-- need ot check IP address each time -->
 
 	<node pkg="ardrone_autonomy" type="ardrone_driver" name="ardrone_autonomy" clear_params="true" args="-ip 192.168.2.25">>
@@ -8,13 +10,13 @@
 		<param name="realtime_navdata" value="true" />
 		<param name="realtime_video" value="true" />		
 		<param name="looprate" value="50" /> <!-- Tunes the speed at which the ros loop runs, and thus, the rate at which navdata is published -->
-	    <remap from="/cmd_vel" to="ardrone/cmd_vel"/>
+	    <remap from="/cmd_vel" to="$(arg cmd_topic)"/>
 	</node>
 
 	<node pkg="rostopic" type="rostopic" 			name="navdataEcho" 		output="screen" 	args="echo /ardrone/navdata" />
 	<!-- <node pkg="rviz" 	 type="rviz" 				name="rviz_$(arg launcher)" 	/>  -->
-	<node pkg="hast"	 type="killhast"			name="killhast_$(arg launcher)"			output="screen" required="true"/>
-	<node pkg="hast"	 type="shutdownListener"	name="shutdownListener_$(arg launcher)"	output="screen"	required="true"/>
+	<node pkg="optitrack_controller"	type="killNodes"		name="killNodes_$(arg launcher)"		output="screen" required="true"/>
+	<node pkg="optitrack_controller"	type="listenForKill"	name="shutdownListener_$(arg launcher)"	output="screen"	required="true"/>
 
 </launch>
 

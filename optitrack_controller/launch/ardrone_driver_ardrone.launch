@@ -3,9 +3,9 @@
 	<arg name="launcher" 	default="ardrone2_launch" />
 	<arg name="cmd_topic" 	default="ardrone/cmd_vel"/>
 	<arg name="echo" 		default="false" />
-	<arg name="ip" 			default="192.168.2.25" /> <!-- need ot check IP address each time -->
+	<arg name="ip" 			default="null" />
 
-	<node pkg="ardrone_autonomy" type="ardrone_driver" name="ardrone_autonomy" clear_params="true" args="-ip 192.168.2.25">>
+	<node pkg="ardrone_autonomy" type="ardrone_driver" name="ardrone_autonomy" clear_params="true">
 		<param name="tf_prefix" value="ardrone_autonomy" />  
 		<param name="realtime_navdata" value="true" />
 		<param name="realtime_video" value="true" />		
@@ -13,14 +13,16 @@
 	    <remap from="/cmd_vel" to="$(arg cmd_topic)"/>
 	</node>
 
-	<node pkg="rostopic" type="rostopic" 			name="navdataEcho" 		output="screen" 	args="echo /ardrone/navdata" />
+	<!-- <node pkg="rostopic" 				type="rostopic" 		name="navdataEcho" 						output="screen" args="echo /ardrone/navdata"  /> -->
 	<node pkg="optitrack_controller"	type="killNodes"		name="killNodes_$(arg launcher)"		output="screen" required="true"/>
 	<node pkg="optitrack_controller"	type="listenForKill"	name="shutdownListener_$(arg launcher)"	output="screen"	required="true"/>
-	<!-- <node pkg="rviz" 	 type="rviz" 				name="rviz_$(arg launcher)" 	/>  -->
+	
+
+	<group if="$(arg echo)">
+		<!-- stuff that will only be evaluated if foo is true -->
+		<node pkg="rostopic" type="rostopic" 			name="navdataEcho" 		output="screen" 	args="echo /ardrone/navdata" />
+	</group>
+
 
 </launch>
 
-<!-- /vrpn_client_node/parrot/pose -->
-
-<!-- ardrone2_065412 -->
-<!-- ardrone2_234879 -->

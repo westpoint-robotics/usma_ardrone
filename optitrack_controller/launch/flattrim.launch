@@ -1,0 +1,16 @@
+<launch>
+    <node pkg="rosservice" type="rosservice" name="flattrim" args="call /ardrone/flattrim"/>
+
+
+</launch>
+
+
+<!-- 
+
+rostopic pub -1 /ardrone/reset std_msgs/Empty
+rostopic pub -1 /ardrone/land std_msgs/Empty
+rostopic pub -1 /ardrone/takeoff std_msgs/Empty
+
+rostopic pub -1 /usma_ardrone/uav/desired_pose usma_plugins/ardrone_pose '{position:  {x: 0.0, y: 0.0, z: 1.5}, heading: 0.0}'
+
+ -->

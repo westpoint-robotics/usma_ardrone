@@ -12,7 +12,7 @@
 
     <!-- EECSDS3 is the default, I did development using my own routers -->
     <arg name="network" default="linksys" /> 
-
+    <arg name="echo"    default="false" />
     <!-- turn on/off logging  of data for plotting -->
     <arg name="logging" default="False" /> 
 
@@ -23,8 +23,9 @@
 
 	<!-- ardrone driver !!! need to send takeoff and land commands separately -->
     <include file="$(find optitrack_controller)/launch/ardrone_driver_$(arg network).launch">
-        <arg name="ip" value="$(arg ardrone_ip)"/>
-        <arg name="cmd_topic" value="ardrone/switched/cmd_vel"/>
+        <arg name="ip"          value="$(arg ardrone_ip)"/>
+        <arg name="echo"        value="false" />
+        <arg name="cmd_topic"   value="ardrone/switched/cmd_vel"/>
     </include>
 
     <!-- launch autopilot using optitrack measurements -->
