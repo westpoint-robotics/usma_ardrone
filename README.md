@@ -61,9 +61,8 @@ If you are directly connected to the ardrone network, the following launch file 
 ---
 Launch the face_tracker when directly connected to the ardrone
 =======
-roslaunch optitrack_controller ardrone_direct.launch
-
-roslaunch optitrack_controller track_face.launch
+roslaunch optitrack_controller ardrone_direct.launch <br />
+roslaunch optitrack_controller track_face.launch  <br />
 
 
 ---
