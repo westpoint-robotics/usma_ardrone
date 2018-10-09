@@ -50,8 +50,6 @@ class faceTrackingAutopilot():
         # publish desired pose and let optitrack controller take care of it
         self.face_desired_pose_counter = 0
 
-
-
     def publish_switched_cmd_vel_msg(self):
         if(self.logging):
             self.switched_cmd_vel_counter += 1

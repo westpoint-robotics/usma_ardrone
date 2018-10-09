@@ -1,8 +1,9 @@
 <!-- -*- mode: XML -*- -->
-
 <!-- need to send takeoff and land commands separately -->
-
 <launch>
+    <!-- Experiment params -->
+    <arg name="use_face" default="false" /> 
+    
     <!-- Experiment meta -->
     <arg name="date" default="20180917" /> 
     <arg name="run" default="002" /> 
@@ -12,9 +13,12 @@
 
     <!-- EECSDS3 is the default, I did development using my own routers -->
     <arg name="network" default="linksys" /> 
+    
+    <!-- turn on/off navdata echo -->
     <arg name="echo"    default="false" />
+
     <!-- turn on/off logging  of data for plotting -->
-    <arg name="logging" default="False" /> 
+    <arg name="logging" default="false" /> 
 
     <!-- launch vrpn server -->
     <include file="$(find optitrack_controller)/launch/vrpn.launch">
@@ -59,8 +63,15 @@
         <arg name="cfg_yaml"            value="$(find optitrack_controller)/config/facetrack.yaml" />
         <arg name="img_topic"           value="/ardrone/front/image_raw"/>
         <arg name="centroid_topic"      value="/ardrone/front/face_centroid"/>
-        <arg name="display_original_image"       value="1" />
-        <arg name="display_tracking_image"       value="0" />
+        <arg name="display_original_image"       value="false" />
+        <arg name="display_tracking_image"       value="true" />
+    </include>
+
+    <!-- vrpn logging -->
+    <include file="$(find usma_optitrack)/launch/vrpn_logger.launch">
+        <arg name="pose_msg"        default="/vrpn_client_node/Ardrone/pose"/>
+        <arg name="filepath"        default="/home/benjamin/ros/data/"/>
+        <arg name="matlab_prefix"   default="vrpn_ardrone"/>
     </include>
 
 

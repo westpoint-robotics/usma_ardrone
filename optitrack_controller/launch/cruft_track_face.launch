@@ -1,9 +1,0 @@
-    <!-- launch controller muxxer -->
-    <include file="$(find optitrack_controller)/launch/face_tracking_autopilot.launch">
-        <arg name="date"                    value="$(arg date)" />
-        <arg name="run"                     value="$(arg run)" />
-        <arg name="logging"                 value="$(arg logging)" />
-        <arg name="mocap_cmd_vel_topic"     value="/usma_ardrone/uav/cmd_vel"/> <!-- subscribe to mocap controller -->
-        <arg name="face_cmd_vel_topic"      value="/ardrone/face/cmd_vel" /> <!-- subscribe to face tracking controller -->
-        <arg name="switched_cmd_vel_topic"  value="/ardrone/switched/cmd_vel" /> <!-- mux controllers and publish  -->
-    </include>

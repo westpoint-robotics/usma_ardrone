@@ -68,9 +68,9 @@ roslaunch optitrack_controller track_face.launch  <br />
 ---
 Connect to ARDrone using linksys router and running the whole face tracking pipeline
 =======
+roslaunch optitrack_controller track_face.launch network:=ardrone #(directly connect to uav network)
 roslaunch optitrack_controller track_face.launch network:=linksys  <br />
 roslaunch optitrack_controller track_face.launch network:=EECSDS3  <br />
-roslaunch optitrack_controller track_face.launch network:=ardrone #(directly connect to uav network)
 
 ---
 Finding a MAC address
@@ -80,3 +80,4 @@ Finding a MAC address
 
 ardrone2_234879  ::  90:03:B7:38:0D:72 <br />
 ardrone2_065412  ::  90:03:B7:31:18:D5 <br />
+ardrone2_049677  ::  90:03:B7:E8:3C:D8 <br />

@@ -1,9 +1,0 @@
-<!-- -*- mode: XML -*- -->
-<launch>
-    <include file="$(find face_shooter)/launch/face_tracker_imgmsg.launch">
-    	<arg name="cfg_yaml" 		value="$(find optitrack_controller)/config/facetrack.yaml" />
-        <arg name="img_topic" 		value="/ardrone/front/image_raw"/>
-        <arg name="centroid_topic" 	value="/ardrone/front/face_centroid"/>
-    </include>
-</launch>
-
