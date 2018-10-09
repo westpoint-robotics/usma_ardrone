@@ -78,5 +78,5 @@ Finding a MAC address
 	>> telnet 192.168.1.1
 	>> ifconfig
 
-ardrone2_234879 90:03:B7:38:0D:72  <br />
-ardrone2_065412 90:03:B7:31:18:D5  <br />
+ardrone2_234879  ::  90:03:B7:38:0D:72 <br />
+ardrone2_065412  ::  90:03:B7:31:18:D5 <br />
