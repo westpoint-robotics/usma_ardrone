@@ -19,13 +19,13 @@ Ar.Drone Face Tracking demo with optitrack feedback
 
 Set AR.Drone to connect to router, using a laptop or PC, connect to the ssid "ardrone2_<######>", in terminal type 
 
-	>> roscd usma_ardrone && cd ../wpa_support 
-	>> script/install_linksys
-	>> script/connect_linksys
+	roscd usma_ardrone && cd ../wpa_support 
+	script/install_linksys
+	script/connect_linksys
 
 "install_linksys" needs only to be called once, but "connect_linksys" must be called each time the drone is powered down, such as when changing the battery. Now connect the laptop to the linksys router network ARDRONE250024ghz and test whether the ardrone is connected to the same network:
 
-	>> ping 192.168.0.25
+	ping 192.168.0.25
 
 if the ping returns a response time, then the ardrone is connected to the same network on the correct ip address
 
@@ -62,15 +62,17 @@ If you are directly connected to the ardrone network, the following launch file 
 Launch the face_tracker when directly connected to the ardrone
 =======
 roslaunch optitrack_controller ardrone_direct.launch <br />
-roslaunch optitrack_controller track_face.launch  <br />
+roslaunch optitrack_controller track_face.launch <br />
 
 
 ---
 Connect to ARDrone using linksys router and running the whole face tracking pipeline
 =======
-roslaunch optitrack_controller track_face.launch network:=ardrone #(directly connect to uav network)
-roslaunch optitrack_controller track_face.launch network:=linksys  <br />
-roslaunch optitrack_controller track_face.launch network:=EECSDS3  <br />
+roslaunch optitrack_controller track_face.launch network:=ardrone #(directly connect to uav network) <br />
+roslaunch optitrack_controller track_face.launch network:=linksys <br />
+roslaunch optitrack_controller track_face.launch network:=EECSDS3 <br />
+
+roslaunch optitrack_controller track_face.launch network:=linksys logging:=true run:=001<br />
 
 ---
 Finding a MAC address

@@ -4,16 +4,16 @@ function [meta, data] = uft_1604()
 %     meta.run = '002'; %optitrack control works, but does not settle, it just oscillates
 %     meta.run = '003'; %testing face tracking and feedback, but uav did not seem to follow my face
 %     meta.run = '008'; %testing face tracking and feedback, testing in the office
-    meta.date = '20180924/';
-    meta.run = '014'; % testing face feedback
-    
+    meta.date = '20181010/';
+    meta.run = '003'; % testing face feedback
     meta.dataroot = '/home/benjamin/ros/data/';
     
 %% Load data
     try [data.fta] = loaddatadotm('fta', meta); catch; disp(['    ** Issue loading fta data']); end
     try [data.facetoCmd] = loaddatadotm('facetoCmd', meta); catch; disp(['    ** Issue loading facetoCmd data']); end
     try [data.optAutopilot] = loaddatadotm('optAutopilot', meta); catch; disp(['    ** Issue loading optAutopilot data']); end
-    
+    try [data.vrpn_ardrone] = loaddatadotm('vrpn_ardrone', meta); catch; disp(['    ** Issue loading vrpn_ardrone data']); end
+    try [data.vrpn_blockhead] = loaddatadotm('vrpn_blockhead', meta); catch; disp(['    ** Issue loading vrpn_blockhead data']); end
 %% Sync Timers
     timers.StartTime = [];
     timers.EndTime = [0];
@@ -27,7 +27,8 @@ function [meta, data] = uft_1604()
         'data.optAutopilot.mocap_pose.time'; ...
         'data.optAutopilot.cmd.time'; ...
         'data.optAutopilot.face.time'; ...
-       
+        'data.vrpn_ardrone.pose.time'; ...
+        'data.vrpn_blockhead.pose.time'; ...
             };
 
     for n = 1:length(timers.SimpleCells)
@@ -44,10 +45,19 @@ function [meta, data] = uft_1604()
         catch
         end
     end
+%% spline data
 
+[~, data.facetoCmd.face.pose(:,1), ~]  = spliner(...
+    data.vrpn_ardrone.pose.time, data.vrpn_ardrone.pose.linear(:,1),...
+    data.facetoCmd.face.centroid_msg.time, data.facetoCmd.face.centroid_msg.time);
+[~, data.facetoCmd.face.pose(:,2), ~]  = spliner(...
+    data.vrpn_ardrone.pose.time, data.vrpn_ardrone.pose.linear(:,2),...
+    data.facetoCmd.face.centroid_msg.time, data.facetoCmd.face.centroid_msg.time);
+[~, data.facetoCmd.face.pose(:,3), ~]  = spliner(...
+    data.vrpn_ardrone.pose.time, data.vrpn_ardrone.pose.linear(:,3),...
+    data.facetoCmd.face.centroid_msg.time, data.facetoCmd.face.centroid_msg.time);
 %% plot data
 [meta, data] = plotuft(meta, data);
-
 end
 
 function [out] = loaddatadotm(in, meta)
@@ -79,6 +89,8 @@ function [out] = loaddatadotm(in, meta)
     cd(here);
 end
 
+
+
 function [meta, data] = plotuft(meta, data)
 %% Turn plotting on
 %     set(0, 'DefaultFigureVisible', 'on');
@@ -86,8 +98,8 @@ function [meta, data] = plotuft(meta, data)
 %     set(figHandles(:), 'visible', 'on');
 %     clear figHandles
 
-%% figure(1); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']); clear current_fig
-figure(1); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']); clear current_fig
+%% figure(1); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
+figure(1); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
     title('uav position, x global')
     hold on
         try plot(data.optAutopilot.mocap_pose.time, data.optAutopilot.mocap_pose.p(:,1), 'k.'); catch; end
@@ -95,8 +107,9 @@ figure(1); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) '
         try plot(data.optAutopilot.cmd.time, data.optAutopilot.cmd.error_pose_global.p(:,1), 'b.'); catch; end
     hold off
     grid on
-%% figure(2); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']); clear current_fig
-figure(2); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']); clear current_fig
+    clear current_fig
+%% figure(2); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
+figure(2); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
     title('uav position, y global')
     hold on
         try plot(data.optAutopilot.mocap_pose.time, data.optAutopilot.mocap_pose.p(:,2), 'k.'); catch; end
@@ -104,8 +117,9 @@ figure(2); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) '
         try plot(data.optAutopilot.cmd.time, data.optAutopilot.cmd.error_pose_global.p(:,2), 'b.'); catch; end
     hold off
     grid on
-%% figure(3); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']); clear current_fig
-figure(3); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']); clear current_fig
+    clear current_fig
+%% figure(3); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
+figure(3); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
     title('uav position, z global')
     hold on
         try plot(data.optAutopilot.mocap_pose.time, data.optAutopilot.mocap_pose.p(:,3), 'k.'); catch; end
@@ -113,20 +127,22 @@ figure(3); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) '
         try plot(data.optAutopilot.cmd.time, data.optAutopilot.cmd.error_pose_global.p(:,3), 'b.'); catch; end
     hold off
     grid on
-%% figure(4); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']); clear current_fig
-figure(4); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']); clear current_fig
-    title('uav position, yaw global')
+    clear current_fig
+%% figure(4); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
+figure(4); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
+    title([meta.date meta.run ' ' 'uav position, yaw global'])
     hold on
         try plot(data.optAutopilot.mocap_pose.time, data.optAutopilot.mocap_pose.yaw, 'k.', 'displayname', 'mocap pose'); catch; end
         try plot(data.optAutopilot.cmd.time, data.optAutopilot.cmd.desired_pose_global.yaw, 'r.', 'displayname', 'desired pose (global)'); catch; end
         try plot(data.optAutopilot.cmd.time, data.optAutopilot.cmd.msg_angular(:,3), 'm.', 'displayname', 'cmd msg yaw'); catch; end
         try plot(data.optAutopilot.cmd.time, data.optAutopilot.cmd.error_pose_global.yaw, 'b.', 'displayname', 'yaw error'); catch; end
-        
     hold off
     grid on
     legend('toggle')
-%% figure(5); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']); clear current_fig
-figure(5); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']); clear current_fig
+    try saveas(gcf, [meta.dataroot meta.date meta.run '/figure' num2str(current_fig.Number) '.png']); catch; end
+    clear current_fig
+%% figure(5); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
+figure(5); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
     title('uav error, x body')
     hold on
         try plot(data.optAutopilot.cmd.time, data.optAutopilot.cmd.error_pose_body.p(:,1), 'r.', 'displayname', 'error bosd body'); catch; end
@@ -136,45 +152,50 @@ figure(5); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) '
     hold off
     grid on
     legend('toggle')
-%% figure(6); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']); clear current_fig
-figure(6); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']); clear current_fig
+    clear current_fig
+%% figure(6); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
+figure(6); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..'])
     title('uav error, y body')
     hold on
         try plot(data.optAutopilot.cmd.time, data.optAutopilot.cmd.error_pose_body.p(:,2), 'r.'); catch; end
     hold off
     grid on
-%% figure(7); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']); clear current_fig
-figure(7); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']); clear current_fig
+    clear current_fig
+%% figure(7); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
+figure(7); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']); 
     title('uav error, z body')
     hold on
         try plot(data.optAutopilot.cmd.time, data.optAutopilot.cmd.error_pose_body.p(:,3), 'r.'); catch; end
     hold off
     grid on
-%% figure(8); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']); clear current_fig
-figure(8); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']); clear current_fig
+    clear current_fig
+%% figure(8); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']); 
+figure(8); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']); 
     title('uav position, yaw body')
     hold on
         try plot(data.optAutopilot.cmd.time, data.optAutopilot.cmd.error_pose_body.yaw, 'r.'); catch; end
     hold off
     grid on
-%% figure(9); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']); clear current_fig
-figure(9); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']); clear current_fig
-    title('yaw cmd vs pixel centroid')
-    try     [AX1 Hleft1 Hright1] = plotyy(...
+    clear current_fig
+%% figure(9); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
+figure(9); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
+    try [AX1 Hleft1 Hright1] = plotyy(...
             data.facetoCmd.face.centroid_msg.time, data.facetoCmd.face.centroid_msg.dxdy(:,1),...
             data.optAutopilot.cmd.time, data.optAutopilot.cmd.msg_angular(:,3));
         hold(AX1(1)); % hold the left axis for more plots
         hold(AX1(2)); % hold the right axis for more plots
         set(Hleft1(1), 'Color', 'b', 'Marker', 'x', 'LineStyle', 'none', 'displayname', 'Centroid pixel');
         set(Hright1(1), 'Color', 'r', 'Marker', '.', 'LineStyle', 'none', 'displayname', 'cmd msg yaw');
-
         h1 = plot(AX1(2), data.facetoCmd.face.feedback.time, data.facetoCmd.face.feedback.yaw, 'ko', 'displayname', 'face yaw cmd');
     catch
     end
     grid on
-    legend('toggle')    
-%% figure(10); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']); clear current_fig
-figure(10); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']); clear current_fig
+    legend('toggle')
+    title([meta.date meta.run ' ' 'yaw cmd vs pixel centroid'])
+    try saveas(gcf, [meta.dataroot meta.date meta.run '/figure' num2str(current_fig.Number) '.png']); catch; end
+    clear current_fig
+%% figure(10); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
+figure(10); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
     title('yaw cmd vs pixel centroid')
     try [AX1 Hleft1 Hright1] = plotyy(...
         data.facetoCmd.face.centroid_msg.time, data.facetoCmd.face.centroid_msg.dxdy(:,2),...
@@ -189,12 +210,10 @@ figure(10); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) 
     end
     grid on
     legend('toggle')  
-    
-%% figure(11); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']); clear current_fig
-figure(11); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']); clear current_fig
-
-% try plot(data.facetoCmd.face.feedback.time, data.facetoCmd.face.feedback.z, 'ko', 'displayname', 'face z cmd'); catch; end
-
+    clear current_fig
+%% figure(11); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
+figure(11); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
+    title([meta.date meta.run ' ' 'uav heading'])
     hold on
 		try plot(data.optAutopilot.face.time, data.optAutopilot.face.angle, 'x', 'displayname', 'relative face angle'); catch; end
 		try plot(data.optAutopilot.face.time, data.optAutopilot.face.uav_mocap_heading, 'x', 'displayname', 'uav heading mocap'); catch; end
@@ -202,7 +221,21 @@ figure(11); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) 
     hold off
     grid on
     legend('toggle')
-
+    try saveas(gcf, [meta.dataroot meta.date meta.run '/figure' num2str(current_fig.Number) '.png']); catch; end
+    clear current_fig
+%% figure(20); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
+figure(20); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']); 
+    title([meta.date meta.run ' ' 'xy top down'])
+    hold on
+		try plot(data.vrpn_ardrone.pose.linear(:,1), data.vrpn_ardrone.pose.linear(:,2), 'x', 'displayname', 'uav xy'); catch; end
+		try plot(data.vrpn_blockhead.pose.linear(:,1), data.vrpn_blockhead.pose.linear(:,2), 'x', 'displayname', 'face xy'); catch; end
+    hold off
+    grid on
+    legend('toggle')
+    xlabel('x [m]')
+    xlabel('y [m]')
+    try saveas(gcf, [meta.dataroot meta.date meta.run '/figure' num2str(current_fig.Number) '.png']); catch; end
+    clear current_fig
 end
 
 

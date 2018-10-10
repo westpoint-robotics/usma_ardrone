@@ -26,7 +26,7 @@ class vrpn_heading():
         # print(('vrpn_heading: {}').format(msg.pose.orientation.w))
         print(('vrpn_heading: {}').format(yaw))
 
-    def yaw_from_q(self, w, x, y, z):
+    def yaw_from_q(self, x, y, z, w):
         t0 = +2.0 * (w * x + y * z)
         t1 = +1.0 - 2.0 * (x * x + y * y)
         X = math.degrees(math.atan2(t0, t1))

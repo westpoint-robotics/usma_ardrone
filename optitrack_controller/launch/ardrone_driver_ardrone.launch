@@ -16,7 +16,6 @@
 	<!-- <node pkg="rostopic" 				type="rostopic" 		name="navdataEcho" 						output="screen" args="echo /ardrone/navdata"  /> -->
 	<node pkg="optitrack_controller"	type="killNodes"		name="killNodes_$(arg launcher)"		output="screen" required="true"/>
 	<node pkg="optitrack_controller"	type="listenForKill"	name="shutdownListener_$(arg launcher)"	output="screen"	required="true"/>
-	
 
 	<group if="$(arg echo)">
 		<!-- stuff that will only be evaluated if foo is true -->
