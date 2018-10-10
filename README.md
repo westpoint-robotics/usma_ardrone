@@ -74,6 +74,10 @@ roslaunch optitrack_controller track_face.launch network:=EECSDS3 <br />
 
 roslaunch optitrack_controller track_face.launch network:=linksys logging:=true run:=004<br />
 
+
+rostopic pub -1 /ardrone/face/face_permission_topic std_msgs/Empty
+
+
 ---
 Finding a MAC address
 =======

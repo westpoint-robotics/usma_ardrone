@@ -70,7 +70,7 @@ class faceCentroidToAutopilot():
         self.face_pose_topic = rospy.get_param("~face_pose_topic","/ardrone/face/pose_desired")
         self.face_pose_pub = rospy.Publisher(self.face_pose_topic,Twist, queue_size=1)  
 
-    def facetracker_permission_cb(self):
+    def facetracker_permission_cb(self, msg):
         self.face_permission_time = rospy.get_time()
         self.face_permission_bool = True
         print("Received permission to track faces")

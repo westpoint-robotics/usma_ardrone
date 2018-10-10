@@ -111,15 +111,11 @@ class optitrackAutopilot
 			face_pose_counter = 0;
 			face_desired_angle = 0;
 
-
-
-
 		ros::param::get("~Kp", Kp);
 		ros::param::get("~Kv", Kv);
 		ros::param::get("~Kphi", Kphi);
 
 		initDesiredPose();
-
 
 		ROS_INFO("optitrackAutopilot Constructed");
 	}
