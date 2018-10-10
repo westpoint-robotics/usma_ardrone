@@ -108,8 +108,7 @@ class optitrackAutopilot
 
 		ros::param::get("~take_off_topic", s_take_off_topic);
 			TakeOff_sub = n.subscribe(s_take_off_topic,   10,  &optitrackAutopilot::wait_for_takeoff, this);
-			face_pose_counter = 0;
-			face_desired_angle = 0;
+
 
 		ros::param::get("~Kp", Kp);
 		ros::param::get("~Kv", Kv);
