@@ -41,15 +41,15 @@ To run the face tracking demo, the following command file will launch the contro
 
 Finally to have the drone takeoff :
 
-	>> rostopic pub -1 /ardrone/takeoff std_msgs/Empty
+	rostopic pub -1 /ardrone/takeoff std_msgs/Empty
 
 and to land;
 
-	>> rostopic pub -1 /ardrone/land std_msgs/Empty
+	rostopic pub -1 /ardrone/land std_msgs/Empty
 
 If there is an issue during takeoff, or if you need to do a hard abort for some reason, you may need to reset the drone before taking off a second time:
 	
-	>> rostopic pub -1 /ardrone/reset std_msgs/Empty
+	rostopic pub -1 /ardrone/reset std_msgs/Empty
 
 ---
 Connect to the AR.Drone directly
@@ -72,7 +72,7 @@ roslaunch optitrack_controller track_face.launch network:=ardrone #(directly con
 roslaunch optitrack_controller track_face.launch network:=linksys <br />
 roslaunch optitrack_controller track_face.launch network:=EECSDS3 <br />
 
-roslaunch optitrack_controller track_face.launch network:=linksys logging:=true run:=001<br />
+roslaunch optitrack_controller track_face.launch network:=linksys logging:=true run:=004<br />
 
 ---
 Finding a MAC address

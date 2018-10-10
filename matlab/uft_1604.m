@@ -5,7 +5,7 @@ function [meta, data] = uft_1604()
 %     meta.run = '003'; %testing face tracking and feedback, but uav did not seem to follow my face
 %     meta.run = '008'; %testing face tracking and feedback, testing in the office
     meta.date = '20181010/';
-    meta.run = '003'; % testing face feedback
+    meta.run = '004'; % testing face feedback
     meta.dataroot = '/home/benjamin/ros/data/';
     
 %% Load data
@@ -46,19 +46,31 @@ function [meta, data] = uft_1604()
         end
     end
 %% spline data
+for i = 1:3
+    try [~, data.facetoCmd.face.pose(:,i), ~]  = spliner(...
+                    data.vrpn_ardrone.pose.time, data.vrpn_ardrone.pose.linear(:,i),...
+                    data.facetoCmd.face.centroid_msg.time, data.facetoCmd.face.centroid_msg.time); catch; end
+end
 
-[~, data.facetoCmd.face.pose(:,1), ~]  = spliner(...
-    data.vrpn_ardrone.pose.time, data.vrpn_ardrone.pose.linear(:,1),...
-    data.facetoCmd.face.centroid_msg.time, data.facetoCmd.face.centroid_msg.time);
-[~, data.facetoCmd.face.pose(:,2), ~]  = spliner(...
-    data.vrpn_ardrone.pose.time, data.vrpn_ardrone.pose.linear(:,2),...
-    data.facetoCmd.face.centroid_msg.time, data.facetoCmd.face.centroid_msg.time);
-[~, data.facetoCmd.face.pose(:,3), ~]  = spliner(...
-    data.vrpn_ardrone.pose.time, data.vrpn_ardrone.pose.linear(:,3),...
-    data.facetoCmd.face.centroid_msg.time, data.facetoCmd.face.centroid_msg.time);
+data.sync_vrpn.time = data.vrpn_ardrone.pose.time;
+for i = 1:3
+    try [~, data.sync_vrpn.uav.pose(:,i), ~]  = spliner(...
+                    data.vrpn_ardrone.pose.time, data.vrpn_ardrone.pose.linear(:,i),...
+                    data.sync_vrpn.time, data.sync_vrpn.time); catch; end
+    try [~, data.sync_vrpn.face.pose(:,i), ~]  = spliner(...
+                    data.vrpn_blockhead.pose.time, data.vrpn_blockhead.pose.linear(:,i),...
+                    data.sync_vrpn.time, data.sync_vrpn.time); catch; end
+    try data.sync_vrpn.diff.pose(:,i) = data.sync_vrpn.face.pose(:,i) - data.sync_vrpn.uav.pose(:,i); catch; end
+    data.sync_vrpn.diff.yaw = atan2(data.sync_vrpn.diff.pose(:,2), data.sync_vrpn.diff.pose(:,1));
+end
+clear i
+
+
 %% plot data
 [meta, data] = plotuft(meta, data);
 end
+
+
 
 function [out] = loaddatadotm(in, meta)
 %%
@@ -88,9 +100,6 @@ function [out] = loaddatadotm(in, meta)
     out = eval(in);
     cd(here);
 end
-
-
-
 function [meta, data] = plotuft(meta, data)
 %% Turn plotting on
 %     set(0, 'DefaultFigureVisible', 'on');
@@ -215,7 +224,8 @@ figure(10); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) 
 figure(11); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
     title([meta.date meta.run ' ' 'uav heading'])
     hold on
-		try plot(data.optAutopilot.face.time, data.optAutopilot.face.angle, 'x', 'displayname', 'relative face angle'); catch; end
+		try plot(data.optAutopilot.face.time, data.optAutopilot.face.angle, '.', 'displayname', 'relative face angle'); catch; end
+        try plot(data.sync_vrpn.time, data.sync_vrpn.diff.yaw, 'o', 'displayname', 'relative (mocap) face angle'); catch; end
 		try plot(data.optAutopilot.face.time, data.optAutopilot.face.uav_mocap_heading, 'x', 'displayname', 'uav heading mocap'); catch; end
         try plot(data.optAutopilot.face.time, data.optAutopilot.face.desired_global_heading, 'x', 'displayname', 'desired global heading'); catch; end
     hold off
@@ -237,8 +247,6 @@ figure(20); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) 
     try saveas(gcf, [meta.dataroot meta.date meta.run '/figure' num2str(current_fig.Number) '.png']); catch; end
     clear current_fig
 end
-
-
 function [] = shortcut()
 
 clc

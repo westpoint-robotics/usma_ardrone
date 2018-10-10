@@ -75,7 +75,8 @@ class faceCentroidToAutopilot():
         # self.face_desired_pose_q.y = 0
         # self.face_desired_pose_q.z = math.sin(angle/2)
         # self.face_desired_pose_q.w = math.cos(angle/2)
-        angle = dx*0.00251
+        angle = dx*0.002 #reduced slightly to slow down angular action
+        # angle = dx*0.00251 based on view angle vs pixel pitch
         self.face_desired_pose_point = Vector3(0, 0, 0)
         self.face_desired_pose_euler = Vector3(0, 0, angle)
         self.face_desired_pose_msg = Twist(self.face_desired_pose_point, self.face_desired_pose_euler)

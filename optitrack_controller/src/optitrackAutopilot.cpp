@@ -314,7 +314,7 @@ class optitrackAutopilot
 		uav_cmd_msg.linear.z = 2*Kp*body_position_error.at<double>(2,0);
 		uav_cmd_msg.angular.x = 0;
 		uav_cmd_msg.angular.y = 0;
-		uav_cmd_msg.angular.z = -Kphi*global_heading_error;
+		uav_cmd_msg.angular.z = Kphi*global_heading_error;
 
 		// cmdUAV(uav_cmd_msg);
 		if ((ros::Time::now().toSec() - starting_time) < 5)
