@@ -61,16 +61,14 @@ for i = 1:3
                     data.vrpn_blockhead.pose.time, data.vrpn_blockhead.pose.linear(:,i),...
                     data.sync_vrpn.time, data.sync_vrpn.time); catch; end
     try data.sync_vrpn.diff.pose(:,i) = data.sync_vrpn.face.pose(:,i) - data.sync_vrpn.uav.pose(:,i); catch; end
-    data.sync_vrpn.diff.yaw = atan2(data.sync_vrpn.diff.pose(:,2), data.sync_vrpn.diff.pose(:,1));
 end
+data.sync_vrpn.diff.yaw = atan2(data.sync_vrpn.diff.pose(:,2), data.sync_vrpn.diff.pose(:,1));
 clear i
 
 
 %% plot data
 [meta, data] = plotuft(meta, data);
 end
-
-
 
 function [out] = loaddatadotm(in, meta)
 %%
@@ -113,7 +111,7 @@ figure(1); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) '
     hold on
         try plot(data.optAutopilot.mocap_pose.time, data.optAutopilot.mocap_pose.p(:,1), 'k.'); catch; end
         try plot(data.optAutopilot.cmd.time, data.optAutopilot.cmd.desired_pose_global.p(:,1), 'r.'); catch; end
-        try plot(data.optAutopilot.cmd.time, data.optAutopilot.cmd.error_pose_global.p(:,1), 'b.'); catch; end
+%         try plot(data.optAutopilot.cmd.time, data.optAutopilot.cmd.error_pose_global.p(:,1), 'b.'); catch; end
     hold off
     grid on
     clear current_fig
@@ -123,7 +121,7 @@ figure(2); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) '
     hold on
         try plot(data.optAutopilot.mocap_pose.time, data.optAutopilot.mocap_pose.p(:,2), 'k.'); catch; end
         try plot(data.optAutopilot.cmd.time, data.optAutopilot.cmd.desired_pose_global.p(:,2), 'r.'); catch; end
-        try plot(data.optAutopilot.cmd.time, data.optAutopilot.cmd.error_pose_global.p(:,2), 'b.'); catch; end
+%         try plot(data.optAutopilot.cmd.time, data.optAutopilot.cmd.error_pose_global.p(:,2), 'b.'); catch; end
     hold off
     grid on
     clear current_fig
@@ -154,9 +152,9 @@ figure(4); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) '
 figure(5); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
     title('uav error, x body')
     hold on
-        try plot(data.optAutopilot.cmd.time, data.optAutopilot.cmd.error_pose_body.p(:,1), 'r.', 'displayname', 'error bosd body'); catch; end
-        try plot(data.optAutopilot.cmd.time, data.optAutopilot.cmd.msg_linear(:,1), 'b.', 'displayname', 'cmd msd linear'); catch; end
-        try plot(data.fta.mocap.vel_msg.time, data.fta.mocap.vel_msg.linear(:,1), 'kx', 'displayname', 'cmd msd linear'); catch; end
+        try plot(data.optAutopilot.cmd.time, data.optAutopilot.cmd.error_pose_body.p(:,1), 'r.', 'displayname', 'error body'); catch; end
+        try plot(data.optAutopilot.cmd.time, data.optAutopilot.cmd.msg_linear(:,1), 'b.', 'displayname', 'cmd msg linear'); catch; end
+        try plot(data.fta.mocap.vel_msg.time, data.fta.mocap.vel_msg.linear(:,1), 'kx', 'displayname', 'cmd msg linear'); catch; end
         
     hold off
     grid on

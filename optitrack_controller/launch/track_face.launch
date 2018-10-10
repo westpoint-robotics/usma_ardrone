@@ -65,6 +65,7 @@
         <arg name="centroid_topic"          value="/ardrone/front/face_centroid"/>
         <arg name="display_original_image"  value="false" />
         <arg name="display_tracking_image"  value="true" />
+        <arg name="logging"                 value="$(arg logging)" />
     </include>
 
     <!-- vrpn logging -->
