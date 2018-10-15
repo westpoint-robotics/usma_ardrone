@@ -108,10 +108,6 @@ class optitrackAutopilot
 
 		ros::param::get("~take_off_topic", s_take_off_topic);
 			TakeOff_sub = n.subscribe(s_take_off_topic,   10,  &optitrackAutopilot::wait_for_takeoff, this);
-			face_pose_counter = 0;
-			face_desired_angle = 0;
-
-
 
 
 		ros::param::get("~Kp", Kp);
@@ -119,7 +115,6 @@ class optitrackAutopilot
 		ros::param::get("~Kphi", Kphi);
 
 		initDesiredPose();
-
 
 		ROS_INFO("optitrackAutopilot Constructed");
 	}
@@ -314,7 +309,7 @@ class optitrackAutopilot
 		uav_cmd_msg.linear.z = 2*Kp*body_position_error.at<double>(2,0);
 		uav_cmd_msg.angular.x = 0;
 		uav_cmd_msg.angular.y = 0;
-		uav_cmd_msg.angular.z = -Kphi*global_heading_error;
+		uav_cmd_msg.angular.z = Kphi*global_heading_error;
 
 		// cmdUAV(uav_cmd_msg);
 		if ((ros::Time::now().toSec() - starting_time) < 5)

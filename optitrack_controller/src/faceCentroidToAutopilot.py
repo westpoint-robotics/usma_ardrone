@@ -5,7 +5,7 @@ import sys
 import rospy
 import cv2
 import math
-from std_msgs.msg import String
+from std_msgs.msg import String, Empty
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 from geometry_msgs.msg import Vector3, Twist #TwistStamped
@@ -26,6 +26,12 @@ class faceCentroidToAutopilot():
             self.data_logger_filename = ('/home/benjamin/ros/data/{0:0>3}/{1:0>3}/facetoCmd_{1:0>3}.m').format(self.exp_date, self.exp_run)
             self.data_logger = open(self.data_logger_filename, 'w')
             self.data_logger.write(("%%filename: {} \n\n").format(self.data_logger_filename))
+
+        # wait for permission to track faces
+        self.face_permission_topic = rospy.get_param("~face_permission_topic","/face_detector/permission")
+        self.face_permission_sub = rospy.Subscriber(self.face_permission_topic,Empty,self.facetracker_permission_cb)
+        self.face_permission_bool = False
+        self.face_permission_time = 0
 
         #subscribe to face tracker centroid
         self.face_centroid_topic = rospy.get_param("~face_centroid_topic","/face_detector/centroid")
@@ -64,6 +70,13 @@ class faceCentroidToAutopilot():
         self.face_pose_topic = rospy.get_param("~face_pose_topic","/ardrone/face/pose_desired")
         self.face_pose_pub = rospy.Publisher(self.face_pose_topic,Twist, queue_size=1)  
 
+    def facetracker_permission_cb(self, msg):
+        self.face_permission_time = rospy.get_time()
+        self.face_permission_bool = True
+        print("Received permission to track faces")
+
+        if(self.logging):
+            self.data_logger.write(("facetoCmd.permission.time = {:06.8f};\n").format(self.face_permission_time))
 
     def publish_face_desired_pose_msg(self, dx, dy):
         # qx = ax * sin(angle/2)
@@ -75,7 +88,8 @@ class faceCentroidToAutopilot():
         # self.face_desired_pose_q.y = 0
         # self.face_desired_pose_q.z = math.sin(angle/2)
         # self.face_desired_pose_q.w = math.cos(angle/2)
-        angle = dx*0.00251
+        angle = dx*0.002 #reduced slightly to slow down angular action
+        # angle = dx*0.00251 based on view angle vs pixel pitch
         self.face_desired_pose_point = Vector3(0, 0, 0)
         self.face_desired_pose_euler = Vector3(0, 0, angle)
         self.face_desired_pose_msg = Twist(self.face_desired_pose_point, self.face_desired_pose_euler)
@@ -99,7 +113,8 @@ class faceCentroidToAutopilot():
         cmd_angular = Vector3(0, 0, cmd_yaw)
         self.face_cmd_vel_msg = Twist(cmd_linear, cmd_angular)
         self.face_cmd_vel_pub.publish(self.face_cmd_vel_msg)
-        self.publish_face_desired_pose_msg(dx, dy)
+        if (self.face_permission_bool):
+            self.publish_face_desired_pose_msg(dx, dy)
 
         if(self.logging):
             # print(self.face_centroid_topic + ' : {} {} {}' ).format(self.face_centroid_msg.x, self.face_centroid_msg.y, self.face_centroid_msg.z)

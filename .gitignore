@@ -20,6 +20,13 @@
 *.tar
 *.zip
 
+# Large Format Files #
+######################
+*.mov
+*.MOV
+*.mp4
+*.MP4
+
 # Logs and databases #
 ######################
 *.log

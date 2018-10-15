@@ -13,14 +13,21 @@
 	    <remap from="/cmd_vel" to="$(arg cmd_topic)"/>
 	</node>
 
-	<node pkg="rostopic" type="rostopic" 			name="navdataEcho" 		output="screen" 	args="echo /ardrone/navdata" />
+	<!-- <node pkg="rostopic" 				type="rostopic" 		name="navdataEcho" 						output="screen" args="echo /ardrone/navdata"  /> -->
 	<node pkg="optitrack_controller"	type="killNodes"		name="killNodes_$(arg launcher)"		output="screen" required="true"/>
 	<node pkg="optitrack_controller"	type="listenForKill"	name="shutdownListener_$(arg launcher)"	output="screen"	required="true"/>
-	<!-- <node pkg="rviz" 	 type="rviz" 				name="rviz_$(arg launcher)" 	/>  -->
+
+	<group if="$(arg echo)">
+		<!-- stuff that will only be evaluated if foo is true -->
+		<node pkg="rostopic" type="rostopic" 			name="navdataEcho" 		output="screen" 	args="echo /ardrone/navdata" />
+	</group>
+
+  <!-- run image processing node to rectify images -->
+  <node ns="ardrone/front" pkg="image_proc" type="image_proc" name="image_proc">
+    <remap from="image_raw" to="/ardrone/front/image_raw" />
+    <remap from="camera_info" to="/ardrone/front/camera_info" />
+  </node>
+
 
 </launch>
 
-<!-- /vrpn_client_node/parrot/pose -->
-
-<!-- ardrone2_065412 -->
-<!-- ardrone2_234879 -->
