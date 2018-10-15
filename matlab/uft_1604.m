@@ -1,3 +1,8 @@
+% try vq = interp1(...
+%     x,v,...
+%     xq); catch; end
+
+
 function [meta, data] = uft_1604()
 %% Set up meta
 %     meta.date = '20180919/';
@@ -5,7 +10,8 @@ function [meta, data] = uft_1604()
 %     meta.run = '003'; %testing face tracking and feedback, but uav did not seem to follow my face
 %     meta.run = '008'; %testing face tracking and feedback, testing in the office
     meta.date = '20181010/';
-    meta.run = '004'; % testing face feedback
+    meta.run = '003'; % testing face feedback
+%     meta.run = '006'; % testing face feedback
     meta.dataroot = '/home/benjamin/ros/data/';
     
 %% Load data
@@ -47,23 +53,65 @@ function [meta, data] = uft_1604()
     end
 %% spline data
 for i = 1:3
-    try [~, data.facetoCmd.face.pose(:,i), ~]  = spliner(...
-                    data.vrpn_ardrone.pose.time, data.vrpn_ardrone.pose.linear(:,i),...
-                    data.facetoCmd.face.centroid_msg.time, data.facetoCmd.face.centroid_msg.time); catch; end
-end
+    try data.facetoCmd.face.pose(:,i) = interp1(...
+        data.vrpn_ardrone.pose.time, data.vrpn_ardrone.pose.linear(:,i),...
+        data.facetoCmd.face.centroid_msg.time, ...
+        'linear', 'extrap'); catch; end
+end; clear i
 
 data.sync_vrpn.time = data.vrpn_ardrone.pose.time;
-for i = 1:3
-    try [~, data.sync_vrpn.uav.pose(:,i), ~]  = spliner(...
-                    data.vrpn_ardrone.pose.time, data.vrpn_ardrone.pose.linear(:,i),...
-                    data.sync_vrpn.time, data.sync_vrpn.time); catch; end
-    try [~, data.sync_vrpn.face.pose(:,i), ~]  = spliner(...
-                    data.vrpn_blockhead.pose.time, data.vrpn_blockhead.pose.linear(:,i),...
-                    data.sync_vrpn.time, data.sync_vrpn.time); catch; end
-    try data.sync_vrpn.diff.pose(:,i) = data.sync_vrpn.face.pose(:,i) - data.sync_vrpn.uav.pose(:,i); catch; end
+if 0 % bug fixed 20181015
+    data.vrpn_ardrone.pose.yaw = data.vrpn_ardrone.pose.angular(:,1);
 end
-data.sync_vrpn.diff.yaw = atan2(data.sync_vrpn.diff.pose(:,2), data.sync_vrpn.diff.pose(:,1));
-clear i
+for i = 1:3
+    try data.sync_vrpn.uav.pose(:,i) = interp1(...
+        data.vrpn_ardrone.pose.time, data.vrpn_ardrone.pose.linear(:,i),...
+        data.sync_vrpn.time, ...
+        'linear', 'extrap'); catch; end
+    try 
+        data.sync_vrpn.face.pose(:,i) = interp1(...
+        data.vrpn_blockhead.pose.time, data.vrpn_blockhead.pose.linear(:,i),...
+        data.sync_vrpn.time, ...
+        'linear', 'extrap'); 
+    catch; end
+    try 
+        data.sync_vrpn.diff.pose_global(:,i) = data.sync_vrpn.face.pose(:,i) - data.sync_vrpn.uav.pose(:,i); 
+    catch; end
+end; clear i
+
+try data.sync_vrpn.uav.yaw = interp1(...
+    data.optAutopilot.mocap_pose.time, data.optAutopilot.mocap_pose.yaw,...
+    data.sync_vrpn.time, ...
+    'linear', 'extrap'); catch; end
+
+
+% get relative angle between face and UAV
+try data.sync_vrpn.angle_to_face = atan2(data.sync_vrpn.diff.pose_global(:,2), data.sync_vrpn.diff.pose_global(:,1)) - data.vrpn_ardrone.pose.yaw; catch; end
+
+
+%% spline data to image time
+data.sync_camtime.time = data.facetoCmd.face.centroid_msg.time;
+for i = 1:3
+    try data.sync_camtime.uav.pose(:,i) = interp1(...
+        data.vrpn_ardrone.pose.time, data.vrpn_ardrone.pose.linear(:,i),...
+        data.sync_camtime.time, ...
+        'linear', 'extrap'); catch; end
+
+    try data.sync_camtime.face.pose(:,i) = interp1(...
+        data.vrpn_blockhead.pose.time, data.vrpn_blockhead.pose.linear(:,i),...
+        data.sync_camtime.time, ...
+        'linear', 'extrap'); catch; end
+    try data.sync_camtime.diff.pose_global(:,i) = data.sync_camtime.face.pose(:,i) - data.sync_camtime.uav.pose(:,i); catch; end
+end, clear i
+try data.sync_camtime.uav.yaw = interp1(...
+    data.optAutopilot.mocap_pose.time, data.optAutopilot.mocap_pose.yaw,...
+    data.sync_camtime.time, ...
+    'linear', 'extrap'); catch; end
+
+% get relative angle between face and UAV
+try data.sync_camtime.angle_to_face = atan2(data.sync_camtime.diff.pose_global(:,2), data.sync_camtime.diff.pose_global(:,1)) - data.sync_camtime.uav.yaw; catch; end
+
+
 
 
 %% plot data
@@ -104,36 +152,49 @@ function [meta, data] = plotuft(meta, data)
 %     figHandles = findall(0, 'Type', 'figure');
 %     set(figHandles(:), 'visible', 'on');
 %     clear figHandles
-
 %% figure(1); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
 figure(1); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
-    title('uav position, x global')
+    title('vrpn position, x global')
     hold on
-        try plot(data.optAutopilot.mocap_pose.time, data.optAutopilot.mocap_pose.p(:,1), 'k.'); catch; end
-        try plot(data.optAutopilot.cmd.time, data.optAutopilot.cmd.desired_pose_global.p(:,1), 'r.'); catch; end
-%         try plot(data.optAutopilot.cmd.time, data.optAutopilot.cmd.error_pose_global.p(:,1), 'b.'); catch; end
+        try plot(data.optAutopilot.mocap_pose.time, data.optAutopilot.mocap_pose.p(:,1), 'k.', 'displayname', 'uav actual'); catch; end
+        try plot(data.optAutopilot.cmd.time, data.optAutopilot.cmd.desired_pose_global.p(:,1), 'r.', 'displayname', 'uav desired'); catch; end
+        try plot(data.vrpn_blockhead.pose.time, data.vrpn_blockhead.pose.linear(:,1), 'b.', 'displayname', 'face actual'); catch; end
     hold off
     grid on
+    legend('toggle')
+    clear current_fig
+%% figure(1); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
+figure(1); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
+    title('vrpn position, x global')
+    hold on
+        try plot(data.optAutopilot.mocap_pose.time, data.optAutopilot.mocap_pose.p(:,1), 'k.', 'displayname', 'uav actual'); catch; end
+        try plot(data.optAutopilot.cmd.time, data.optAutopilot.cmd.desired_pose_global.p(:,1), 'r.', 'displayname', 'uav desired'); catch; end
+        try plot(data.vrpn_blockhead.pose.time, data.vrpn_blockhead.pose.linear(:,1), 'b.', 'displayname', 'face actual'); catch; end
+    hold off
+    grid on
+    legend('toggle')
     clear current_fig
 %% figure(2); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
 figure(2); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
-    title('uav position, y global')
+    title('vrpn position, y global')
     hold on
-        try plot(data.optAutopilot.mocap_pose.time, data.optAutopilot.mocap_pose.p(:,2), 'k.'); catch; end
-        try plot(data.optAutopilot.cmd.time, data.optAutopilot.cmd.desired_pose_global.p(:,2), 'r.'); catch; end
-%         try plot(data.optAutopilot.cmd.time, data.optAutopilot.cmd.error_pose_global.p(:,2), 'b.'); catch; end
+        try plot(data.optAutopilot.mocap_pose.time, data.optAutopilot.mocap_pose.p(:,2), 'k.', 'displayname', 'uav actual'); catch; end
+        try plot(data.optAutopilot.cmd.time, data.optAutopilot.cmd.desired_pose_global.p(:,2), 'r.', 'displayname', 'uav desired'); catch; end
+        try plot(data.vrpn_blockhead.pose.time, data.vrpn_blockhead.pose.linear(:,2), 'b.', 'displayname', 'face actual'); catch; end
     hold off
     grid on
+    legend('toggle')
     clear current_fig
 %% figure(3); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
 figure(3); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
-    title('uav position, z global')
+    title('vrpn position, z global')
     hold on
-        try plot(data.optAutopilot.mocap_pose.time, data.optAutopilot.mocap_pose.p(:,3), 'k.'); catch; end
-        try plot(data.optAutopilot.cmd.time, data.optAutopilot.cmd.desired_pose_global.p(:,3), 'r.'); catch; end
-        try plot(data.optAutopilot.cmd.time, data.optAutopilot.cmd.error_pose_global.p(:,3), 'b.'); catch; end
+        try plot(data.optAutopilot.mocap_pose.time, data.optAutopilot.mocap_pose.p(:,3), 'k.', 'displayname', 'uav actual'); catch; end
+        try plot(data.optAutopilot.cmd.time, data.optAutopilot.cmd.desired_pose_global.p(:,3), 'r.', 'displayname', 'uav desired'); catch; end
+        try plot(data.vrpn_blockhead.pose.time, data.vrpn_blockhead.pose.linear(:,3), 'b.', 'displayname', 'face actual'); catch; end
     hold off
     grid on
+    legend('toggle')
     clear current_fig
 %% figure(4); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
 figure(4); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
@@ -231,12 +292,56 @@ figure(11); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) 
     legend('toggle')
     try saveas(gcf, [meta.dataroot meta.date meta.run '/figure' num2str(current_fig.Number) '.png']); catch; end
     clear current_fig
+%% figure(16); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
+figure(16); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
+    title('vrpn position, x global imagetime')
+    hold on
+        try plot(data.sync_camtime.time, data.sync_camtime.uav.pose(:,1), 'k.', 'displayname', 'uav actual'); catch; end
+        try plot(data.sync_camtime.time, data.sync_camtime.face.pose(:,1), 'b.', 'displayname', 'face actual'); catch; end
+    hold off
+    grid on
+    legend('toggle')
+    clear current_fig
+%% figure(17); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
+figure(17); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
+    title('vrpn position, y global imagetime')
+    hold on
+        try plot(data.sync_camtime.time, data.sync_camtime.uav.pose(:,2), 'k.', 'displayname', 'uav actual'); catch; end
+        try plot(data.sync_camtime.time, data.sync_camtime.face.pose(:,2), 'b.', 'displayname', 'face actual'); catch; end
+    hold off
+    grid on
+    legend('toggle')
+    clear current_fig
+%% figure(18); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
+figure(18); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
+    title('vrpn position, z global imagetime')
+    hold on
+        try plot(data.sync_camtime.time, data.sync_camtime.uav.pose(:,3), 'k.', 'displayname', 'uav actual'); catch; end
+        try plot(data.sync_camtime.time, data.sync_camtime.face.pose(:,3), 'b.', 'displayname', 'face actual'); catch; end
+    hold off
+    grid on
+    legend('toggle')
+    clear current_fig
+%% figure(19); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
+figure(19); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
+    title('vrpn position, yaw global imagetime')
+    hold on
+        try plot(data.optAutopilot.mocap_pose.time, data.optAutopilot.mocap_pose.yaw, 'b.', 'displayname', 'mocap pose'); catch; end
+        try plot(data.sync_camtime.time, data.sync_camtime.uav.yaw, 'k.', 'displayname', 'uav actual'); catch; end
+        try plot(data.vrpn_ardrone.pose.time, data.vrpn_ardrone.pose.yaw, 'r.', 'displayname', 'uav actual'); catch; end
+%         try plot(data.sync_camtime.time, data.sync_camtime.face.pose(:,3), 'b.', 'displayname', 'face actual'); catch; end
+    hold off
+    grid on
+    legend('toggle')
+    clear current_fig
+
 %% figure(20); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
 figure(20); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']); 
     title([meta.date meta.run ' ' 'xy top down'])
     hold on
 		try plot(data.vrpn_ardrone.pose.linear(:,1), data.vrpn_ardrone.pose.linear(:,2), 'x', 'displayname', 'uav xy'); catch; end
 		try plot(data.vrpn_blockhead.pose.linear(:,1), data.vrpn_blockhead.pose.linear(:,2), 'x', 'displayname', 'face xy'); catch; end
+        
     hold off
     grid on
     legend('toggle')
@@ -244,6 +349,67 @@ figure(20); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) 
     xlabel('y [m]')
     try saveas(gcf, [meta.dataroot meta.date meta.run '/figure' num2str(current_fig.Number) '.png']); catch; end
     clear current_fig
+%% figure(21); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
+figure(21); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
+    try 
+        [AX1 Hleft1 Hright1] = plotyy(...
+            data.facetoCmd.face.centroid_msg.time, data.facetoCmd.face.centroid_msg.dxdy(:,1),...
+            data.sync_camtime.time, data.sync_camtime.angle_to_face);
+        hold(AX1(1)); % hold the left axis for more plots
+        hold(AX1(2)); % hold the right axis for more plots
+        set(Hleft1(1), 'Color', 'b', 'Marker', 'x', 'LineStyle', 'none', 'displayname', 'Centroid pixel');
+        set(Hright1(1), 'Color', 'r', 'Marker', '.', 'LineStyle', 'none', 'displayname', 'vrpn relative angle');
+%         h1 = plot(AX1(2), data.facetoCmd.face.feedback.time, data.facetoCmd.face.feedback.yaw, 'ko', 'displayname', 'face yaw cmd');
+    catch
+    end
+    
+    AX1(1).YTick = -400:100:400;
+    AX1(1).YLim = [AX1(1).YTick(1) AX1(1).YTick(end)];
+    
+    AX1(2).YTick = [-8:2:8];
+    AX1(2).YLim = [AX1(2).YTick(1) AX1(2).YTick(end)];
+    grid on
+    legend('toggle')
+    title([meta.date meta.run ' ' 'yaw cmd vs pixel centroid'])
+    try saveas(gcf, [meta.dataroot meta.date meta.run '/figure' num2str(current_fig.Number) '.png']); catch; end
+    clear current_fig
+    
+%% figure(22); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
+figure(22); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
+    title([meta.date meta.run ' ' 'angle/pixel'])
+    
+    try 
+        [AX1 Hleft1 Hright1] = plotyy(...
+            data.sync_camtime.time, data.sync_camtime.angle_to_face ./ data.facetoCmd.face.centroid_msg.dxdy(:,1),...
+            data.sync_camtime.time, data.sync_camtime.angle_to_face);
+        hold(AX1(1)); % hold the left axis for more plots
+        hold(AX1(2)); % hold the right axis for more plots
+        set(Hleft1(1), 'Color', 'b', 'Marker', 'x', 'LineStyle', 'none', 'displayname', 'angle ./ pixel');
+        set(Hright1(1), 'Color', 'r', 'Marker', '.', 'LineStyle', 'none', 'displayname', 'vrpn relative angle');       
+    catch; end
+       
+    try 
+        scale = 0.00175;
+        offset = 50;
+        adjusted_data = (data.facetoCmd.face.centroid_msg.dxdy(:,1)+offset )*scale;
+        h1 = plot(AX1(2), data.facetoCmd.face.centroid_msg.time,adjusted_data , 'ko', 'displayname', 'pixel to angle'); 
+    catch;end
+    
+    mean (adjusted_data - data.sync_camtime.angle_to_face)
+    AX1(1).YTick = -0.006:0.002:0.006;
+    AX1(1).YLim = [AX1(1).YTick(1) AX1(1).YTick(end)];
+    
+    AX1(2).YTick = [-0.6:0.2:0.6];
+    AX1(2).YLim = [AX1(2).YTick(1) AX1(2).YTick(end)];
+    
+    grid on
+
+    legend('toggle')
+    xlabel('x [m]')
+    xlabel('y [m]')
+    try saveas(gcf, [meta.dataroot meta.date meta.run '/figure' num2str(current_fig.Number) '.png']); catch; end
+    clear current_fig
+    
 end
 function [] = shortcut()
 
