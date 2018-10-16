@@ -1,7 +1,18 @@
 <launch>
 	<!-- Lazy shutoff -->
 	<arg name="launcher"	default="spawn_launch" />
-	<node pkg="optitrack_controller"	type="killNodes"			name="killnodes_$(arg launcher)"		output="screen" required="true"/>
+	<arg name="kill_topic"	default="/usma/shutdown"/>
+	<arg name="land_topic"	default="/ardrone/land"/>
+	<arg name="cmd_topic"	default="/ardrone/cmd_vel"/>
+
+	<include file="$(find optitrack_controller)/launch/killNodes.launch">
+		<arg name="launcher" 	value="spawn_launch"/>
+		<arg name="kill_topic" 	value="$(arg kill_topic)"/>
+		<arg name="land_topic" 	value="$(arg land_topic)"/>
+		<arg name="cmd_topic" 	value="$(arg cmd_topic)"/>
+	</include>
+
+
 	<node pkg="optitrack_controller"	type="listenForKill"		name="shutdownListener_$(arg launcher)"	output="screen"	required="true"/>
 
 	<arg name="use_sim_time"	default="true"/>

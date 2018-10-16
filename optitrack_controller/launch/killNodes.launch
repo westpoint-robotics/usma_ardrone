@@ -1,0 +1,13 @@
+<launch>
+	<arg name="launcher"	default="kill_launch"/>
+	<arg name="kill_topic"	default="/usma/shutdown"/>
+	<arg name="land_topic"	default="/ardrone/land"/>
+	<arg name="cmd_topic"	default="/ardrone/cmd_vel"/>
+
+	<node pkg="optitrack_controller" type="killNodes" name="killnodes_$(arg launcher)" output="screen" required="true">
+		<param name="kill_topic" 	value="$(arg kill_topic)"/>
+		<param name="land_topic" 	value="$(arg land_topic)"/>
+		<param name="cmd_topic" 	value="$(arg cmd_topic)"/>
+	</node>
+
+</launch>

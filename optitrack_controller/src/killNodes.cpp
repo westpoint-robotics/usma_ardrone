@@ -33,9 +33,14 @@
 		ros::init(argc, argv, "NodeKill");
 		ros::NodeHandle n;
 			/*-----  Publishers and Subscribers */
-			ros::Publisher NodeKill		= n.advertise<std_msgs::Bool>("/usma/shutdown", 1000);
-			ros::Publisher DroneLand	= n.advertise<std_msgs::Empty>("/ardrone/land", 1000);
-			ros::Publisher DroneCmd_dr_pub 	= n.advertise<geometry_msgs::Twist>	("/ardrone/cmd_vel", 1000);
+			std::string s_kill_topic, s_land_topic, s_cmd_topic;
+			ros::param::get("~kill_topic", s_kill_topic);
+			ros::param::get("~land_topic", s_land_topic);
+			ros::param::get("~cmd_topic",  s_cmd_topic);
+
+			ros::Publisher NodeKill		= n.advertise<std_msgs::Bool>(s_kill_topic, 1000);
+			ros::Publisher DroneLand	= n.advertise<std_msgs::Empty>(s_land_topic, 1000);
+			ros::Publisher DroneCmd_dr_pub 	= n.advertise<geometry_msgs::Twist>	(s_cmd_topic, 1000);
 
 			DroneCmd_dr_msg.linear.x = 0.0;
 			DroneCmd_dr_msg.linear.y = 0.0;
