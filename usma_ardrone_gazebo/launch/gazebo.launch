@@ -1,0 +1,86 @@
+<launch>
+
+    <arg name="launcher"    default="gazebo_launch" />
+
+    <include file="$(find optitrack_controller)/launch/killNodes.launch">
+        <arg name="kill_topic"  default="/usma/shutdown"/>
+        <arg name="land_topic"  default="/ardrone/land"/>
+        <arg name="cmd_topic"   default="/usma_ardrone/uav/cmd_vel"/>
+    </include>
+
+    <node pkg="optitrack_controller"    type="listenForKill"        name="shutdownListener_$(arg launcher)" output="screen" required="true"/>
+
+    <arg name="use_sim_time"    default="true"/>
+    <arg name="gui"             default="true"/>
+    <arg name="verbose"         default="true"/>
+    <arg name="paused"          default="false"/>
+
+    <include file="$(find usma_ardrone_gazebo)/launch/empty_world.launch">
+        <arg name="world_name"      value="$(find usma_descriptions)/worlds/empty.world"/>
+        <arg name="gui"             value="$(arg gui)"/>
+        <arg name="paused"          value="$(arg paused)"/>
+        <arg name="verbose"         value="$(arg verbose)"/>
+        <arg name="use_sim_time"    value="$(arg use_sim_time)"/>
+    </include>
+
+    <!-- Spawn UAV --> 
+    <include file="$(find usma_descriptions)/UAV/launch/usma_ardrone_0.launch" />
+
+
+    <!-- <node pkg="denmpc" type="simplePosePublisher.py" name="simplePosePub"/> -->
+
+
+    
+</launch>
+
+
+<!-- 
+type /ardrone/mpc/desiredpose   geometry_msgs/PoseStamped
+type /ardrone/mpc/pose          geometry_msgs/PoseStamped
+type /ardrone/mpc/cmd_vel       geometry_msgs/Twist
+ -->
+
+<!-- 
+rostopic pub -r 20 /usma_ardrone/mpc/desiredpose geometry_msgs/PoseStamped '{header: {seq: 1,stamp: {secs: 1, nsecs: 0},frame_id: ''},pose: {position: {x: 1.0, y: 0.0, z: 1.0}, orientation: {x: 0.0, y: 0.0, z: 0.0, w: 1.0}}}' 
+
+
+
+'
+{
+    header: 
+    {
+        seq: 1,
+        stamp: {secs: 1, nsecs: 0},
+        frame_id: ''
+    },
+    pose: 
+    {
+        position: {x: 1.0, y: 0.0, z: 1.0}, 
+        orientation: {x: 0.0, y: 0.0, z: 0.0, w: 1.0}
+    }
+
+}
+' 
+
+
+header: 
+  seq: 1472
+  stamp: 
+    secs: 16
+    nsecs: 170000000
+  frame_id: ''
+pose: 
+  position: 
+    x: 0.497533477943
+    y: -0.0968728789839
+    z: 0.0297960441947
+  orientation: 
+    x: 1.41057859944e-06
+    y: 1.97249878706e-05
+    z: -0.0712115553262
+    w: 0.997461234333
+
+
+-->
+
+
