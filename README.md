@@ -33,11 +33,11 @@ if the ping returns a response time, then the ardrone is connected to the same n
 
 Assuming the optitrack software and cameras are booted and running, to launch the demo, first launch the vrpn service. This will stream the optitrack pose data as a ros message. (note this assumes the Ethernet cable for the optitrack pc has been switched from EECSDS3 to the linksys router, it has not been tested on EECSDS3)
 
-	>> roslaunch optitrack_controller vrpn.launch
+	<!-- roslaunch optitrack_controller vrpn.launch -->
 
 To run the face tracking demo, the following command file will launch the control and tracking nodes for the ardrone
 
-	>> roslaunch optitrack_controller track_face.launch network:=linksys
+	roslaunch optitrack_controller track_face.launch network:=linksys
 
 Finally to have the drone takeoff :
 
@@ -52,6 +52,13 @@ and to land;
 If there is an issue during takeoff, or if you need to do a hard abort for some reason, you may need to reset the drone before taking off a second time:
 	
 	rostopic pub -1 /ardrone/reset std_msgs/Empty
+
+
+---
+testing mpc:
+=======
+	roslaunch optitrack_controller 
+
 
 ---
 Connect to the AR.Drone directly
@@ -78,6 +85,8 @@ roslaunch optitrack_controller track_face.launch network:=linksys logging:=true 
 
 
 rostopic pub -1 /ardrone/face/face_permission_topic std_msgs/Empty
+
+
 
 
 ---

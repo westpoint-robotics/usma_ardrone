@@ -82,11 +82,6 @@
         <arg name="filepath"        value="/home/benjamin/ros/data/$(arg date)/$(arg run)/"/>
         <arg name="matlab_prefix"   value="vrpn_blockhead"/>
     </include>
-    <include file="$(find usma_optitrack)/launch/vrpn_logger.launch">
-        <arg name="pose_msg"        default="/vrpn_client_node/blockhead/pose"/>
-        <arg name="filepath"        default="/home/benjamin/ros/data/"/>
-        <arg name="matlab_prefix"   default="vrpn_blockhead"/>
-    </include>
 
 </launch>
 
