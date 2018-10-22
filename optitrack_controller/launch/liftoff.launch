@@ -1,9 +1,11 @@
 <launch>
     <node pkg="rostopic" type="rostopic" name="echoVRPN" output="screen" args="echo /vrpn_client_node/Ardrone/pose" />
-
     <node pkg="rostopic" type="rostopic" name="liftoff" output="screen" args="pub -1 /ardrone/takeoff std_msgs/Empty" />
 
-    
+	<arg name="launcher" 	default="liftoff_launch" />    
+	<node pkg="optitrack_controller"	type="killNodes"		name="killNodes_$(arg launcher)"		output="screen" required="true"/>
+	<node pkg="optitrack_controller"	type="listenForKill"	name="shutdownListener_$(arg launcher)"	output="screen"	required="true"/>
+
 </launch>
 
 
