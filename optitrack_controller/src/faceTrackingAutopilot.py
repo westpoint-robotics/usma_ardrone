@@ -9,7 +9,6 @@ from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 from geometry_msgs.msg import Vector3, Twist, Pose #TwistStamped
 from os.path import expanduser
-home = expanduser("~")
 import time
 
 class faceTrackingAutopilot():

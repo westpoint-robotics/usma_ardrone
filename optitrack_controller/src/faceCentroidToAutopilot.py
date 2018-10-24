@@ -11,7 +11,6 @@ from cv_bridge import CvBridge, CvBridgeError
 from geometry_msgs.msg import Vector3, Twist #TwistStamped
 from geometry_msgs.msg import Quaternion, Pose, Point
 from os.path import expanduser
-home = expanduser("~")
 import time
 
 class faceCentroidToAutopilot():
