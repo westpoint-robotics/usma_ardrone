@@ -23,10 +23,11 @@
 	</group>
   
   <!-- run image processing node to rectify images -->
+  <!-- 
   <node ns="ardrone/front" pkg="image_proc" type="image_proc" name="image_proc">
     <remap from="image_raw" to="/ardrone/front/image_raw" />
     <remap from="camera_info" to="/ardrone/front/camera_info" />
   </node>
-
+ -->
 </launch>
 

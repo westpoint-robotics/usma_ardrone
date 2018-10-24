@@ -24,21 +24,14 @@ class saveArdroneImages():
         self.rate = rospy.Rate(30) # 30hz sleep rate for ros
         self.bridge = CvBridge()
 
+        self.sequence = rospy.get_param('~sequence', 'seq_01')
+
         # define ros publishers and subscribers
         self.image_topic = rospy.get_param('~subscribed_image_topic', '/ardrone/image_raw')
         # print('subscribing to: ' + self.image_topic)
         self.image_sub = rospy.Subscriber(self.image_topic,Image,self.image_callback)
         self.image_seq = 0
         
-        # self.centroid_topic = rospy.get_param('~publishing_centroid_topic', '/face_centroid')
-        # print('publishing on: ' + self.centroid_topic)
-        # self.pub_centroid = rospy.Publisher(self.centroid_topic, Vector3, queue_size=1)  
-
-        # self.display_original_image = rospy.get_param("~display_original_image",False) #default is off
-        # self.display_tracking_image = rospy.get_param("~display_tracking_image",True) #default is on
-        # if (self.display_original_image): # Dispaly the image if param is set to true       
-        #     print('self.display_original_image: {}').format(self.display_original_image)
-
     def image_callback(self,data):
         # print('image_callback(self,data):')
         # call back to read image message and save it into the class
@@ -65,8 +58,12 @@ if __name__ == '__main__':
     while not rospy.is_shutdown():
         # print('while not rospy.is_shutdown():')
         if (ft.new_image):
-            image_seq_filename = ('/home/benjamin/ros/data/sequences/seq_01/image_{1:0>3}.m').format(ft.image_seq)
-            # cv2.imwrite(image_seq_filename,ft.cv_image)
+            image_seq_filename = ('/home/benjamin/ros/data/sequences/{0}/image_{1:0>3}.png').format(ft.sequence, ft.image_seq)
+            print(image_seq_filename)
+            # image_seq_filename = ('/home/benjamin/ros/data/sequences/{1}}/image_{0:0>3}.m').format(ft.image_seq, ft.sequence)
+            cv2.imwrite(image_seq_filename,ft.cv_image)
+            # cv2.imshow('ardrone/front/rect', ft.cv_image)
+            ft.new_image = False
 
         cv2.waitKey(1) # Needed for showing image
         # wait for new image to arrive

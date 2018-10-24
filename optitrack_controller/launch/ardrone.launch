@@ -1,0 +1,19 @@
+<!-- -*- mode: XML -*- -->
+<launch>
+
+	<node pkg="ardrone_autonomy" type="ardrone_driver" name="ardrone_autonomy" clear_params="true">
+		<param name="tf_prefix" value="ardrone_autonomy" />  
+		<param name="realtime_navdata" value="true" />
+		<param name="realtime_video" value="true" />		
+		<param name="looprate" value="50" /> <!-- Tunes the speed at which the ros loop runs, and thus, the rate at which navdata is published -->
+	</node>
+
+	<node ns="ardrone/front" pkg="image_proc" type="image_proc" name="image_proc">
+		<remap from="image_raw" 	to="/ardrone/front/image_raw" />
+		<remap from="camera_info" 	to="/ardrone/front/camera_info" />
+	</node>
+
+	<node pkg="rostopic" 	type="rostopic" 	name="navdataEcho" 	output="screen" 	args="echo /ardrone/navdata" />
+	<node pkg="image_view" 	type="image_view"	name="image_view" 	args="image:=/ardrone/front/image_rect_color" />
+
+</launch>

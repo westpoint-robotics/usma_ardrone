@@ -1,0 +1,9 @@
+
+<launch>
+
+    <node pkg="optitrack_controller" type="saveArdroneImages.py" name="saveArdroneImages" output="screen" >
+        <param name="sequence"     				value="seq_01" />
+        <param name="subscribed_image_topic"  	value="/ardrone/front/image_rect_color" />
+	</node>
+
+</launch>
