@@ -1,17 +1,17 @@
 ardrone0_init:
   x: [1.15,0,0.95, 1,0, 0.0,0.0, 0.0,0.0]
   xdes: [1.15,0,0.95, 1,0, 0.0,0.0, 0.0,0.0]
-  p: [-0.5092, 1.458, -1,1, -5, 1.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.3, 1.0] #without tracking position in cost function
+  # p: [-0.5092, 1.458, -1,1, -5, 1.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.3, 1.0] #without tracking position in cost function
+  # p: [-0.5092, 1.458, -1,1, -5, 1.3, 5.0, 5.0, 5.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.3, 1.0] #tracking position without orientation in cost function
+  # p: [-0.5092, 1.458, -1,1, -5, 1.3, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.3, 1.0] #tracking orientation without position in cost function
+  p: [-0.5092, 1.458, -1,1, -5, 1.3, 5.0, 5.0, 5.0, 2.0, 2.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.3, 1.0] #tracking both orientation and position in cost function
 
-  # /* ARDrone parameters:
-  #  * {    lateralA,lateralB,
-  #  *      verticalA,verticalB,
-  #  *      orientationalA,orientationalB,
-  #  *      qposlat,qposlat, qposvert,qposorient, qposorient, qvlat,qvlat, qvvert,qvorient,
-  #  *      qposlat,qposvert,qposorient,qvlat,qvvert,qvorient,  (diag{qp*})
-  #  *      ruvlat,ruvlat,ruvver,ruorient (diag{ru*})
-  #  *  } dim[19]
-
+  # double ardrone0_init_p[]={ //without tracking position
+  #     -0.5092,1.458,-1,1,-5,1.3, //Model Parameters: Ardrone
+  #     0.0,0.0,0.0, 0.0,0.0, 0.0,0.0,0.0,0.0, //State Penalty: no tracking
+  #     x,y,z, 
+  #     1.0,1.0,0.3,1.0 //Input penalty
+  # };
 
 constraint0_init:
   p: [1,0.17,0.5,1.5,1,1,1]

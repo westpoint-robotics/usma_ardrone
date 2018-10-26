@@ -4,7 +4,8 @@ import rospy
 from geometry_msgs.msg import PoseStamped, Vector3, Quaternion
 
 def talker():
-    pub = rospy.Publisher('/usma_ardrone/mpc/desiredpose', PoseStamped, queue_size=10)
+    pose_topic = rospy.get_param("~pose_topic",'/usma_ardrone/mpc/desiredpose') # false by default, in case operator doesn't know to create data folder for logging
+    pub = rospy.Publisher(pose_topic, PoseStamped, queue_size=10)
     rospy.init_node('desiredpose_publisher', anonymous=True)
     rate = rospy.Rate(10) # 10hz
     pub_msg = PoseStamped()
