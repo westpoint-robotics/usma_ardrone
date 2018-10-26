@@ -1,15 +1,29 @@
 <launch>
+    <arg name="launcher"    default="testmpc" />
+    <arg name="shutdown_topic"  default="/usma/shutdown"/>
+    
+    <include file="$(find optitrack_controller)/launch/killNodes.launch">
+        <arg name="kill_topic"  value="$(arg shutdown_topic)"/>
+        <arg name="land_topic"  value="/ardrone/land"/>
+        <arg name="cmd_topic"   value="/usma_ardrone/uav/cmd_vel"/>
+    </include>
+
+    <node pkg="optitrack_controller"    type="listenForKill"        name="shutdownListener_$(arg launcher)" output="screen" required="true">
+        <arg name="kill_topic"  value="$(arg shutdown_topic)"/>
+    </node>
+
 
     <!-- Start the mpc node   -->
-    <include file="$(find denmpc)/launch/ardrone_denmpc.launch">
+    <include file="$(find usma_mpc)/launch/denmpc_params.launch">
+        <!-- <include file="$(find usma_mpc)/launch/denmpc_ardrone.launch"> -->
         <arg name="ardrone_pose_topic"          value="/vrpn_client_node/Ardrone/pose"/>
         <arg name="ardrone_desiredpose_topic"   value="/usma_ardrone/mpc/desiredpose"/>
-        <arg name="ardrone_ctrl_ch_topic"       value="/usma_ardrone/mpc/cmd_vel"/>    
-        <arg name="scenario_param_file"         value="$(find denmpc)/config/scenario_params.yaml"/>   
+        <arg name="ardrone_ctrl_ch_topic"       value="/usma_ardrone/uav/cmd_vel"/>    
+        <arg name="scenario_param_file"         value="$(find usma_mpc)/config/scenario_params.yaml"/>   
     </include>
 
     
-
+<!-- <node pkg="denmpc" type="simplePosePublisher.py" name="simplePosePub"/> -->
 
 </launch>
 

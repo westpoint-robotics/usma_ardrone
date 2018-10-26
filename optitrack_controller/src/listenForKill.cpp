@@ -11,6 +11,7 @@ class shutdownListener
 		ros::Subscriber ShutDown_sub;
 		std_msgs::Bool Kill_msg;
 		std_msgs::Empty Null_msg;
+		std::string s_kill_topic;
 
 	public:
 		ros::NodeHandle n;
@@ -19,7 +20,8 @@ class shutdownListener
 	{
 		/*--------- Initialize ROS Communication & Variables ------------- */
 		/*-----  Publishers and Subscribers */
-		ShutDown_sub= n.subscribe("/usma/shutdown",   10,  &shutdownListener::nodeShutDown, this);
+		ros::param::get("~kill_topic", s_kill_topic);
+		ShutDown_sub= n.subscribe(s_kill_topic,   10,  &shutdownListener::nodeShutDown, this);
 		ROS_INFO("waitForkill Listener Constructed");
 	}
 
