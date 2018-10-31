@@ -1,0 +1,108 @@
+# ardrone states:
+# tmp[0] = msg->pose.position.x;
+# tmp[1] = msg->pose.position.y;
+# tmp[2] = msg->pose.position.z;
+# tmp[3]=cos(yaw);
+# tmp[4]=sin(yaw);
+# tmp[5]=dx*tmp[3]+dy*tmp[4];
+# tmp[6]=-dx*tmp[4]+dy*tmp[3];
+# tmp[7]=dz;
+# tmp[8]=dyaw;
+
+
+ardrone0_init:
+  x: [1.15,0,0.95, 1,0, 0.0,0.0, 0.0,0.0]
+  x0:
+    x: 1.15
+    y: 0.0
+    z: 0.0
+    ox: 1.0
+    oy: 0.0
+    vf: 0.0
+    vs: 0.0
+    dz: 0.0
+    dyaw: 0.0
+
+  xdes: [1.15,0,0.95, 1,0, 0.0,0.0, 0.0,0.0]
+  xd:
+    x: 1.15
+    y: 0.0
+    z: 0.0
+    ox: 1.0
+    oy: 0.0
+    vf: 0.0
+    vs: 0.0
+    dz: 0.0
+    dyaw: 0.0
+
+  # p: [-0.5092, 1.458, -1,1, -5, 1.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.3, 1.0] #without tracking position in cost function
+  # p: [-0.5092, 1.458, -1,1, -5, 1.3, 5.0, 5.0, 5.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.3, 1.0] #tracking position without orientation in cost function
+  # p: [-0.5092, 1.458, -1,1, -5, 1.3, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.3, 1.0] #tracking orientation without position in cost function
+  # p: [-0.5092, 1.458, -1,1, -5, 1.3, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.3, 1.0] #tracking both orientation and position in cost function
+  model: #vehicle state model
+    af: -0.5092
+    bf: 1.458
+    az: -1 #I'm not yet sure why, maybe gravity?
+    bz: 1
+    aphi: -5 #Not sure why not zero nor why it is negative, compass drift?
+    bphi: 1.6
+  Q: #state penalty
+    x: 1.5
+    y: 1.5
+    z: 1.0
+    phi: 1.5
+    vx: 0.5
+    vy: 0.5
+    vz: 0.5
+    vphi: 0.5
+  R: #input penalty
+    ux: 1.0
+    uy: 1.0
+    uz: 0.3
+    uphi: 1.0
+
+# p[0] == af/as
+# p[1] == bf/bs
+# p[2] == az
+# p[3] == bz
+# p[4] == a phi
+# p[5] == b phi
+# p[6] == Qx
+# p[7] == Qy (not actually used)
+# p[8] == Qz
+# p[9] == Qphi (used for cos(phi) and sin(phi))
+# p[10] == Qphi (not used)
+# p[11] == Qx_dot
+# p[12] == Qy_dot
+# p[13] == Qz_dot
+# p[14] == Qphi_dot
+# p[15] == Rx
+# p[16] == Ry (not actually used)
+# p[17] == Rz
+# p[18] == Rphi
+
+
+
+  #   //Initialize Parameters
+  # /* Agent parameters:
+  #  * {  lateralA,lateralB,verticalA,verticalB,orientationalA,orientationalB,
+  #  *    qposlat,qposlat,qposvert,qposorient,qposorient,qvlat,qvlat,qvvert,qvorient,
+  #  *    ruvlat,ruvlat,ruvver,ruorient
+  #  *  } dim[19]
+  # */
+  # double ardrone0_init_p[]={
+  #     -0.5092,1.458,3,3,1,1.3, //Model Parameters: Ardrone
+  #     1.0,1.0,1.0, 1.0,1.0, 0.0,0.0,0.0,0.0, //State Penalty: Position
+  #     1.0,1.0,1.0,1.0  //Input Penalty
+  # };
+constraint0_init:
+  p: [1,0.17,0.5,1.5,1,1,1]
+
+# the following are not implemented yet:
+controller:
+  HorizonDiskretization: 10
+  HorizonLength: 1
+  Tolerance: 1e-8
+  UpdateIntervall: 0.01
+  MaximumNumberofIterations: 10
+

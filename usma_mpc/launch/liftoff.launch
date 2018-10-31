@@ -22,6 +22,9 @@
     <node pkg="rostopic" type="rostopic" name="liftoff" output="screen" args="pub -1 /ardrone/takeoff std_msgs/Empty" />
 
     
+    <node pkg="usma_mpc" type="simplePosePublisher.py" name="simplePosePub">
+        <param name="ardrone_desiredpose_topic"   value="/usma_ardrone/mpc/desiredpose"/>
+    </node>
 
 
 </launch>

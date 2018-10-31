@@ -23,19 +23,35 @@ This branch also depends upon a separate repo: (I haven't tested just denmpc and
 	cd ~/ros
 	catkin build usma_ardrone
 
+
+---
+Ar.Drone connect to router
+=======
+
+Set AR.Drone to connect to router, using a laptop or PC, connect to the ssid "ardrone2_<######>", in terminal type 
+
+	roscd usma_ardrone && cd ../wpa_support 
+	script/install_linksys
+	script/connect_linksys
+
+
 ---
 To run:
 =======
 
-Launch gazebo first:
+1A) Launch gazebo first:
 
 	roslaunch usma_mpc gazebo.launch 
 
-Signal the ardrone to takeoff:
+1B) Launch ardrone driver first:
+
+	roslaunch usma_mpc gazebo.launch 
+
+2) Signal the ardrone to takeoff:
 
 	roslaunch usma_mpc liftoff.launch 
 
-Launch denmpc:
+3) Launch denmpc:
 
 	roslaunch usma_mpc mpc.launch 
 

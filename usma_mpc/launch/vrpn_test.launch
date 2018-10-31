@@ -1,0 +1,45 @@
+<!-- -*- mode: XML -*- -->
+<launch>
+    <!-- Experiment meta -->
+    <arg name="date" default="20181010" /> 
+    <arg name="run" default="001" /> 
+	<arg name="ardrone_ip" default="192.168.0.25" /> <!-- need to check IP address each time -->
+    <arg name="server_ip" default="192.168.0.50" /> 
+
+    <!-- EECSDS3 is the default, I did development using my own routers -->
+    <arg name="network" default="linksys" /> 
+    
+    <!-- turn on/off navdata echo -->
+    <arg name="echo"    default="false" />
+
+    <!-- turn on/off logging  of data for plotting -->
+    <arg name="logging" default="false" /> 
+
+    <!-- launch vrpn server -->
+    <include file="$(find optitrack_controller)/launch/vrpn.launch">
+        <arg name="server" value="$(arg server_ip)"/>
+    </include>
+
+    <arg name="shutdown_topic"  default="/usma/shutdown"/>
+	<arg name="launcher" 	default="vrpn_linksys" />
+
+    <node pkg="optitrack_controller"    type="listenForKill"        name="shutdownListener_$(arg launcher)" output="screen" required="true">
+        <param name="kill_topic"  value="$(arg shutdown_topic)"/>
+    </node>
+
+    <include file="$(find optitrack_controller)/launch/killNodes.launch">
+        <arg name="kill_topic"  value="$(arg shutdown_topic)"/>
+        <arg name="land_topic"  value="/ardrone/land"/>
+        <arg name="cmd_topic"   value="/usma_ardrone/uav/cmd_vel"/>
+    </include>
+
+
+
+</launch>
+
+<!-- /usma/shutdown
+/usma_ardrone/mpc/desiredpose
+/usma_ardrone/uav/cmd_vel
+/usma_ardrone/uav/pid
+/vrpn_client_node/Ardrone/pose
+ -->
