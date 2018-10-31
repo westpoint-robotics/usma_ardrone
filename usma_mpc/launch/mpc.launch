@@ -9,7 +9,7 @@
     </include>
 
     <node pkg="optitrack_controller"    type="listenForKill"        name="shutdownListener_$(arg launcher)" output="screen" required="true">
-        <arg name="kill_topic"  value="$(arg shutdown_topic)"/>
+        <param name="kill_topic"  value="$(arg shutdown_topic)"/>
     </node>
 
     <!-- Start the mpc node   -->
@@ -22,8 +22,8 @@
     </include>
 
     
-    <node pkg="denmpc" type="simplePosePublisher.py" name="simplePosePub">
-        <arg name="ardrone_desiredpose_topic"   value="/usma_ardrone/mpc/desiredpose"/>
+    <node pkg="usma_mpc" type="simplePosePublisher.py" name="simplePosePub">
+        <param name="ardrone_desiredpose_topic"   value="/usma_ardrone/mpc/desiredpose"/>
     </node>
 
 </launch>

@@ -37,7 +37,7 @@ Signal the ardrone to takeoff:
 
 Launch denmpc:
 
-	roslaunch usma_mpc ardrone_denmpc.launch 
+	roslaunch usma_mpc mpc.launch 
 
 
 

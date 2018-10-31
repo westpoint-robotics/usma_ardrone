@@ -12,7 +12,7 @@
 
 
     <!-- Start the mpc node   -->
-    <node pkg="denmpc" type="scenario_scenario_param_node" name="scenario_scenario_param_node" output="screen" >
+    <node pkg="denmpc" type="scenario_scenario_param_node" name="scenario_scenario_param_node" output="screen"  >
         <param name="ardrone_pose_topic"           value="$(arg ardrone_pose_topic)" />
         <param name="ardrone_desiredpose_topic"    value="$(arg ardrone_desiredpose_topic)" />
         <param name="ardrone_ctrl_ch_topic"        value="$(arg ardrone_ctrl_ch_topic)" />

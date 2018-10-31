@@ -3,7 +3,7 @@
 <!-- need to send takeoff and land commands separately -->
 
 <launch>
-    <include file="$(find usma_ardrone_gazebo)/launch/spawn_robots.launch"/>
+    <!-- <include file="$(find usma_ardrone_gazebo)/launch/spawn_robots.launch"/> -->
 
     <arg name="logging" default="False" /> 
 
