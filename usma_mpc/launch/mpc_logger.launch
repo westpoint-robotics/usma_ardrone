@@ -1,0 +1,23 @@
+<launch>
+    <arg name="HOST"            default="$(env HOST)" />
+    <arg name="date"            default="20181107" /> <!-- no slash and end! -->
+    <arg name="trial"           default="001" /> <!-- no slash and end! -->
+    <arg name="data_root"       default="/home/benjamin/ros/data" /> <!-- no slash and end! -->
+    <arg name="matlab_prefix"       default="mpc_log" />
+    
+    <arg name="uav_pose_topic"      default="/vrpn_client_node/Ardrone/pose" />
+    <arg name="uav_des_pose_topic"  default="/usma_ardrone/mpc/desiredpose" />
+    <arg name="mpc_cmd_vel_topic"   default="/usma_ardrone/uav/cmd_vel" />
+
+        <node pkg="usma_mpc" type="mpc_logger.py" name="mpc_logger_$(arg HOST)" output="screen" >
+            <param name="/trial"            value="$(arg trial)" />
+            <param name="/date"             value="$(arg date)" />
+            <param name="/data_root"        value="$(arg data_root)" />
+            <param name="/matlab_prefix"        value="$(arg matlab_prefix)" />
+            <param name="/mpc_cmd_vel_topic"    value="$(arg mpc_cmd_vel_topic)" />
+            <param name="/uav_des_pose_topic"   value="$(arg uav_des_pose_topic)" />
+            <param name="/uav_pose_topic"       value="$(arg uav_pose_topic)" />
+        </node>
+
+</launch>
+

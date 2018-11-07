@@ -36,18 +36,18 @@ ardrone0_init:
     aphi: -5 # yaw rate coefficient from system modeling via matlab
     bphi: 9
   Q: #state penalty
-    x: 1.5
-    y: 1.5
+    x: 1.0
+    y: 1.0
     z: 1.0
-    phi: 1.5
-    vx: 0.5
-    vy: 0.5
-    vz: 0.5
-    vphi: 0.5
+    phi: 1.0 #used twice in code for ox and oy, I think
+    vx: 0.0
+    vy: 0.0
+    vz: 0.0
+    vphi: 0.0
   R: #input penalty
     ux: 1.0
     uy: 1.0
-    uz: 0.3
+    uz: 1.0
     uphi: 1.0
 
 # p[0] == af/as
