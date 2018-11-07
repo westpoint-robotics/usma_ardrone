@@ -1,8 +1,3 @@
-% try vq = interp1(...
-%     x,v,...
-%     xq); catch; end
-
-
 function [meta, data] = mpc_1604()
 %% Set up meta
     meta.date = '20181107/';
@@ -14,7 +9,6 @@ function [meta, data] = mpc_1604()
     files = what(trial_path);
     for i= 1:length(files.m)
         eval_str = ['[data.' files.m{i}(1:end-6) '] = loaddatadotm(files.m{i}(1:end-6), meta);'];
-        disp(eval_str)
         try 
             eval(eval_str); 
             catch; disp(['    ** Issue loading ' files.m{i}(1:end-6) ' data']); end
@@ -86,7 +80,7 @@ function [meta, data] = plotmpc(meta, data)
 %     set(figHandles(:), 'visible', 'on');
 %     clear figHandles
 %% figure(1); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
-figure(1); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
+figure(1); clf; current_fig = gcf; disp(['      figure(' num2str(current_fig.Number) ') ..']);
     title('vrpn position, x global')
     hold on
         try plot(data.mpc_log.uav_pose.time, data.mpc_log.uav_pose.position(:,1), 'k.', 'displayname', 'uav actual x'); catch; end
@@ -95,9 +89,10 @@ figure(1); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) '
     hold off
     grid on
     legend('toggle')
+    axis([data.timers.StartTime data.timers.EndTime -5 5])
     clear current_fig
 %% figure(2); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
-figure(2); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
+figure(2); clf; current_fig = gcf; disp(['      figure(' num2str(current_fig.Number) ') ..']);
     title('vrpn position, x global')
     hold on
         try plot(data.mpc_log.uav_pose.time, data.mpc_log.uav_pose.position(:,2), 'k.', 'displayname', 'uav actual x'); catch; end
@@ -106,9 +101,10 @@ figure(2); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) '
     hold off
     grid on
     legend('toggle')
+    axis([data.timers.StartTime data.timers.EndTime -5 5])
     clear current_fig
 %% figure(3); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
-figure(3); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) ') ..']);
+figure(3); clf; current_fig = gcf; disp(['      figure(' num2str(current_fig.Number) ') ..']);
     title('vrpn position, x global')
     hold on
         try plot(data.mpc_log.uav_pose.time, data.mpc_log.uav_pose.position(:,3), 'k.', 'displayname', 'uav actual x'); catch; end
@@ -117,6 +113,7 @@ figure(3); clf; current_fig = gcf; disp(['figure(' num2str(current_fig.Number) '
     hold off
     grid on
     legend('toggle')
+    axis([data.timers.StartTime data.timers.EndTime -5 5])
     clear current_fig
 
     

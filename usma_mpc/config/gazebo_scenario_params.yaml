@@ -1,35 +1,74 @@
-mpc_param_file: gazebo_scenario_params.yaml
+mpc_param_file: live_scenario_params.yaml
 ardrone0_init:
   x: [1.15,0,0.95, 1,0, 0.0,0.0, 0.0,0.0]
+  x0:
+    x: 1.15
+    y: 0.0
+    z: 0.0
+    ox: 1.0 # orientation cos(yaw)
+    oy: 0.0 # orientation sin(yaw)
+    vf: 0.0 # body forward velocity
+    vs: 0.0 # body side/lateral velocity
+    dz: 0.0 # altitude rate
+    dyaw: 0.0 # yaw rate
+
   xdes: [1.15,0,0.95, 1,0, 0.0,0.0, 0.0,0.0]
+  xd:
+    x: 1.15
+    y: 0.0
+    z: 0.0
+    ox: 1.0
+    oy: 0.0
+    vf: 0.0
+    vs: 0.0
+    dz: 0.0
+    dyaw: 0.0
+
   # p: [-0.5092, 1.458, -1,1, -5, 1.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.3, 1.0] #without tracking position in cost function
   # p: [-0.5092, 1.458, -1,1, -5, 1.3, 5.0, 5.0, 5.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.3, 1.0] #tracking position without orientation in cost function
   # p: [-0.5092, 1.458, -1,1, -5, 1.3, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.3, 1.0] #tracking orientation without position in cost function
-  p: [-0.5092, 1.458, -1,1, -5, 1.3, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.3, 1.0] #tracking both orientation and position in cost function
-  model: #vehicle 'linear' state model
-    x: -0.5092
-    z: 1.458
-    xdot: -1
-    zdot: 1
-    y: -5
-    ydot: 1.3
+  # p: [-0.5092, 1.458, -1,1, -5, 1.3, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.3, 1.0] #tracking both orientation and position in cost function
+  model: #vehicle state model
+    af: -0.6
+    bf: 1.2
+    az: -1.9 # altitude rate coefficient from system modeling via matlab
+    bz: 1.2
+    aphi: -5 # yaw rate coefficient from system modeling via matlab
+    bphi: 9
   Q: #state penalty
     x: 1.0
     y: 1.0
-    z: 1.0
-    phi: 1.0
+    z: 10.0
+    phi: 10.0 #used twice in code for ox and oy, I think
+    vx: 0.0
+    vy: 0.0
+    vz: 0.0
+    vphi: 0.0
   R: #input penalty
     ux: 1.0
     uy: 1.0
-    uz: 0.3
+    uz: 1.0
     uphi: 1.0
 
-  # double ardrone0_init_p[]={ //without tracking position
-  #     -0.5092,1.458,-1,1,-5,1.3, //Model Parameters: Ardrone
-  #     0.0,0.0,0.0, 0.0,0.0, 0.0,0.0,0.0,0.0, //State Penalty: no tracking
-  #     x,y,z, 
-  #     1.0,1.0,0.3,1.0 //Input penalty
-  # };
+# p[0] == af/as
+# p[1] == bf/bs
+# p[2] == az
+# p[3] == bz
+# p[4] == a phi
+# p[5] == b phi
+# p[6] == Qx
+# p[7] == Qy (not actually used)
+# p[8] == Qz
+# p[9] == Qphi (used for cos(phi) and sin(phi))
+# p[10] == Qphi (not used)
+# p[11] == Qx_dot
+# p[12] == Qy_dot
+# p[13] == Qz_dot
+# p[14] == Qphi_dot
+# p[15] == Rx
+# p[16] == Ry (not actually used)
+# p[17] == Rz
+# p[18] == Rphi
 
 constraint0_init:
   p: [1,0.17,0.5,1.5,1,1,1]
@@ -41,5 +80,4 @@ controller:
   Tolerance: 1e-8
   UpdateIntervall: 0.01
   MaximumNumberofIterations: 10
-
 

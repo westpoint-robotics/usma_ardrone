@@ -8,7 +8,7 @@ def talker():
     rospy.init_node('desiredpose_publisher', anonymous=True)
     rate = rospy.Rate(10) # 10hz
     pub_msg = PoseStamped()
-    pub_msg.pose.position = Vector3(0.30, 0.25, 1.350)
+    pub_msg.pose.position = Vector3(0.75, -0.5, 1.350)
     pub_msg.pose.orientation = Quaternion(0.0, 0.0, 0.0, 1.0)
 
     while not rospy.is_shutdown():

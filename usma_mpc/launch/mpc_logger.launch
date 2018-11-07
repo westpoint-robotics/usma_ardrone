@@ -1,7 +1,7 @@
 <launch>
     <arg name="HOST"            default="$(env HOST)" />
     <arg name="date"            default="20181107" /> <!-- no slash and end! -->
-    <arg name="trial"           default="001" /> <!-- no slash and end! -->
+    <arg name="trial"           default="002" /> <!-- no slash and end! -->
     <arg name="data_root"       default="/home/benjamin/ros/data" /> <!-- no slash and end! -->
     <arg name="matlab_prefix"       default="mpc_log" />
     

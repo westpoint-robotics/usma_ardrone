@@ -1,5 +1,5 @@
 <launch>
-    <arg name="physics"         default="live" />
+    <arg name="physics"         default="gazebo" />
     <arg name="launcher"        default="testmpc" />
     <arg name="shutdown_topic"  default="/usma/shutdown"/>
     
@@ -25,12 +25,11 @@
     </include>
 
 
-    <include file="$(find usma_mpc)/launch/mpc_logger.launch"></include>
+    <include file="$(find usma_mpc)/launch/mpc_logger.launch">
+        <arg name="trial"   value="001" />
+    </include>
 
     
-    <node pkg="usma_mpc" type="simplePosePublisher.py" name="simplePosePub">
-        <param name="ardrone_desiredpose_topic"   value="/usma_ardrone/mpc/desiredpose"/>
-    </node>
 
 </launch>
 
