@@ -10,7 +10,7 @@
     <rosparam file="$(arg cfg_yaml)" command="load"/>
 
     <!-- Start the node to track a face in an video stream   -->
-    <node pkg="ardrone_face_tracker" type="face_tracker_imgmsg.py" name="face_tracker_imgmsg" output="screen" >
+    <node pkg="ardrone_face_tracker" type="face_tracker.py" name="face_tracker" output="screen" >
         <param name="/display_original_image"       value="$(arg display_original_image)" />
         <param name="/display_tracking_image"       value="$(arg display_tracking_image)" />
         <param name="/subscribed_image_topic"    	value="$(arg img_topic)" />

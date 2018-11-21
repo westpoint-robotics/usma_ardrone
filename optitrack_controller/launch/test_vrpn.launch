@@ -1,0 +1,13 @@
+<!-- -*- mode: XML -*- -->
+<!-- need to send takeoff and land commands separately -->
+<launch>
+    <arg name="server_ip" default="192.168.0.24" /> 
+
+    <!-- launch vrpn server -->
+    <include file="$(find optitrack_controller)/launch/vrpn.launch">
+        <arg name="server" value="$(arg server_ip)"/>
+    </include>
+
+
+</launch>
+

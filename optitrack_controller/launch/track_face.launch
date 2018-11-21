@@ -9,7 +9,7 @@
     <arg name="run" default="001" /> 
 
 	<arg name="ardrone_ip" default="192.168.0.25" /> <!-- need to check IP address each time -->
-    <arg name="server_ip" default="192.168.0.50" /> 
+    <arg name="server_ip" default="192.168.0.24" /> 
 
     <!-- EECSDS3 is the default, I did development using my own routers -->
     <arg name="network" default="linksys" /> 
@@ -61,7 +61,7 @@
     </include>
 
     <!-- Launch face tracking algorithm -->
-    <include file="$(find face_shooter)/launch/face_tracker_imgmsg.launch">
+    <include file="$(find ardrone_face_tracker)/launch/face_tracker.launch">
         <arg name="cfg_yaml"                value="$(find optitrack_controller)/config/facetrack.yaml" />
         <arg name="img_topic"               value="/ardrone/front/image_raw"/>
         <arg name="centroid_topic"          value="/ardrone/front/face_centroid"/>
