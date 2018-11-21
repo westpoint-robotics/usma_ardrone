@@ -63,7 +63,7 @@
     <!-- Launch face tracking algorithm -->
     <include file="$(find ardrone_face_tracker)/launch/face_tracker.launch">
         <arg name="cfg_yaml"                value="$(find optitrack_controller)/config/facetrack.yaml" />
-        <arg name="img_topic"               value="/ardrone/front/image_raw"/>
+        <arg name="img_topic"               value="/ardrone/front/image_rect_color"/>
         <arg name="centroid_topic"          value="/ardrone/front/face_centroid"/>
         <arg name="display_original_image"  value="false" />
         <arg name="display_tracking_image"  value="true" />

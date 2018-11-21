@@ -9,5 +9,24 @@
     </include>
 
 
+    <arg name="date" default="20181121" /> 
+    <arg name="run" default="001" /> 
+
+
+    <!-- vrpn logging -->
+    <include file="$(find usma_optitrack)/launch/vrpn_logger.launch">
+        <arg name="run"             value="$(arg run)" />
+        <arg name="pose_msg"        value="/vrpn_client_node/Ardrone/pose"/>
+        <arg name="filepath"        value="/home/benjamin/ros/data/$(arg date)/$(arg run)/"/>
+        <arg name="matlab_prefix"   value="vrpn_ardrone"/>
+    </include>
+    <include file="$(find usma_optitrack)/launch/vrpn_logger.launch">
+        <arg name="run"             value="$(arg run)" />
+        <arg name="pose_msg"        value="/vrpn_client_node/blockhead/pose"/>
+        <arg name="filepath"        value="/home/benjamin/ros/data/$(arg date)/$(arg run)/"/>
+        <arg name="matlab_prefix"   value="vrpn_blockhead"/>
+    </include>
+
+
 </launch>
 

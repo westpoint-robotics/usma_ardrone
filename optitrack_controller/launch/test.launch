@@ -1,20 +1,24 @@
 <!-- -*- mode: XML -*- -->
-
 <!-- need to send takeoff and land commands separately -->
-
 <launch>
+    <!-- Experiment params -->
+    <arg name="use_face" default="false" /> 
+    
     <!-- Experiment meta -->
-    <arg name="date" default="20180917" /> 
-    <arg name="run" default="002" /> 
+    <arg name="date" default="20181121" /> 
+    <arg name="run" default="001" /> 
 
 	<arg name="ardrone_ip" default="192.168.0.25" /> <!-- need to check IP address each time -->
-    <arg name="server_ip" default="192.168.0.50" /> 
+    <arg name="server_ip" default="192.168.0.24" /> 
 
     <!-- EECSDS3 is the default, I did development using my own routers -->
     <arg name="network" default="linksys" /> 
+    
+    <!-- turn on/off navdata echo -->
+    <arg name="echo"    default="false" />
 
     <!-- turn on/off logging  of data for plotting -->
-    <arg name="logging" default="False" /> 
+    <arg name="logging" default="false" /> 
 
     <!-- launch vrpn server -->
     <include file="$(find optitrack_controller)/launch/vrpn.launch">
@@ -23,8 +27,9 @@
 
 	<!-- ardrone driver !!! need to send takeoff and land commands separately -->
     <include file="$(find optitrack_controller)/launch/ardrone_driver_$(arg network).launch">
-        <arg name="ip" value="$(arg ardrone_ip)"/>
-        <arg name="cmd_topic" value="ardrone/switched/cmd_vel"/>
+        <arg name="ip"          value="$(arg ardrone_ip)"/>
+        <arg name="echo"        value="false" />
+        <arg name="cmd_topic"   value="ardrone/switched/cmd_vel"/>
     </include>
 
     <!-- launch autopilot using optitrack measurements -->
@@ -34,6 +39,7 @@
         <arg name="Kphi"                    value="0.5"/>
         <arg name="Kp"                      value="0.25"/>
         <arg name="Kv"                      value="0.1"/>
+        <arg name="logging"                 value="$(arg logging)" />
         <arg name="mocap_pose_topic"        value="/vrpn_client_node/Ardrone/pose"/>
         <arg name="uav_desired_pose_topic"  value="/usma_ardrone/uav/desired_pose"/>
         <arg name="face_pose_topic"         value="/ardrone/face/pose_desired" />
@@ -51,14 +57,19 @@
         <arg name="face_centroid_topic"     value="/ardrone/front/face_centroid" />
         <arg name="face_cmd_vel_topic"      value="/ardrone/face/cmd_vel" />
         <arg name="face_pose_topic"         value="/ardrone/face/pose_desired" />
+        <arg name="face_permission_topic"   value="/ardrone/face/face_permission_topic" />
     </include>
 
     <!-- Launch face tracking algorithm -->
-    <include file="$(find face_shooter)/launch/face_tracker_imgmsg.launch">
-        <arg name="cfg_yaml"        value="$(find optitrack_controller)/config/facetrack.yaml" />
-        <arg name="img_topic"       value="/ardrone/front/image_raw"/>
-        <arg name="centroid_topic"  value="/ardrone/front/face_centroid"/>
+    <include file="$(find ardrone_face_tracker)/launch/face_tracker.launch">
+        <arg name="cfg_yaml"                value="$(find optitrack_controller)/config/facetrack.yaml" />
+        <!-- <arg name="img_topic"               value="/ardrone/front/image_raw"/> -->
+        <arg name="img_topic"               value="/ardrone/front/image_rect_color"/>
+        <arg name="centroid_topic"          value="/ardrone/front/face_centroid"/>
+        <arg name="display_original_image"  value="false" />
+        <arg name="display_tracking_image"  value="true" />
     </include>
+
 
 
 </launch>

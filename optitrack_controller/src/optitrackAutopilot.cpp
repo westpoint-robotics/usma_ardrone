@@ -68,7 +68,7 @@ class optitrackAutopilot
 
 		// PV variables
 		double Kp, Kv, Kphi;
-		double starting_time;
+		double starting_time, last_face_time, LOST_face_time;
 
 	public:
 		ros::NodeHandle n;
@@ -117,6 +117,7 @@ class optitrackAutopilot
 		initDesiredPose();
 
 		ROS_INFO("optitrackAutopilot Constructed");
+		LOST_face_time = 2; //seconds without a face before zeroing face commands.
 	}
 
 
@@ -129,18 +130,21 @@ class optitrackAutopilot
 
 	void updateFacePose(const geometry_msgs::Twist::ConstPtr& msg)
 	{
-		face_pose_msg.linear = msg->linear; // radians
+		face_pose_msg.linear = msg->linear; // 
 		face_pose_msg.angular = msg->angular; // radians
 		face_desired_angle = face_pose_msg.angular.z;
 
 		face_pose_counter += 1;
 		fprintf (pFile,"optAutopilot.face.time(%d,:)  = % -6.8f;\n", face_pose_counter, ros::Time::now().toSec());
 		fprintf (pFile,"optAutopilot.face.angle(%d,:) = % -6.8f;\n", face_pose_counter, face_desired_angle);
+		fprintf (pFile,"optAutopilot.face.altitude(%d,:) = % -6.8f;\n", face_pose_counter, face_pose_msg.linear.z);
 		fprintf (pFile,"optAutopilot.face.uav_mocap_heading(%d,:)      = % -6.8f;\n", face_pose_counter, uav_mocap_ardrone_pose.heading);
 		fprintf (pFile,"optAutopilot.face.desired_global_heading(%d,:) = % -6.8f;\n\n", face_pose_counter, uav_desired_pose_global_msg.heading);
 		
 		// ROS_INFO("Adding %6.4f radians to global heading error", face_desired_angle);
 		uav_desired_pose_global_msg.heading = uav_mocap_ardrone_pose.heading + face_desired_angle;
+		last_face_time = ros::Time::now().toSec();
+
 	}
 
 
@@ -282,6 +286,8 @@ class optitrackAutopilot
 			uav_desired_pose_global_msg.position.x - uav_mocap_ardrone_pose.position.x,
 			uav_desired_pose_global_msg.position.y - uav_mocap_ardrone_pose.position.y,
 			uav_desired_pose_global_msg.position.z - uav_mocap_ardrone_pose.position.z);
+
+		
 		double global_heading_error = uav_desired_pose_global_msg.heading - uav_mocap_ardrone_pose.heading;
         // ROS_INFO("uav_Kp global position and heading errors [x, y, z, Y] : [%2.3f, %2.3f, %2.3f, %2.4f]", 
 		// global_position_error.at<double>(0,0),
@@ -306,10 +312,23 @@ class optitrackAutopilot
 
 		uav_cmd_msg.linear.x = Kp*body_position_error.at<double>(0,0);
 		uav_cmd_msg.linear.y = Kp*body_position_error.at<double>(1,0);
-		uav_cmd_msg.linear.z = 2*Kp*body_position_error.at<double>(2,0);
 		uav_cmd_msg.angular.x = 0;
 		uav_cmd_msg.angular.y = 0;
-		uav_cmd_msg.angular.z = Kphi*global_heading_error;
+
+
+		//unless it has been a while since the lasst time we saw a face:
+		double time_since_last_face = last_face_time - ros::Time::now().toSec();
+		if (time_since_last_face >=	LOST_face_time){
+			//it has been a while since we saw a face: reset
+			uav_cmd_msg.linear.z = 2*Kp*body_position_error.at<double>(2,0);
+			uav_cmd_msg.angular.z = Kphi*global_heading_error;
+		} else {  // we've seen a face recently
+			uav_cmd_msg.linear.z = face_pose_msg.linear.z; 
+			uav_cmd_msg.angular.z = global_heading_error;
+		}
+
+
+
 
 		// cmdUAV(uav_cmd_msg);
 		if ((ros::Time::now().toSec() - starting_time) < 5)
