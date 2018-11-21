@@ -15,6 +15,14 @@ Set AR.Drone to connect to router, using a laptop or PC, connect to the ssid "ar
 if the ping returns a response time, then the ardrone is connected to the same network on the correct ip address
 
 ---
+If you plan on logging data, run :
+
+	. ~/ros/src/usma_ardrone/scripts/makedirs.sh 20181121 1 5
+
+	. ~/ros/src/usma_ardrone/scripts/makedirs.sh <yyyymmdd> <start number> <last number>
+
+
+---
 
 Assuming the optitrack software and cameras are booted and running, to launch the demo, first launch the vrpn service. This will stream the optitrack pose data as a ros message. (note this assumes the Ethernet cable for the optitrack pc has been switched from EECSDS3 to the linksys router, it has not been tested on EECSDS3)
 
@@ -22,7 +30,9 @@ Assuming the optitrack software and cameras are booted and running, to launch th
 
 To run the face tracking demo, the following command file will launch the control and tracking nodes for the ardrone
 
-	roslaunch optitrack_controller track_face.launch network:=linksys logging:=true run:=004<br />
+	roslaunch optitrack_controller track_face.launch network:=linksys
+
+	roslaunch optitrack_controller track_face.launch network:=linksys logging:=true run:=004 
 
 Finally to have the drone takeoff :
 
@@ -35,8 +45,6 @@ Finally to have the drone takeoff :
 To give the uav permission to track faces:<br/>
 
 	rostopic pub -1 /ardrone/face/face_permission_topic std_msgs/Empty
-
-
 
 To land;
 

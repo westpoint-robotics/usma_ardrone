@@ -5,7 +5,7 @@
     <arg name="use_face" default="false" /> 
     
     <!-- Experiment meta -->
-    <arg name="date" default="20181010" /> 
+    <arg name="date" default="20181121" /> 
     <arg name="run" default="001" /> 
 
 	<arg name="ardrone_ip" default="192.168.0.25" /> <!-- need to check IP address each time -->
