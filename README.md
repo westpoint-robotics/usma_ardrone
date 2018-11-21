@@ -18,13 +18,13 @@ Ar.Drone Face Tracking demo with optitrack feedback
 =======
 
 See readme under optitrack_controller
-
+https://github.com/westpoint-robotics/usma_ardrone/tree/master/optitrack_controller
 
 ---
 testing mpc:
 =======
 see readme under usma_mpc
-
+https://github.com/westpoint-robotics/usma_ardrone/tree/master/usma_mpc
 
 ---
 Finding a MAC address

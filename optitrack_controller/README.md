@@ -1,18 +1,3 @@
-Setting up the repo
-=======
-
-	git init
-	git remote add gh git@github.com:westpoint-robotics/usma_ardrone.git
-
-
----
-Required repos:
-=======
-
-	sudo apt-get install -y ros-kinetic-ardrone-autonomy
-
-might also need "hector_gazebo_plugins"
-
 ---
 Ar.Drone Face Tracking demo with optitrack feedback
 =======
@@ -37,7 +22,7 @@ Assuming the optitrack software and cameras are booted and running, to launch th
 
 To run the face tracking demo, the following command file will launch the control and tracking nodes for the ardrone
 
-	roslaunch optitrack_controller track_face.launch network:=linksys
+	roslaunch optitrack_controller track_face.launch network:=linksys logging:=true run:=004<br />
 
 Finally to have the drone takeoff :
 
@@ -45,19 +30,18 @@ Finally to have the drone takeoff :
 -or-  <br />
 	roslaunch optitrack_controller liftoff.launch
 
-and to land;
+To give the uav permission to track faces:<br/>
+	rostopic pub -1 /ardrone/face/face_permission_topic std_msgs/Empty
+
+
+
+To land;
 
 	rostopic pub -1 /ardrone/land std_msgs/Empty
 
 If there is an issue during takeoff, or if you need to do a hard abort for some reason, you may need to reset the drone before taking off a second time:
 	
 	rostopic pub -1 /ardrone/reset std_msgs/Empty
-
-
----
-testing mpc:
-=======
-	roslaunch optitrack_controller 
 
 
 ---
