@@ -44,7 +44,7 @@ ardrone0_init:
     vy: 0.0
     vz: 0.0
     vphi: 0.0
-  R: #input penalty
+  R: #control penalty
     ux: 1.0
     uy: 1.0
     uz: 1.0
