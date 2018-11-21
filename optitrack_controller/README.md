@@ -19,8 +19,7 @@ If you plan on logging data, run :
 
 	. ~/ros/src/usma_ardrone/scripts/makedirs.sh 20181121 1 5
 
-	. ~/ros/src/usma_ardrone/scripts/makedirs.sh <yyyymmdd> <start number> <last number>
-
+	. ~/ros/src/usma_ardrone/scripts/makedirs.sh <yyyymmdd> <run first index> <run last index>
 
 ---
 
@@ -32,7 +31,7 @@ To run the face tracking demo, the following command file will launch the contro
 
 	roslaunch optitrack_controller track_face.launch network:=linksys
 
-	roslaunch optitrack_controller track_face.launch network:=linksys logging:=true run:=004 
+	roslaunch optitrack_controller track_face.launch network:=linksys logging:=true date:=20181121 run:=001
 
 Finally to have the drone takeoff :
 

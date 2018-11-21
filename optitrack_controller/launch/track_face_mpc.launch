@@ -1,0 +1,87 @@
+<!-- -*- mode: XML -*- -->
+<!-- need to send takeoff and land commands separately -->
+<launch>
+    <!-- Experiment params -->
+    <arg name="use_face" default="false" /> 
+    
+    <!-- Experiment meta -->
+    <arg name="date" default="20181121" /> 
+    <arg name="run" default="001" /> 
+
+	<arg name="ardrone_ip" default="192.168.0.25" /> <!-- need to check IP address each time -->
+    <arg name="server_ip" default="192.168.0.50" /> 
+
+    <!-- EECSDS3 is the default, I did development using my own routers -->
+    <arg name="network" default="linksys" /> 
+    
+    <!-- turn on/off navdata echo -->
+    <arg name="echo"    default="false" />
+
+    <!-- turn on/off logging  of data for plotting -->
+    <arg name="logging" default="false" /> 
+
+    <!-- launch vrpn server -->
+    <include file="$(find optitrack_controller)/launch/vrpn.launch">
+        <arg name="server" value="$(arg server_ip)"/>
+    </include>
+
+	<!-- ardrone driver !!! need to send takeoff and land commands separately -->
+    <include file="$(find optitrack_controller)/launch/ardrone_driver_$(arg network).launch">
+        <arg name="ip"          value="$(arg ardrone_ip)"/>
+        <arg name="echo"        value="false" />
+        <arg name="cmd_topic"   value="ardrone/switched/cmd_vel"/>
+    </include>
+
+    <!-- launch autopilot using optitrack measurements -->
+    <include file="$(find optitrack_controller)/launch/optitrackAutopilot.launch">
+        <arg name="date"                    value="$(arg date)" />
+        <arg name="run"                     value="$(arg run)" />
+        <arg name="Kphi"                    value="0.5"/>
+        <arg name="Kp"                      value="0.25"/>
+        <arg name="Kv"                      value="0.1"/>
+        <arg name="logging"                 value="$(arg logging)" />
+        <arg name="mocap_pose_topic"        value="/vrpn_client_node/Ardrone/pose"/>
+        <arg name="uav_desired_pose_topic"  value="/usma_ardrone/uav/desired_pose"/>
+        <arg name="face_pose_topic"         value="/ardrone/face/pose_desired" />
+        <arg name="uav_cmd_topic"           value="/ardrone/switched/cmd_vel" />
+        <!-- <arg name="uav_cmd_topic"           value="/usma_ardrone/uav/cmd_vel"/> -->
+    </include>
+
+    <!-- launch autopilot using face tracking centroid -->
+    <include file="$(find optitrack_controller)/launch/face_centroid_cmd.launch">
+        <arg name="date"                    value="$(arg date)" />
+        <arg name="run"                     value="$(arg run)" />
+        <arg name="Kz"                      value="0.001"/>
+        <arg name="Kyaw"                    value="0.001"/>
+        <arg name="logging"                 value="$(arg logging)" />
+        <arg name="face_centroid_topic"     value="/ardrone/front/face_centroid" />
+        <arg name="face_cmd_vel_topic"      value="/ardrone/face/cmd_vel" />
+        <arg name="face_pose_topic"         value="/ardrone/face/pose_desired" />
+        <arg name="face_permission_topic"   value="/ardrone/face/face_permission_topic" />
+    </include>
+
+    <!-- Launch face tracking algorithm -->
+    <include file="$(find face_shooter)/launch/face_tracker_imgmsg.launch">
+        <arg name="cfg_yaml"                value="$(find optitrack_controller)/config/facetrack.yaml" />
+        <arg name="img_topic"               value="/ardrone/front/image_raw"/>
+        <arg name="centroid_topic"          value="/ardrone/front/face_centroid"/>
+        <arg name="display_original_image"  value="false" />
+        <arg name="display_tracking_image"  value="true" />
+    </include>
+
+    <!-- vrpn logging -->
+    <include file="$(find usma_optitrack)/launch/vrpn_logger.launch">
+        <arg name="run"             value="$(arg run)" />
+        <arg name="pose_msg"        value="/vrpn_client_node/Ardrone/pose"/>
+        <arg name="filepath"        value="/home/benjamin/ros/data/$(arg date)/$(arg run)/"/>
+        <arg name="matlab_prefix"   value="vrpn_ardrone"/>
+    </include>
+    <include file="$(find usma_optitrack)/launch/vrpn_logger.launch">
+        <arg name="run"             value="$(arg run)" />
+        <arg name="pose_msg"        value="/vrpn_client_node/blockhead/pose"/>
+        <arg name="filepath"        value="/home/benjamin/ros/data/$(arg date)/$(arg run)/"/>
+        <arg name="matlab_prefix"   value="vrpn_blockhead"/>
+    </include>
+
+</launch>
+
