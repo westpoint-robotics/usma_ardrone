@@ -31,6 +31,7 @@ Finally to have the drone takeoff :
 	roslaunch optitrack_controller liftoff.launch
 
 To give the uav permission to track faces:<br/>
+
 	rostopic pub -1 /ardrone/face/face_permission_topic std_msgs/Empty
 
 
