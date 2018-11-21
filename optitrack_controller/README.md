@@ -27,7 +27,9 @@ To run the face tracking demo, the following command file will launch the contro
 Finally to have the drone takeoff :
 
 	rostopic pub -1 /ardrone/takeoff std_msgs/Empty
+
 -or-  <br />
+
 	roslaunch optitrack_controller liftoff.launch
 
 To give the uav permission to track faces:<br/>
