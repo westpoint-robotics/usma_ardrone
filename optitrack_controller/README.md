@@ -1,6 +1,6 @@
 # Set up the lab:
 The Ar.Drone is configured to connect to the Linksys e2500 router (bottom in this image)<br />
-![alt tag](media/optitrackIP.jpg)
+![Open Project](https://github.com/westpoint-robotics/usma_ardrone/blob/master/media/routers_1.jpg)
 
 Make sure that the green ethernet cable is connected to the e2500 router, this connects the computer running Optitrack Motive to the netowkr that will be used for ROS and the AR.Drone.  This must happen before Optitrack Motive is launched in windows.  Open Motive Now. <br />
 
