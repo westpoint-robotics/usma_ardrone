@@ -17,11 +17,10 @@ The IP address here must match the server_ip in the launch file mentioned below:
 
 Set AR.Drone to connect to router, using a laptop or PC, connect to the ssid "ardrone2_<######>", in terminal type 
 
-	roscd usma_ardrone && cd ../wpa_support 
-	script/install_linksys
+	roscd wpa_support 
 	script/connect_linksys
 
-"install_linksys" needs only to be called once, but "connect_linksys" must be called each time the drone is powered down, such as when changing the battery. Now connect the laptop to the linksys router network ARDRONE250024ghz and test whether the ardrone is connected to the same network:
+"connect_linksys" must be called each time the drone is powered down, such as when changing the battery. Now connect the laptop to the linksys router network ARDRONE250024ghz and test whether the ardrone is connected to the same network:
 
 	ping 192.168.0.25
 
@@ -36,7 +35,9 @@ If you plan on logging data, run :
 
 Assuming the optitrack software and cameras are booted and running, to launch the demo, first launch the vrpn service. This will stream the optitrack pose data as a ros message. (note this assumes the Ethernet cable for the optitrack pc has been switched from EECSDS3 to the linksys router, it has not been tested on EECSDS3)
 
-	<!-- roslaunch optitrack_controller vrpn.launch -->
+	roslaunch optitrack_controller vrpn.launch
+
+'rostopic list' should populate with the rigid bodies in the optitrack field of view.  'ctrl-c' to close the vrpn server.
 
 To run the face tracking demo, the following command file will launch the control and tracking nodes for the ardrone
 
@@ -52,7 +53,7 @@ Finally to have the drone takeoff :
 
 	roslaunch optitrack_controller liftoff.launch
 
-To give the uav permission to track faces:<br/>
+To give the uav permission to track faces (It will not maneuver to track faces without permission):<br/>
 
 	rostopic pub -1 /ardrone/face/face_permission_topic std_msgs/Empty
 
@@ -63,6 +64,8 @@ To land;
 If there is an issue during takeoff, or if you need to do a hard abort for some reason, you may need to reset the drone before taking off a second time:
 	
 	rostopic pub -1 /ardrone/reset std_msgs/Empty
+
+If there is an issue, you can always e-stop the Ar.Drone by putting a hand above and below the body of the UAV, grabbing it and flipping it over.  This will put the drone into an e-stop and will need a reset before taking off again.
 
 
 ---
@@ -103,3 +106,7 @@ Finding a MAC address
 ardrone2_234879  ::  90:03:B7:38:0D:72 <br />
 ardrone2_065412  ::  90:03:B7:31:18:D5 <br />
 ardrone2_049677  ::  90:03:B7:E8:3C:D8 <br />
+
+
+script/install_linksys
+"install_linksys" needs only to be called once, but 
