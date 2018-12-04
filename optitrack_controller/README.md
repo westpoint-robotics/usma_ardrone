@@ -8,10 +8,10 @@ Open the project "abruzzo_face_tracking".  This should load in the opbjects "Ard
 ![Open Project](https://github.com/westpoint-robotics/usma_ardrone/blob/master/media/open_project.jpg)
 
 To configure the Motive workspace, from the drop down in the top right corner, choose "abruzzo_uavface"
-![alt tag](media/streamingengine.jpg)
+![Open Project](https://github.com/westpoint-robotics/usma_ardrone/blob/master/media/streaming_engine.jpg)
 
 Make sure Optitrack Tracker is publishing on the Linksys network.
-![alt tag](media/optitrackIP.jpg)
+![Open Project](https://github.com/westpoint-robotics/usma_ardrone/blob/master/media/optitrack_IP.jpg)
 
 
 
