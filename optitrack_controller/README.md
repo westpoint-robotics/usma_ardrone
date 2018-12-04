@@ -26,11 +26,6 @@ Set AR.Drone to connect to router, using a laptop or PC, connect to the ssid "ar
 
 if the ping returns a response time, then the ardrone is connected to the same network on the correct ip address
 
-If you plan on logging data, run :
-
-	. ~/ros/src/usma_ardrone/scripts/makedirs.sh 20181121 1 5
-
-	. ~/ros/src/usma_ardrone/scripts/makedirs.sh <yyyymmdd> <run first index> <run last index>
 
 
 Assuming the optitrack software and cameras are booted and running, to launch the demo, first launch the vrpn service. This will stream the optitrack pose data as a ros message. (note this assumes the Ethernet cable for the optitrack pc has been switched from EECSDS3 to the linksys router, it has not been tested on EECSDS3)
@@ -42,8 +37,6 @@ Assuming the optitrack software and cameras are booted and running, to launch th
 To run the face tracking demo, the following command file will launch the control and tracking nodes for the ardrone
 
 	roslaunch optitrack_controller track_face.launch network:=linksys
-
-	roslaunch optitrack_controller track_face.launch network:=linksys logging:=true date:=20181121 run:=001
 
 Finally to have the drone takeoff :
 
@@ -61,12 +54,25 @@ To land;
 
 	rostopic pub -1 /ardrone/land std_msgs/Empty
 
+
+---
+
 If there is an issue during takeoff, or if you need to do a hard abort for some reason, you may need to reset the drone before taking off a second time:
 	
 	rostopic pub -1 /ardrone/reset std_msgs/Empty
 
 If there is an issue, you can always e-stop the Ar.Drone by putting a hand above and below the body of the UAV, grabbing it and flipping it over.  This will put the drone into an e-stop and will need a reset before taking off again.
 
+
+---
+If you plan on logging data, run :
+
+	. ~/ros/src/usma_ardrone/scripts/makedirs.sh 20181121 1 5
+
+	. ~/ros/src/usma_ardrone/scripts/makedirs.sh <yyyymmdd> <run first index> <run last index>
+
+
+	roslaunch optitrack_controller track_face.launch network:=linksys logging:=true date:=20181121 run:=001
 
 ---
 Connect to the AR.Drone directly
