@@ -5,13 +5,16 @@ The Ar.Drone is configured to connect to the Linksys e2500 router (bottom in thi
 Make sure that the green ethernet cable is connected to the e2500 router, this connects the computer running Optitrack Motive to the netowkr that will be used for ROS and the AR.Drone.  This must happen before Optitrack Motive is launched in windows.  Open Motive Now. <br />
 
 Open the project "abruzzo_face_tracking".  This should load in the opbjects "Ardrone" and "blockhead".
-![alt tag](media/openproject.jpg)
+![Open Project](https://github.com/westpoint-robotics/usma_ardrone/blob/master/media/open_project.jpg)
 
 To configure the Motive workspace, from the drop down in the top right corner, choose "abruzzo_uavface"
 ![alt tag](media/streamingengine.jpg)
 
 Make sure Optitrack Tracker is publishing on the Linksys network.
 ![alt tag](media/optitrackIP.jpg)
+
+
+
 
 ## Ar.Drone Face Tracking demo with optitrack feedback
 
