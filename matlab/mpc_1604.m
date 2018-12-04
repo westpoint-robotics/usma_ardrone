@@ -1,5 +1,5 @@
 function [meta, data] = mpc_1604()
-%% Set up meta
+%% Set up metarsync -avI  -e ssh benjamin@saturn.local:/Users/benjamin/ros/data/$DATE/ ~/ros/data/$DATE/ 
     meta.date = '20181107/';
     meta.run = '001'; % testing face feedback
     meta.dataroot = '/home/benjamin/ros/data/';
