@@ -1,3 +1,4 @@
+
 ---
 Set up the lab:
 =======
@@ -15,7 +16,6 @@ To configure the Motive workspace, from the drop down in the top right corner, c
 Make sure Optitrack Tracker is publishing on the Linksys network.
 ![alt tag](media/optitrackIP.jpg)
 
----
 Ar.Drone Face Tracking demo with optitrack feedback
 =======
 
