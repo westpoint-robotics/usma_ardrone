@@ -10,7 +10,7 @@ Open the project "abruzzo_face_tracking".  This should load in the opbjects "Ard
 To configure the Motive workspace, from the drop down in the top right corner, choose "abruzzo_uavface".  Make sure Optitrack Tracker is publishing on the Linksys network, which should be something like 192.168.0.xx.  This number must match the 
 ![Open Project](https://github.com/westpoint-robotics/usma_ardrone/blob/master/media/optitrack_IP.jpg)  
 
-The IP address here must match the server_ip in the launch file mentioned below:
+The IP address here must match the server_ip in the launch files mentioned below:
 ![Open Project](https://github.com/westpoint-robotics/usma_ardrone/blob/master/media/ip_addresses.png)  
 
 ## Ar.Drone Face Tracking demo with optitrack feedback
