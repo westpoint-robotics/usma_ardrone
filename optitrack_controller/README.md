@@ -1,7 +1,4 @@
-
----
-Set up the lab:
-=======
+# Set up the lab:
 The Ar.Drone is configured to connect to the Linksys e2500 router (bottom in this image)<br />
 ![alt tag](media/optitrackIP.jpg)
 
@@ -16,8 +13,7 @@ To configure the Motive workspace, from the drop down in the top right corner, c
 Make sure Optitrack Tracker is publishing on the Linksys network.
 ![alt tag](media/optitrackIP.jpg)
 
-Ar.Drone Face Tracking demo with optitrack feedback
-=======
+## Ar.Drone Face Tracking demo with optitrack feedback
 
 Set AR.Drone to connect to router, using a laptop or PC, connect to the ssid "ardrone2_<######>", in terminal type 
 
@@ -31,14 +27,12 @@ Set AR.Drone to connect to router, using a laptop or PC, connect to the ssid "ar
 
 if the ping returns a response time, then the ardrone is connected to the same network on the correct ip address
 
----
 If you plan on logging data, run :
 
 	. ~/ros/src/usma_ardrone/scripts/makedirs.sh 20181121 1 5
 
 	. ~/ros/src/usma_ardrone/scripts/makedirs.sh <yyyymmdd> <run first index> <run last index>
 
----
 
 Assuming the optitrack software and cameras are booted and running, to launch the demo, first launch the vrpn service. This will stream the optitrack pose data as a ros message. (note this assumes the Ethernet cable for the optitrack pc has been switched from EECSDS3 to the linksys router, it has not been tested on EECSDS3)
 
