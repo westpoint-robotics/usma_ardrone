@@ -32,7 +32,7 @@ Assuming the optitrack software and cameras are booted and running, to launch th
 
 	roslaunch optitrack_controller vrpn.launch
 
-'rostopic list' should populate with the rigid bodies in the optitrack field of view.  'ctrl-c' to close the vrpn server.
+'rostopic list' should populate with the rigid bodies in the optitrack field of view. If you do not see rigid bodies on the 'rostopic list' output, check to make sure that the optitrack software is registering the rigid bodies in its software.  sometimes the too many reflective markers are out of view of the optitrack cameras. Try moving the drone around until it is seen by the cameras. 'ctrl-c' to close the vrpn server.
 
 To run the face tracking demo, the following command file will launch the control and tracking nodes for the ardrone
 
