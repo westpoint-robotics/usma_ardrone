@@ -1,5 +1,6 @@
 <!-- -*- mode: XML -*- -->
 <launch>
+	<arg name="launcher"	default="ardrone_autonomy"/>
 
 	<node pkg="ardrone_autonomy" type="ardrone_driver" name="ardrone_autonomy" clear_params="true">
 		<param name="tf_prefix" value="ardrone_autonomy" />  
@@ -15,5 +16,15 @@
 
 	<node pkg="rostopic" 	type="rostopic" 	name="navdataEcho" 	output="screen" 	args="echo /ardrone/navdata" />
 	<node pkg="image_view" 	type="image_view"	name="image_view" 	args="image:=/ardrone/front/image_rect_color" />
+
+	<include file="$(find stop)/launch/listener.launch">
+		<arg name="launcher"	default="$(arg launcher)" />
+		<arg name="stop_topic"	default="/stop/shutdown" />
+	</include>
+
+	<include file="$(find stop)/launch/trigger.launch">
+		<arg name="launcher" 	default="$(arg launcher)" />
+		<arg name="stop_topic"	default="/stop/shutdown" />
+	</include>
 
 </launch>
