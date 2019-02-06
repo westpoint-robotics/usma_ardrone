@@ -31,6 +31,7 @@ class faceCentroidToAutopilot():
         self.face_permission_sub = rospy.Subscriber(self.face_permission_topic,Empty,self.facetracker_permission_cb)
         self.face_permission_bool = False
         self.face_permission_time = 0
+        self.liftoff_bool = False
 
         #subscribe to face tracker centroid
         self.face_centroid_topic = rospy.get_param("~face_centroid_topic","/face_detector/centroid")
@@ -68,6 +69,11 @@ class faceCentroidToAutopilot():
         # self.face_desired_pose_q = Quaternion
         self.face_pose_topic = rospy.get_param("~face_pose_topic","/ardrone/face/pose_desired")
         self.face_pose_pub = rospy.Publisher(self.face_pose_topic,Twist, queue_size=1)  
+
+    def liftoff_timer_cb(self, msg):
+        self.liftoff_time = rospy.get_time()
+        self.liftoff_bool = True
+        print("UAV lifted off")
 
     def facetracker_permission_cb(self, msg):
         self.face_permission_time = rospy.get_time()
@@ -134,6 +140,10 @@ if __name__ == '__main__':
     except rospy.ROSInterruptException: pass
     rate = rospy.Rate(30) # 30hz
     while not rospy.is_shutdown():
+        if (facetoCmd.liftoff_bool):# give uav time to liftoff
+            liftoff_wait = rospy.get_time() - self.liftoff_time
+            if (liftoff_wait>10): # UAV can track faces now
+                self.face_permission_bool = True
         rate.sleep()
 
     facetoCmd.data_logger.close()
