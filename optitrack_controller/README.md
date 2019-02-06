@@ -18,7 +18,7 @@ The IP address here must match the server_ip in the launch files mentioned below
 Set AR.Drone to connect to router, using a laptop or PC, connect to the ssid "ardrone2_<######>", in terminal type 
 
 	roscd wpa_support 
-	script/connect_linksys
+	. script/connect_linksys
 
 "connect_linksys" must be called each time the drone is powered down, such as when changing the battery. Now connect the laptop to the linksys router network ARDRONE250024ghz and test whether the ardrone is connected to the same network:
 
