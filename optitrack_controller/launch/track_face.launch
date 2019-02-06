@@ -34,6 +34,7 @@
 
     <arg name="launcher"    default="track_face_launch" />    
     <node pkg="optitrack_controller"    type="listenForKill"    name="shutdownListener_$(arg launcher)" output="screen" required="true"/>
+    <node pkg="optitrack_controller"    type="killNodes"        name="killNodes_$(arg launcher)"        output="screen" required="true"/>
 
     <!-- launch autopilot using optitrack measurements -->
     <include file="$(find optitrack_controller)/launch/optitrackAutopilot.launch">
