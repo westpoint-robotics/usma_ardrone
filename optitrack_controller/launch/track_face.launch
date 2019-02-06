@@ -9,7 +9,7 @@
     <arg name="run" default="001" /> 
 
 	<arg name="ardrone_ip" default="192.168.0.25" /> <!-- need to check IP address each time -->
-    <arg name="server_ip" default="192.168.0.24" /> 
+    <arg name="server_ip" default="192.168.0.5" /> 
 
     <!-- EECSDS3 is the default, I did development using my own routers -->
     <arg name="network" default="linksys" /> 
@@ -18,7 +18,7 @@
     <arg name="echo"    default="false" />
 
     <!-- turn on/off logging  of data for plotting -->
-    <arg name="logging" default="false" /> 
+    <arg name="logging" default="true" /> 
 
     <!-- launch vrpn server -->
     <include file="$(find optitrack_controller)/launch/vrpn.launch">
@@ -37,7 +37,7 @@
         <arg name="date"                    value="$(arg date)" />
         <arg name="run"                     value="$(arg run)" />
         <arg name="Kphi"                    value="0.5"/>
-        <arg name="Kp"                      value="0.25"/>
+        <arg name="Kp"                      value="0.15"/>
         <arg name="Kv"                      value="0.1"/>
         <arg name="logging"                 value="$(arg logging)" />
         <arg name="mocap_pose_topic"        value="/vrpn_client_node/Ardrone/pose"/>
