@@ -72,9 +72,9 @@ echo "Infrastructure Netmask    : $NETMASK" >>$LOG
 # echo " " >> $LOG
 
 MASTERn=0
-MASTERLIMIT=10
+MASTERLIMIT=5
 ADHOCn=1
-echo "Init Mode: MASTERn = $MASTERn, ADHOCn = $ADHOCn" >> $LOG
+echo "Init Mode: MASTERn = $MASTERn" >> $LOG
 echo " --- " >> $LOG
 
 while [ 1 ]
@@ -84,7 +84,7 @@ do
 
     if echo $CONFIG | grep -q "Master" ;
     then
-        # echo "In Master mode: n = $MASTERn" >> $LOG
+        echo "In Master mode: n = $MASTERn" >> $LOG
         # MASTERn=$(($MASTERn+1))
         MASTERn=`expr "$MASTERn" + 1`
         CONNECTED=0
@@ -100,50 +100,33 @@ do
 
         # if we are, there is nothing else to do, waiting 10s before checking again 
         if [ "$CONNECTED" -eq 1 ] ; then
-            # echo "Master mode, connected to $BASE_ADDRESS$i" >> $LOG
-            sleep 2
+            echo "Master mode, connected to $BASE_ADDRESS$i" >> $LOG
+            sleep 5
             continue
         fi
 
         if [ "$CONNECTED" -eq 0 ] ; then
-            # echo "Master mode, not connected." >> $LOG
-            sleep 2
+            echo "Master mode, not connected." >> $LOG
+            sleep 5
             continue
         fi        
 
     fi
 
-
-    
-    if echo $CONFIG | grep -q "Ad-Hoc" ;
-    then
-        # echo "In Ad-Hoc mode: n = $ADHOCn" >> $LOG
-        # ADHOCn=$(($ADHOCn+1))
-        CONNECTED=0
-        # are we connected to one of the standard ad-hoc IPs 
-        for i in $LAST_NUMBER
-        do
-
-                if ping -W 1 -c 1 -q $BASE_ADDRESS$i ; then
-                        CONNECTED=1
-                        break
-                fi
-        done
-
-        # if we are, there is nothing else to do, waiting 10s before checking again 
-        if [ "$CONNECTED" -eq 1 ] ; then
-                sleep 3
-                continue
-        fi
-    fi      
+    if [ "$MASTERn" -ge "$MASTERLIMIT" ] && [ "$CONNECTED" -eq 0 ] ; then
+        echo "$MASTERn >= $MASTERLIMIT" >> $LOG
+        # echo "  ** consider switching to managed mode" >> $LOG
 
 
-        if [ "$MASTERn" -ge "$MASTERLIMIT" ] ; then
-            echo "$MASTERn >= $MASTERLIMIT" >> $LOG
-            echo "  ** consider switching to managed mode" >> $LOG
+        echo "Switching to managed mode with ESSID : $ESSID" >> $LOG     
+        # ifconfig ath0 down
+        # iwconfig ath0 mode managed essid $ESSID ap any channel auto commit
+        # ifconfig ath0 $IP netmask $NETMASK up
+        
+        sleep 1
 
-            sleep 1
-        fi
+        MASTERn=0
+    fi
 
         # if we reach this point we are either in managed  mode or in ad-hoc mode but not connected
         # Signal level:-96 dBm indicates we lost the signal in managed mode (this is the lowest value)
