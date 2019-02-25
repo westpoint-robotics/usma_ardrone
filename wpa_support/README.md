@@ -68,3 +68,16 @@ ardrone-wpa2 @daraosn, MIT (see LICENSE)
 wpa_supplicant (BSD licensed)
 Copyright (c) 2003-2013, Jouni Malinen <j@w1.fi> and contributors.
 
+
+Setting up Autoconnect
+=======
+---
+
+https://sites.google.com/site/androflight/arautoconnect
+
+1. Connect to the drone's WIFI
+2. cd ~/ros/src/usma_ardrone/wpa_support/ && java -jar ARAutoConnect.jar
+3. Fill out router config:
+a. Set ESSID : ARDRONE250024ghz
+b. Set IP : 192.168.0.25
+
