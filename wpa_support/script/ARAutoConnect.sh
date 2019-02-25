@@ -66,80 +66,133 @@ echo "Access Point ESSID        : $ESSID" >> $LOG
 echo "Infrastructure IP address : $IP" >> $LOG
 echo "Infrastructure Netmask    : $NETMASK" >>$LOG
 
+# CONFIG=`iwconfig ath0`
+# echo " " >> $LOG
+# echo $CONFIG >> log
+# echo " " >> $LOG
+
+MASTERn=0
+MASTERLIMIT=10
+ADHOCn=1
+echo "Init Mode: MASTERn = $MASTERn, ADHOCn = $ADHOCn" >> $LOG
+echo " --- " >> $LOG
+
 while [ 1 ]
 do
 
-        CONFIG=`iwconfig ath0`
-        
-        if echo $CONFIG | grep -q "Ad-Hoc" ;
-        then
-                echo "In Ad-Hoc mode:" >> $LOG
-        
-                CONNECTED=0
-                # are we connected to one of the standard ad-hoc IPs 
-                for i in $LAST_NUMBER
-                do
+    CONFIG=`iwconfig ath0`
 
-                        if ping -W 1 -c 1 -q $BASE_ADDRESS$i ; then
-                                CONNECTED=1
-                                break
-                        fi
-                done
+    if echo $CONFIG | grep -q "Master" ;
+    then
+        # echo "In Master mode: n = $MASTERn" >> $LOG
+        # MASTERn=$(($MASTERn+1))
+        MASTERn=`expr "$MASTERn" + 1`
+        CONNECTED=0
+        # are we connected to one of the standard ad-hoc IPs 
+        for i in $LAST_NUMBER
+        do
+            if ping -W 1 -c 1 -q $BASE_ADDRESS$i ; then
+                CONNECTED=1
+                break
+            fi
+        done
 
-                # if we are, there is nothing else to do, waiting 10s before checking again 
-                if [ "$CONNECTED" -eq 1 ] ; then
-                        sleep 10
-                        continue
+
+        # if we are, there is nothing else to do, waiting 10s before checking again 
+        if [ "$CONNECTED" -eq 1 ] ; then
+            # echo "Master mode, connected to $BASE_ADDRESS$i" >> $LOG
+            sleep 2
+            continue
+        fi
+
+        if [ "$CONNECTED" -eq 0 ] ; then
+            # echo "Master mode, not connected." >> $LOG
+            sleep 2
+            continue
+        fi        
+
+    fi
+
+
+    
+    if echo $CONFIG | grep -q "Ad-Hoc" ;
+    then
+        # echo "In Ad-Hoc mode: n = $ADHOCn" >> $LOG
+        # ADHOCn=$(($ADHOCn+1))
+        CONNECTED=0
+        # are we connected to one of the standard ad-hoc IPs 
+        for i in $LAST_NUMBER
+        do
+
+                if ping -W 1 -c 1 -q $BASE_ADDRESS$i ; then
+                        CONNECTED=1
+                        break
                 fi
-        fi      
+        done
+
+        # if we are, there is nothing else to do, waiting 10s before checking again 
+        if [ "$CONNECTED" -eq 1 ] ; then
+                sleep 3
+                continue
+        fi
+    fi      
+
+
+        if [ "$MASTERn" -ge "$MASTERLIMIT" ] ; then
+            echo "$MASTERn >= $MASTERLIMIT" >> $LOG
+            echo "  ** consider switching to managed mode" >> $LOG
+
+            sleep 1
+        fi
 
         # if we reach this point we are either in managed  mode or in ad-hoc mode but not connected
         # Signal level:-96 dBm indicates we lost the signal in managed mode (this is the lowest value)
         if `echo $CONFIG | grep -q "Signal level:-96 dBm"` || `echo $CONFIG | grep -q "Ad-Hoc"` ;
+        # if `echo $CONFIG | grep -q "Signal level:-96 dBm"` || `echo $CONFIG | grep -q "Ad-Hoc" || `echo $CONFIG | grep -q "Master"` ;
         then
-                #We are not connected, lets find out if the specified AP if available
-                NETWORKS=`iwlist ath0 scanning`
-   
-                if echo $NETWORKS |grep -q $ESSID ;
+            #We are not connected, lets find out if the specified AP if available
+            NETWORKS=`iwlist ath0 scanning`
+
+            if echo $NETWORKS |grep -q $ESSID ;
+            then
+    
+                # if we are in ad-hoc mode lets switch to managed
+                if echo $CONFIG | grep -q Ad-Hoc;
                 then
-        
-                        # if we are in ad-hoc mode lets switch to managed
-                        if echo $CONFIG | grep -q Ad-Hoc;
-                        then
-                                echo "Switching to managed mode with ESSID : $ESSID" >> $LOG     
-                                ifconfig ath0 down
-                                iwconfig ath0 mode managed essid $ESSID ap any channel auto commit
-                                ifconfig ath0 $IP netmask $NETMASK up
-      
-                        else 
-                                if echo $CONFIG | grep -q Managed;
-                                then
-                                        echo "Reconnecting to the access point" >> $LOG
-                                        iwconfig ath0 essid $ESSID
-       
-                                fi
-                        fi
-      
-                        sleep 2
-        
-                else
-                        echo "no networks found" >> $LOG
-                        if `echo $CONFIG | grep -q "Managed"` ;
-                        then
-                                COUNT=`expr "$COUNT" + 1`
-                                
-                                if [ "$COUNT" -ge 30 ] ;
-                                then
-                                        COUNT=0
-                                        #reconnecting to Ad-Hoc network
-                                        echo "Restoring Ad-Hoc network with ssid $ESSID" >> $LOG
-                                        ifconfig ath0 down                                        
-                                        iwconfig ath0 mode Ad-Hoc essid $DRONESSID channel auto commit
-                                        ifconfig ath0 192.168.1.1 netmask 255.255.255.0 up
-                                fi
-                        fi   
-                        sleep 1
+                    echo "Switching to managed mode with ESSID : $ESSID" >> $LOG     
+                    ifconfig ath0 down
+                    iwconfig ath0 mode managed essid $ESSID ap any channel auto commit
+                    ifconfig ath0 $IP netmask $NETMASK up
+
+                else 
+                    if echo $CONFIG | grep -q Managed;
+                    then
+                        echo "Reconnecting to the access point" >> $LOG
+                        iwconfig ath0 essid $ESSID
+
+                    fi
                 fi
+
+                sleep 2
+    
+            else
+                echo "no networks found" >> $LOG
+                if `echo $CONFIG | grep -q "Managed"` ;
+                then
+                    COUNT=`expr "$COUNT" + 1`
+                    
+                    if [ "$COUNT" -ge 30 ] ;
+                    then
+                        COUNT=0
+                        #reconnecting to Ad-Hoc network
+                        echo "Restoring Ad-Hoc network with ssid $ESSID" >> $LOG
+                        ifconfig ath0 down                                        
+                        iwconfig ath0 mode Ad-Hoc essid $DRONESSID channel auto commit
+                        ifconfig ath0 192.168.1.1 netmask 255.255.255.0 up
+                    fi
+                fi   
+                sleep 1
+            fi
         else
 
                 sleep 10             

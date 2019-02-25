@@ -1,0 +1,16 @@
+Network configuration
+Drone SSID                : ardrone2_049677
+Access Point ESSID        : ARDRONE250024ghz
+Infrastructure IP address : 192.168.0.25
+Infrastructure Netmask    : 255.255.255.0
+Init Mode: MASTERn = 0, ADHOCn = 1
+ --- 
+In Master mode: n = 0
+In Master mode: n = 1
+In Master mode: n = 2
+In Master mode: n = 3
+In Master mode: n = 4
+In Master mode: n = 5
+In Master mode: n = 6
+In Master mode: n = 7
+In Master mode: n = 8
