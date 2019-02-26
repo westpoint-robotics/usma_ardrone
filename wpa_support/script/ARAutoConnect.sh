@@ -104,13 +104,11 @@ do
 
         if [ "$MASTERn" -ge "$MASTERLIMIT" ] && [ "$CONNECTED" -eq 0 ] ; then
             # echo "  **$MASTERn >= $MASTERLIMIT" >> $LOG
+            # echo "  connecting to $ESSID ..." >> $LOG   
+            # echo "{ifconfig ath0 $IP; iwconfig ath0 essid '$ESSID' && wpa_supplicant -B -Dwext -iath0 -c/etc/wpa_supplicant.conf $DHCPC; }" >> $LOG
 
             sleep 1
             MASTERn=0
-
-            # echo "  connecting to $ESSID ..." >> $LOG   
-
-            # echo "{ifconfig ath0 $IP; iwconfig ath0 essid '$ESSID' && wpa_supplicant -B -Dwext -iath0 -c/etc/wpa_supplicant.conf $DHCPC; }" >> $LOG
             ifconfig ath0 $IP
             iwconfig ath0 essid '$ESSID' && wpa_supplicant -B -Dwext -iath0 -c/etc/wpa_supplicant.conf $DHCPC
 
@@ -119,7 +117,7 @@ do
 
         # if we are, there is nothing else to do, waiting 10s before checking again 
         if [ "$CONNECTED" -eq 1 ] ; then
-            echo "  connected to $BASE_ADDRESS$i" >> $LOG
+            # echo "  connected to $BASE_ADDRESS$i" >> $LOG
             MASTERn=0
             sleep 5
             continue
