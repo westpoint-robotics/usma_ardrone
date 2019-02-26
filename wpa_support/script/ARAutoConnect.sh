@@ -17,17 +17,9 @@
 
 
 INSTALL_PATH=/home/default/ARAutoConnect
-
 ESSID_PATH=$INSTALL_PATH/essid
 IP_PATH=$INSTALL_PATH/ip
 NETMASK_PATH=$INSTALL_PATH/netmask
-
-HEXLOG=$INSTALL_PATH/randhex
-tr -dc 'A-F0-9' < /dev/urandom | dd bs=1 count=8>$HEXLOG
-HEXSUFFIX=$(cat $HEXLOG)
-
-LOG=$INSTALL_PATH/log_$HEXSUFFIX
-echo "  --- " >> $LOG
 
 ESSID=rezo
 IP=192.168.1.1
@@ -65,32 +57,39 @@ if [ -s $NETMASK_PATH ] ; then
         NETMASK=`cat $NETMASK_PATH`
 fi
 
+HEXLOG=$INSTALL_PATH/randhex
+tr -dc 'A-F0-9' < /dev/urandom | dd bs=1 count=8>$HEXLOG
+HEXSUFFIX=$(cat $HEXLOG)
+# LOG=$INSTALL_PATH/log_$HEXSUFFIX
+LOG=$INSTALL_PATH/log
+PASSWORD="abruzzo2018"
+DHCPC=""
+
+echo "  --- " >> $LOG
 echo "Network configuration" > $LOG
 echo "Drone SSID                : $DRONESSID" >> $LOG
 echo "Access Point ESSID        : $ESSID" >> $LOG
+echo "Access Point PSK          : $PASSWORD" >> $LOG
 echo "Infrastructure IP address : $IP" >> $LOG
-echo "Infrastructure Netmask    : $NETMASK" >>$LOG
+# echo "Infrastructure Netmask    : $NETMASK" >>$LOG
+echo "Random log ID             : $HEXSUFFIX" >> $LOG
+echo "  --- " >> $LOG
 
 
 MASTERn=0
 MASTERLIMIT=6 # 6*5 == 30 second wait before connecting to router
 ADHOCn=1
-echo "Init Mode: MASTERn = $MASTERn" >> $LOG
-echo "  --- " >> $LOG
-
-NONCE=$(</dev/urandom tr -dc A=Za-z0-9-_ | head -c 22)
-echo "Random log ID: $NONCE" >> $LOG
-echo "  --- " >> $LOG
 
 
 while [ 1 ]
 do
-
+    
     CONFIG=`iwconfig ath0`
+    sleep 5
 
     if echo $CONFIG | grep -q "Master" ;
     then
-        echo "In Master mode: n = $MASTERn" >> $LOG
+        # echo "In Master mode: n = $MASTERn" >> $LOG
         # MASTERn=$(($MASTERn+1))
         MASTERn=`expr "$MASTERn" + 1`
         CONNECTED=0
@@ -104,39 +103,42 @@ do
         done
 
         if [ "$MASTERn" -ge "$MASTERLIMIT" ] && [ "$CONNECTED" -eq 0 ] ; then
-            echo "  **$MASTERn >= $MASTERLIMIT" >> $LOG
+            # echo "  **$MASTERn >= $MASTERLIMIT" >> $LOG
 
             sleep 1
             MASTERn=0
-            PASSWORD="abruzzo2018"
-            DRONEIP="192.168.1.1"
-            IFCONFIG="ifconfig ath0 $ADDRESS;"
-            DHCPC=""
 
-            echo "Connecting to $ESSID / $PASSWORD" >> $LOG   
-            # $IFCONFIG iwconfig ath0 essid '$ESSID' 
-            # wpa_supplicant -B -Dwext -iath0 -c/etc/wpa_supplicant.conf $DHCPC
-            # sleep 1
+            # echo "  connecting to $ESSID ..." >> $LOG   
+
+            # echo "{ifconfig ath0 $IP; iwconfig ath0 essid '$ESSID' && wpa_supplicant -B -Dwext -iath0 -c/etc/wpa_supplicant.conf $DHCPC; }" >> $LOG
+            ifconfig ath0 $IP
+            iwconfig ath0 essid '$ESSID' && wpa_supplicant -B -Dwext -iath0 -c/etc/wpa_supplicant.conf $DHCPC
+
             continue
-
-
         fi
 
         # if we are, there is nothing else to do, waiting 10s before checking again 
         if [ "$CONNECTED" -eq 1 ] ; then
-            echo "  Master mode, connected to $BASE_ADDRESS$i" >> $LOG
+            echo "  connected to $BASE_ADDRESS$i" >> $LOG
             MASTERn=0
             sleep 5
             continue
         fi
 
         if [ "$CONNECTED" -eq 0 ] ; then
-            echo "  Master mode, not connected." >> $LOG
+            # echo "  not connected ..." >> $LOG
             sleep 5
             continue
-        fi        
-
+        fi
     fi
+
+
+    if echo $CONFIG | grep -q "Managed" ;
+    then
+        # echo "$CONFIG" >> $LOG
+        sleep 5
+    fi
+
 
 done
         # echo "  ** consider switching to managed mode" >> $LOG
