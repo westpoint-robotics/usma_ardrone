@@ -22,7 +22,12 @@ ESSID_PATH=$INSTALL_PATH/essid
 IP_PATH=$INSTALL_PATH/ip
 NETMASK_PATH=$INSTALL_PATH/netmask
 
-LOG=$INSTALL_PATH/log
+HEXLOG=$INSTALL_PATH/randhex
+tr -dc 'A-F0-9' < /dev/urandom | dd bs=1 count=8>$HEXLOG
+HEXSUFFIX=$(cat $HEXLOG)
+
+LOG=$INSTALL_PATH/log_$HEXSUFFIX
+echo "  --- " >> $LOG
 
 ESSID=rezo
 IP=192.168.1.1
@@ -66,16 +71,17 @@ echo "Access Point ESSID        : $ESSID" >> $LOG
 echo "Infrastructure IP address : $IP" >> $LOG
 echo "Infrastructure Netmask    : $NETMASK" >>$LOG
 
-# CONFIG=`iwconfig ath0`
-# echo " " >> $LOG
-# echo $CONFIG >> log
-# echo " " >> $LOG
 
 MASTERn=0
-MASTERLIMIT=5
+MASTERLIMIT=6 # 6*5 == 30 second wait before connecting to router
 ADHOCn=1
 echo "Init Mode: MASTERn = $MASTERn" >> $LOG
-echo " --- " >> $LOG
+echo "  --- " >> $LOG
+
+NONCE=$(</dev/urandom tr -dc A=Za-z0-9-_ | head -c 22)
+echo "Random log ID: $NONCE" >> $LOG
+echo "  --- " >> $LOG
+
 
 while [ 1 ]
 do
@@ -97,87 +103,102 @@ do
             fi
         done
 
+        if [ "$MASTERn" -ge "$MASTERLIMIT" ] && [ "$CONNECTED" -eq 0 ] ; then
+            echo "  **$MASTERn >= $MASTERLIMIT" >> $LOG
+
+            sleep 1
+            MASTERn=0
+            PASSWORD="abruzzo2018"
+            DRONEIP="192.168.1.1"
+            IFCONFIG="ifconfig ath0 $ADDRESS;"
+            DHCPC=""
+
+            echo "Connecting to $ESSID / $PASSWORD" >> $LOG   
+            # $IFCONFIG iwconfig ath0 essid '$ESSID' 
+            # wpa_supplicant -B -Dwext -iath0 -c/etc/wpa_supplicant.conf $DHCPC
+            # sleep 1
+            continue
+
+
+        fi
 
         # if we are, there is nothing else to do, waiting 10s before checking again 
         if [ "$CONNECTED" -eq 1 ] ; then
-            echo "Master mode, connected to $BASE_ADDRESS$i" >> $LOG
+            echo "  Master mode, connected to $BASE_ADDRESS$i" >> $LOG
+            MASTERn=0
             sleep 5
             continue
         fi
 
         if [ "$CONNECTED" -eq 0 ] ; then
-            echo "Master mode, not connected." >> $LOG
+            echo "  Master mode, not connected." >> $LOG
             sleep 5
             continue
         fi        
 
     fi
 
-    if [ "$MASTERn" -ge "$MASTERLIMIT" ] && [ "$CONNECTED" -eq 0 ] ; then
-        echo "$MASTERn >= $MASTERLIMIT" >> $LOG
+done
         # echo "  ** consider switching to managed mode" >> $LOG
 
 
-        echo "Switching to managed mode with ESSID : $ESSID" >> $LOG     
         # ifconfig ath0 down
         # iwconfig ath0 mode managed essid $ESSID ap any channel auto commit
         # ifconfig ath0 $IP netmask $NETMASK up
-        
-        sleep 1
 
-        MASTERn=0
-    fi
-
-        # if we reach this point we are either in managed  mode or in ad-hoc mode but not connected
-        # Signal level:-96 dBm indicates we lost the signal in managed mode (this is the lowest value)
-        if `echo $CONFIG | grep -q "Signal level:-96 dBm"` || `echo $CONFIG | grep -q "Ad-Hoc"` ;
-        # if `echo $CONFIG | grep -q "Signal level:-96 dBm"` || `echo $CONFIG | grep -q "Ad-Hoc" || `echo $CONFIG | grep -q "Master"` ;
-        then
-            #We are not connected, lets find out if the specified AP if available
-            NETWORKS=`iwlist ath0 scanning`
-
-            if echo $NETWORKS |grep -q $ESSID ;
-            then
+      # { $IFCONFIG iwconfig ath0 essid '$ESSID' && wpa_supplicant -B -Dwext -iath0 -c/etc/wpa_supplicant.conf $DHCPC; } &
+    # "; sleep 1; ) 
     
-                # if we are in ad-hoc mode lets switch to managed
-                if echo $CONFIG | grep -q Ad-Hoc;
-                then
-                    echo "Switching to managed mode with ESSID : $ESSID" >> $LOG     
-                    ifconfig ath0 down
-                    iwconfig ath0 mode managed essid $ESSID ap any channel auto commit
-                    ifconfig ath0 $IP netmask $NETMASK up
 
-                else 
-                    if echo $CONFIG | grep -q Managed;
-                    then
-                        echo "Reconnecting to the access point" >> $LOG
-                        iwconfig ath0 essid $ESSID
+        # # if we reach this point we are either in managed  mode or in ad-hoc mode but not connected
+        # # Signal level:-96 dBm indicates we lost the signal in managed mode (this is the lowest value)
+        # if `echo $CONFIG | grep -q "Signal level:-96 dBm"` || `echo $CONFIG | grep -q "Ad-Hoc"` ;
+        # # if `echo $CONFIG | grep -q "Signal level:-96 dBm"` || `echo $CONFIG | grep -q "Ad-Hoc" || `echo $CONFIG | grep -q "Master"` ;
+        # then
+        #     #We are not connected, lets find out if the specified AP if available
+        #     NETWORKS=`iwlist ath0 scanning`
 
-                    fi
-                fi
-
-                sleep 2
+        #     if echo $NETWORKS |grep -q $ESSID ;
+        #     then
     
-            else
-                echo "no networks found" >> $LOG
-                if `echo $CONFIG | grep -q "Managed"` ;
-                then
-                    COUNT=`expr "$COUNT" + 1`
+        #         # if we are in ad-hoc mode lets switch to managed
+        #         if echo $CONFIG | grep -q Ad-Hoc;
+        #         then
+        #             echo "Switching to managed mode with ESSID : $ESSID" >> $LOG     
+        #             ifconfig ath0 down
+        #             iwconfig ath0 mode managed essid $ESSID ap any channel auto commit
+        #             ifconfig ath0 $IP netmask $NETMASK up
+
+        #         else 
+        #             if echo $CONFIG | grep -q Managed;
+        #             then
+        #                 echo "Reconnecting to the access point" >> $LOG
+        #                 iwconfig ath0 essid $ESSID
+
+        #             fi
+        #         fi
+
+        #         sleep 2
+    
+        #     else
+        #         echo "no networks found" >> $LOG
+        #         if `echo $CONFIG | grep -q "Managed"` ;
+        #         then
+        #             COUNT=`expr "$COUNT" + 1`
                     
-                    if [ "$COUNT" -ge 30 ] ;
-                    then
-                        COUNT=0
-                        #reconnecting to Ad-Hoc network
-                        echo "Restoring Ad-Hoc network with ssid $ESSID" >> $LOG
-                        ifconfig ath0 down                                        
-                        iwconfig ath0 mode Ad-Hoc essid $DRONESSID channel auto commit
-                        ifconfig ath0 192.168.1.1 netmask 255.255.255.0 up
-                    fi
-                fi   
-                sleep 1
-            fi
-        else
+        #             if [ "$COUNT" -ge 30 ] ;
+        #             then
+        #                 COUNT=0
+        #                 #reconnecting to Ad-Hoc network
+        #                 echo "Restoring Ad-Hoc network with ssid $ESSID" >> $LOG
+        #                 ifconfig ath0 down                                        
+        #                 iwconfig ath0 mode Ad-Hoc essid $DRONESSID channel auto commit
+        #                 ifconfig ath0 192.168.1.1 netmask 255.255.255.0 up
+        #             fi
+        #         fi   
+        #         sleep 1
+        #     fi
+        # else
 
-                sleep 10             
-        fi
-done
+        #         sleep 10             
+        # fi
