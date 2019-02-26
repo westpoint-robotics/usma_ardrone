@@ -77,7 +77,7 @@ https://sites.google.com/site/androflight/arautoconnect
 
 1. Connect to the drone's WIFI
 2. cd ~/ros/src/usma_ardrone/wpa_support/ && java -jar ARAutoConnect.jar (sudo apt install default-jre)
-3. Fill out router config:
+3. Fill out router config: 
 a. Set ESSID : ARDRONE250024ghz
 b. Set IP : 192.168.0.25
 
