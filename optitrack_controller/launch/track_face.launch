@@ -9,7 +9,7 @@
     <arg name="run" default="001" /> 
 
 	<arg name="ardrone_ip" default="192.168.0.25" /> <!-- need to check IP address each time -->
-    <arg name="server_ip" default="192.168.0.5" /> 
+    <arg name="server_ip" default="192.168.0.19" /> 
 
     <!-- EECSDS3 is the default, I did development using my own routers -->
     <arg name="network" default="linksys" /> 
@@ -18,7 +18,7 @@
     <arg name="echo"    default="false" />
 
     <!-- turn on/off logging  of data for plotting -->
-    <arg name="logging" default="true" /> 
+    <arg name="logging" default="false" /> 
 
     <!-- launch vrpn server -->
     <include file="$(find optitrack_controller)/launch/vrpn.launch">
@@ -34,7 +34,10 @@
 
     <arg name="launcher"    default="track_face_launch" />    
     <node pkg="optitrack_controller"    type="listenForKill"    name="shutdownListener_$(arg launcher)" output="screen" required="true"/>
-    <node pkg="optitrack_controller"    type="killNodes"        name="killNodes_$(arg launcher)"        output="screen" required="true"/>
+    <!-- <node pkg="optitrack_controller"    type="killNodes"        name="killNodes_$(arg launcher)"        output="screen" required="true"/> -->
+    <include file="$(find optitrack_controller)/launch/killNodes.launch">
+        <arg name="launcher"                    value="$(arg launcher)" />
+    </include>
 
     <!-- launch autopilot using optitrack measurements -->
     <include file="$(find optitrack_controller)/launch/optitrackAutopilot.launch">
@@ -74,18 +77,20 @@
     </include>
 
     <!-- vrpn logging -->
-    <include file="$(find usma_optitrack)/launch/vrpn_logger.launch">
-        <arg name="run"             value="$(arg run)" />
-        <arg name="pose_msg"        value="/vrpn_client_node/Ardrone/pose"/>
-        <arg name="filepath"        value="/home/benjamin/ros/data/$(arg date)/$(arg run)/"/>
-        <arg name="matlab_prefix"   value="vrpn_ardrone"/>
-    </include>
-    <include file="$(find usma_optitrack)/launch/vrpn_logger.launch">
-        <arg name="run"             value="$(arg run)" />
-        <arg name="pose_msg"        value="/vrpn_client_node/blockhead/pose"/>
-        <arg name="filepath"        value="/home/benjamin/ros/data/$(arg date)/$(arg run)/"/>
-        <arg name="matlab_prefix"   value="vrpn_blockhead"/>
-    </include>
+    <group if="$(arg logging)">
+        <include file="$(find usma_optitrack)/launch/vrpn_logger.launch">
+            <arg name="run"             value="$(arg run)" />
+            <arg name="pose_msg"        value="/vrpn_client_node/Ardrone/pose"/>
+            <arg name="filepath"        value="/home/benjamin/ros/data/$(arg date)/$(arg run)/"/>
+            <arg name="matlab_prefix"   value="vrpn_ardrone"/>
+        </include>
+        <include file="$(find usma_optitrack)/launch/vrpn_logger.launch">
+            <arg name="run"             value="$(arg run)" />
+            <arg name="pose_msg"        value="/vrpn_client_node/blockhead/pose"/>
+            <arg name="filepath"        value="/home/benjamin/ros/data/$(arg date)/$(arg run)/"/>
+            <arg name="matlab_prefix"   value="vrpn_blockhead"/>
+        </include>
+    </group>
 
 </launch>
 
