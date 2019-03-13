@@ -2,7 +2,7 @@
 The Ar.Drone is configured to connect to the Linksys e2500 router (bottom in this image)<br />
 ![Open Project](https://github.com/westpoint-robotics/usma_ardrone/blob/master/media/routers_1.jpg)
 
-Make sure that the green ethernet cable is connected to the e2500 router, this connects the computer running Optitrack Motive to the netowkr that will be used for ROS and the AR.Drone.  This must happen before Optitrack Motive is launched in windows.  Open Motive Now. <br />
+Make sure that the green ethernet cable is connected to the e2500 router, this connects the computer running Optitrack Motive to the network that will be used for ROS and the AR.Drone.  This must happen before Optitrack Motive is launched in windows.  Open Motive Now. <br />
 
 Open the project "abruzzo_face_tracking".  This should load in the opbjects "Ardrone" and "blockhead".
 ![Open Project](https://github.com/westpoint-robotics/usma_ardrone/blob/master/media/open_project.jpg)
@@ -15,7 +15,7 @@ The IP address here must match the server_ip in the launch files mentioned below
 
 ## Ar.Drone Face Tracking demo with optitrack feedback
 
-Set AR.Drone to connect to router, using a laptop or PC, connect to the ssid "ardrone2_<######>", in terminal type 
+<!-- Set AR.Drone to connect to router, using a laptop or PC, connect to the ssid "ardrone2_<######>", in terminal type 
 
 	roscd wpa_support 
 	. script/connect_linksys
@@ -32,9 +32,13 @@ Assuming the optitrack software and cameras are booted and running, to launch th
 
 	roslaunch optitrack_controller vrpn.launch
 
-'rostopic list' should populate with the rigid bodies in the optitrack field of view. If you do not see rigid bodies on the 'rostopic list' output, check to make sure that the optitrack software is registering the rigid bodies in its software.  sometimes the too many reflective markers are out of view of the optitrack cameras. Try moving the drone around until it is seen by the cameras. 'ctrl-c' to close the vrpn server.
+'rostopic list' should populate with the rigid bodies in the optitrack field of view. If you do not see rigid bodies on the 'rostopic list' output, check to make sure that the optitrack software is registering the rigid bodies in its software.  sometimes the too many reflective markers are out of view of the optitrack cameras. Try moving the drone around until it is seen by the cameras. 'ctrl-c' to close the vrpn server. -->
 
-To run the face tracking demo, the following command file will launch the control and tracking nodes for the ardrone
+The AR.Drone should automatically connect to the linksys router, but it takes about 30-60 seconds.  After that, to test whether the ardrone is connected to the same network:
+
+	ping 192.168.0.25
+
+If the ping is successful, everything should be configured to work. **To run the face tracking demo**, the following command file will launch the control and tracking nodes for the ardrone
 
 	roslaunch optitrack_controller track_face.launch network:=linksys
 
@@ -52,7 +56,7 @@ If there is an issue during takeoff, or if you need to do a hard abort for some 
 	
 	rostopic pub -1 /ardrone/reset std_msgs/Empty
 
-If there is an issue, you can always e-stop the Ar.Drone by putting a hand above and below the body of the UAV, grabbing it and flipping it over.  This will put the drone into an e-stop and will need a reset before taking off again.
+If there is an issue, you can always e-stop the Ar.Drone by putting a hand above and below the body of the UAV, grabbing it and flipping it over.  This will put the drone into an e-stop state and **will require** a reset before taking off again.
 
 
 ---
