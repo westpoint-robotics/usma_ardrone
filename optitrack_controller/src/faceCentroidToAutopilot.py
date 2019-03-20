@@ -146,5 +146,5 @@ if __name__ == '__main__':
                 self.face_permission_bool = True
         rate.sleep()
 
-    facetoCmd.data_logger.close()
+    #facetoCmd.data_logger.close()
 # end main

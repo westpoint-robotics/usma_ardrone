@@ -9,7 +9,7 @@
     <arg name="run" default="001" /> 
 
 	<arg name="ardrone_ip" default="192.168.0.25" /> <!-- need to check IP address each time -->
-    <arg name="server_ip" default="192.168.0.19" /> 
+    <arg name="server_ip" default="192.168.0.3" /> 
 
     <!-- EECSDS3 is the default, I did development using my own routers -->
     <arg name="network" default="linksys" /> 
@@ -34,7 +34,6 @@
 
     <arg name="launcher"    default="track_face_launch" />    
     <node pkg="optitrack_controller"    type="listenForKill"    name="shutdownListener_$(arg launcher)" output="screen" required="true"/>
-    <!-- <node pkg="optitrack_controller"    type="killNodes"        name="killNodes_$(arg launcher)"        output="screen" required="true"/> -->
     <include file="$(find optitrack_controller)/launch/killNodes.launch">
         <arg name="launcher"                    value="$(arg launcher)" />
     </include>
@@ -51,8 +50,8 @@
         <arg name="uav_desired_pose_topic"  value="/usma_ardrone/uav/desired_pose"/>
         <arg name="face_pose_topic"         value="/ardrone/face/pose_desired" />
         <arg name="uav_cmd_topic"           value="/ardrone/switched/cmd_vel" />
-        <!-- <arg name="uav_cmd_topic"           value="/usma_ardrone/uav/cmd_vel"/> -->
     </include>
+        <!-- <arg name="uav_cmd_topic"           value="/usma_ardrone/uav/cmd_vel"/> -->
 
     <!-- launch autopilot using face tracking centroid -->
     <include file="$(find optitrack_controller)/launch/face_centroid_cmd.launch">

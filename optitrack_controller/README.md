@@ -44,6 +44,9 @@ Finally to have the drone takeoff :
 
 To land : hit enter in either window used to launch the previous two commands
 
+To give the drone permission t track faces:
+
+	rostopic pub -1 /ardrone/face/face_permission_topic std_msgs/Empty
 
 
 ---
@@ -89,7 +92,7 @@ roslaunch optitrack_controller track_face.launch network:=EECSDS3 <br />
 roslaunch optitrack_controller track_face.launch network:=linksys logging:=true run:=004<br />
 
 
-rostopic pub -1 /ardrone/face/face_permission_topic std_msgs/Empty
+
 
 
 
