@@ -64,7 +64,7 @@ If there is an issue, you can always e-stop the Ar.Drone by putting a hand above
 
 ---
 If you plan on logging data, run :
-
+z
 	. ~/ros/src/usma_ardrone/scripts/makedirs.sh 20181121 1 5
 
 	. ~/ros/src/usma_ardrone/scripts/makedirs.sh <yyyymmdd> <run first index> <run last index>
@@ -114,3 +114,7 @@ ardrone2_049677  ::  90:03:B7:E8:3C:D8 <br />
 
 script/install_linksys
 "install_linksys" needs only to be called once, but 
+
+
+
+rostopic pub -1 /ardrone/takeoff std_msgs/Empty
