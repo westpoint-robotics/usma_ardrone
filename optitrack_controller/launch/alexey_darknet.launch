@@ -1,0 +1,27 @@
+<launch>
+	<!-- Launch arguments -->
+	<arg name="called"			default="false" /> 
+	<arg name="launcher"		default="yolo" /> 
+	<arg name="ros_params"	default="$(find usma_threat_ros)/yolo/ros.yaml"/>
+
+	<!-- Start the node to run darknet ros -->
+	<node pkg="usma_threat_ros" type="alexey_darknet.py" name="alexey_darknet" output="screen" >
+		<rosparam 	command="load" 	file="$(arg ros_params)" />
+	</node>
+
+<!-- 	<include file="$(find stop)/launch/stop.launch">
+		<arg name="launcher"	value="yolo" />
+	</include> -->
+
+<!-- 	<group if="$(arg called)">
+		<include file="$(find stop)/launch/stop.launch">
+			<arg name="launcher"          value="$(arg launcher)_stopper" />
+		</include>
+	</group>     -->
+	
+<!--   <node pkg="image_view" type="image_view" name="image_view" >
+    <remap from="image" to="/darknet_ros/detection_image"/>
+  </node> -->
+
+
+</launch>

@@ -13,6 +13,17 @@ To configure the Motive workspace, from the drop down in the top right corner, c
 The IP address here must match the server_ip in the launch files mentioned below:
 ![Open Project](https://github.com/westpoint-robotics/usma_ardrone/blob/master/media/ip_addresses.png)  
 
+## Ar.Drone Yolo
+
+The AR.Drone should automatically connect to the linksys router, but it takes about 30-60 seconds.  After that, to test whether the ardrone is connected to the same network:
+
+	ping 192.168.0.25
+
+If the ping is successful, everything should be configured to work. **To run the face tracking demo**, the following command file will launch the control and tracking nodes for the ardrone
+
+	roslaunch optitrack_controller yolo.launch network:=linksys
+
+
 ## Ar.Drone Face Tracking demo with optitrack feedback
 
 <!-- Set AR.Drone to connect to router, using a laptop or PC, connect to the ssid "ardrone2_<######>", in terminal type 

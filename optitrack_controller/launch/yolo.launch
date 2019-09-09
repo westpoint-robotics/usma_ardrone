@@ -1,0 +1,5 @@
+<launch>
+  <include file="$(find usma_threat_ros)/launch/alexey_darknet.launch">
+		<arg name="ros_params"				value="$(find optitrack_controller)/config/yolo.yaml"/>	
+  </include>
+</launch>
