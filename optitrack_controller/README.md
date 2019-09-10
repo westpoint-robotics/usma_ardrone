@@ -21,7 +21,7 @@ The AR.Drone should automatically connect to the linksys router, but it takes ab
 
 If the ping is successful, everything should be configured to work. **To run the face tracking demo**, the following command file will launch the control and tracking nodes for the ardrone
 
-	roslaunch optitrack_controller yolo.launch network:=linksys
+	roslaunch optitrack_controller pistol.launch
 
 
 ## Ar.Drone Face Tracking demo with optitrack feedback

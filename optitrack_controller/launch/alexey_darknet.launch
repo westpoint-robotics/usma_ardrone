@@ -1,9 +1,11 @@
 <launch>
 	<!-- Launch arguments -->
-	<arg name="called"			default="false" /> 
-	<arg name="launcher"		default="yolo" /> 
-	<arg name="ros_params"	default="$(find usma_threat_ros)/yolo/ros.yaml"/>
-
+	<arg name="called"		default="false" /> 
+	<arg name="launcher"	default="yolo" /> 
+	<arg name="threat"		default="false" /> 
+	<arg unless="$(arg threat)" name="ros_params" 	value="$(find optitrack_controller)/config/yolov3.yaml"/>
+	<arg     if="$(arg threat)" name="ros_params"		value="$(find optitrack_controller)/config/yolo_pistol.yaml"/>
+	
 	<!-- Start the node to run darknet ros -->
 	<node pkg="usma_threat_ros" type="alexey_darknet.py" name="alexey_darknet" output="screen" >
 		<rosparam 	command="load" 	file="$(arg ros_params)" />

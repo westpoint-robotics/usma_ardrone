@@ -60,13 +60,9 @@
 		<remap from="image" to="/darknet_ros/detection_image" />
 	</node>
 
+	<node pkg="optitrack_controller" type="simplePosePublisher.py" name="simplePosePub">
+		<param name="pose_topic"	value="/usma_ardrone/uav/desired_pose"/>
+	</node>
+
 </launch>
 
-  <!-- Use YOLOv3 -->
-  <!-- <arg name="network_param_file"         default="$(find darknet_ros)/config/yolov3.yaml"/> -->
-
-
-  <!-- Include main launch file -->
-  <!-- <include file="$(find darknet_ros)/launch/darknet_ros.launch">
-    <arg name="network_param_file"    value="$(arg network_param_file)"/>
-  </include> -->

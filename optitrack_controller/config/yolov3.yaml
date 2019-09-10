@@ -1,0 +1,21 @@
+darknet_yolo:
+  data: /home/benjamin/ros/src/usma_threat_ros/yolo/coco-v3.data
+  cfg: /home/benjamin/ros/src/usma_threat_ros/yolo/coco-v3.cfg
+  weights: /home/benjamin/ros/src/usma_threat_ros/yolo/yolov3.weights
+  # data: /home/benjamin/ros/src/usma_threat_ros/yolo/pistol.data
+  # cfg: /home/benjamin/ros/src/usma_threat_ros/yolo/pistol-tiny.cfg
+  # weights: /home/benjamin/ros/src/usma_threat_ros/yolo/20190528/pistol-yolov3-tiny_450000.weights
+
+subscribers:
+  image:
+    # topic: /logitech/image_raw
+    # topic: /pgr/image_color
+    topic: /ardrone/front/image_rect_color
+
+publishers:
+  bounding_boxes:
+    topic: /darknet_ros/bounding_boxes
+  detection_image:
+    topic: /darknet_ros/detection_image
+
+

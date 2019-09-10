@@ -2,14 +2,15 @@
 # license removed for brevity
 import rospy
 from geometry_msgs.msg import PoseStamped, Vector3, Quaternion
+from usma_plugins.msg import PoseStamped, Vector3, Quaternion
 
 def talker():
-    pose_topic = rospy.get_param("~pose_topic",'/usma_ardrone/mpc/desiredpose') # false by default, in case operator doesn't know to create data folder for logging
+    pose_topic = rospy.get_param("~pose_topic",'/usma_ardrone/uav/desired_pose') # false by default, in case operator doesn't know to create data folder for logging
     pub = rospy.Publisher(pose_topic, PoseStamped, queue_size=10)
     rospy.init_node('desiredpose_publisher', anonymous=True)
     rate = rospy.Rate(10) # 10hz
     pub_msg = PoseStamped()
-    pub_msg.pose.position = Vector3(1.5, 0.25, 1.20)
+    pub_msg.pose.position = Vector3(0.0, 0.0, 1.66)
     pub_msg.pose.orientation = Quaternion(0.0, 0.0, 0.0, 1.0)
 
     while not rospy.is_shutdown():

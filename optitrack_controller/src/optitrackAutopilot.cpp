@@ -374,10 +374,6 @@ class optitrackAutopilot
 			fprintf (pFile,"optAutopilot.cmd.msg_linear(%d,:) = [% -6.8f % -6.8f % -6.8f];\n", cmd_counter, uav_cmd_msg.linear.x, uav_cmd_msg.linear.y, uav_cmd_msg.linear.z);
 			fprintf (pFile,"optAutopilot.cmd.msg_angular(%d,:)= [% -6.8f % -6.8f % -6.8f];\n\n", cmd_counter, uav_cmd_msg.angular.x, uav_cmd_msg.angular.y, uav_cmd_msg.angular.z);
 		}
-
-
-
-
 	}
 
 	// void cmdUAV(geometry_msgs::Twist cmd_vel)
