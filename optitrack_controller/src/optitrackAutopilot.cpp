@@ -42,6 +42,7 @@ class optitrackAutopilot
 			int face_pose_counter;
 			geometry_msgs::Twist face_pose_msg;
 			double face_desired_angle;
+			bool track_face;
 
 
 		// mocap subscriber
@@ -94,6 +95,8 @@ class optitrackAutopilot
 			uav_cmd_pub = n.advertise<geometry_msgs::Twist>	(s_uav_cmd_topic, 1);
 			cmd_counter = 0;
 
+		track_face = false;
+		ros::param::get("~track_face", track_face);
 		ros::param::get("~face_pose_topic", s_face_pose_topic);
 			face_pose_sub = n.subscribe(s_face_pose_topic,   10,  &optitrackAutopilot::updateFacePose, this);
 			face_pose_counter = 0;
@@ -298,11 +301,11 @@ class optitrackAutopilot
 
 		
 		double global_heading_error = uav_desired_pose_global_msg.heading - uav_mocap_ardrone_pose.heading;
-        // ROS_INFO("uav_Kp global position and heading errors [x, y, z, Y] : [%2.3f, %2.3f, %2.3f, %2.4f]", 
-		// global_position_error.at<double>(0,0),
-		// global_position_error.at<double>(1,0),
-		// global_position_error.at<double>(2,0),
-        // 	global_heading_error);
+     //  ROS_INFO("uav_Kp global position and heading errors [x, y, z, Y] : [%2.3f, %2.3f, %2.3f, %2.4f]", 
+					// global_position_error.at<double>(0,0),
+					// global_position_error.at<double>(1,0),
+					// global_position_error.at<double>(2,0),
+					// global_heading_error);
 
 		// convert global frame to uav body frame
 		double cosyaw = cos(uav_RPY[2]);
@@ -326,16 +329,20 @@ class optitrackAutopilot
 
 
 		//unless it has been a while since the lasst time we saw a face:
-		double time_since_last_face = last_face_time - ros::Time::now().toSec();
-		if (time_since_last_face >=	LOST_face_time){
-			//it has been a while since we saw a face: reset
+		if(track_face){
+			double time_since_last_face = last_face_time - ros::Time::now().toSec();
+			if (time_since_last_face >=	LOST_face_time){
+				//it has been a while since we saw a face: reset
+				uav_cmd_msg.linear.z = 2*Kp*body_position_error.at<double>(2,0);
+				uav_cmd_msg.angular.z = Kphi*global_heading_error;
+			} else {  // we've seen a face recently
+				uav_cmd_msg.linear.z = face_pose_msg.linear.z; 
+				uav_cmd_msg.angular.z = global_heading_error;
+			}
+		} else {
 			uav_cmd_msg.linear.z = 2*Kp*body_position_error.at<double>(2,0);
-			uav_cmd_msg.angular.z = Kphi*global_heading_error;
-		} else {  // we've seen a face recently
-			uav_cmd_msg.linear.z = face_pose_msg.linear.z; 
 			uav_cmd_msg.angular.z = global_heading_error;
 		}
-
 
 
 
